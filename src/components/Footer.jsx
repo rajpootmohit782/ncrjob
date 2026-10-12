@@ -2,78 +2,336 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer style={{ backgroundColor: "#0f172a", color: "#cbd5e1", padding: "40px 20px", marginTop: "60px" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "30px" }}>
+    <footer style={{ 
+      backgroundColor: "#0f172a", 
+      color: "#cbd5e1", 
+      paddingTop: "50px",
+      marginTop: "60px"
+    }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}>
         
-        <div>
-          <h3 style={{ color: "#fff", marginTop: 0, fontSize: "20px" }}>Job<span style={{color: "#2563eb"}}>Portal</span></h3>
-          <p style={{ fontSize: "14px", lineHeight: "1.6", color: "#94a3b8" }}>
-            Find your dream job. Genuine and reliable job listings updated daily for freshers and experienced professionals.
+        {/* Main Content */}
+        <div style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", 
+          gap: "40px", 
+          paddingBottom: "40px",
+          borderBottom: "1px solid #1e293b"
+        }}>
+          
+          {/* Brand & Description */}
+          <div style={{ gridColumn: "span 1" }}>
+            <h3 style={{ 
+              color: "#fff", 
+              margin: "0 0 16px", 
+              fontSize: "22px", 
+              fontWeight: "700" 
+            }}>
+              VM<span style={{ color: "#2563eb" }}>jobs</span>
+            </h3>
+            <p style={{ 
+              fontSize: "14px", 
+              lineHeight: "1.7", 
+              color: "#94a3b8", 
+              margin: "0 0 20px" 
+            }}>
+              Your trusted platform for genuine job opportunities across India. 
+              Connecting job seekers with verified employers.
+            </p>
+            
+            {/* Social Links */}
+            <div style={{ display: "flex", gap: "12px" }}>
+              <a 
+                href="https://wa.me/9192754378976" 
+                target="_blank" 
+                rel="noreferrer"
+                aria-label="WhatsApp"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  backgroundColor: "#25D366",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textDecoration: "none",
+                  color: "#fff",
+                  fontSize: "16px",
+                  transition: "transform 0.2s"
+                }}
+              >
+                W
+              </a>
+              <a 
+                href="https://t.me/yourchannel" 
+                target="_blank" 
+                rel="noreferrer"
+                aria-label="Telegram"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  backgroundColor: "#0088cc",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textDecoration: "none",
+                  color: "#fff",
+                  fontSize: "16px",
+                  transition: "transform 0.2s"
+                }}
+              >
+                T
+              </a>
+              <a 
+                href="https://instagram.com/subh.ai" 
+                target="_blank" 
+                rel="noreferrer"
+                aria-label="Instagram"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  background: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textDecoration: "none",
+                  color: "#fff",
+                  fontSize: "16px",
+                  transition: "transform 0.2s"
+                }}
+              >
+                I
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 style={{ 
+              color: "#fff", 
+              margin: "0 0 16px", 
+              fontSize: "16px", 
+              fontWeight: "600" 
+            }}>
+              Quick Links
+            </h4>
+            <ul style={{ 
+              listStyle: "none", 
+              padding: 0, 
+              margin: 0,
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px"
+            }}>
+              <li>
+                <Link to="/" style={{ 
+                  color: "#94a3b8", 
+                  textDecoration: "none", 
+                  fontSize: "14px",
+                  transition: "color 0.2s"
+                }}>
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/jobs" style={{ 
+                  color: "#94a3b8", 
+                  textDecoration: "none", 
+                  fontSize: "14px",
+                  transition: "color 0.2s"
+                }}>
+                  Browse Jobs
+                </Link>
+              </li>
+              <li>
+                <Link to="/become-employer" style={{ 
+                  color: "#94a3b8", 
+                  textDecoration: "none", 
+                  fontSize: "14px",
+                  transition: "color 0.2s"
+                }}>
+                  Post a Job
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" style={{ 
+                  color: "#94a3b8", 
+                  textDecoration: "none", 
+                  fontSize: "14px",
+                  transition: "color 0.2s"
+                }}>
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" style={{ 
+                  color: "#94a3b8", 
+                  textDecoration: "none", 
+                  fontSize: "14px",
+                  transition: "color 0.2s"
+                }}>
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 style={{ 
+              color: "#fff", 
+              margin: "0 0 16px", 
+              fontSize: "16px", 
+              fontWeight: "600" 
+            }}>
+              Legal
+            </h4>
+            <ul style={{ 
+              listStyle: "none", 
+              padding: 0, 
+              margin: 0,
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px"
+            }}>
+              <li>
+                <Link to="/privacy" style={{ 
+                  color: "#94a3b8", 
+                  textDecoration: "none", 
+                  fontSize: "14px",
+                  transition: "color 0.2s"
+                }}>
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" style={{ 
+                  color: "#94a3b8", 
+                  textDecoration: "none", 
+                  fontSize: "14px",
+                  transition: "color 0.2s"
+                }}>
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link to="/disclaimer" style={{ 
+                  color: "#94a3b8", 
+                  textDecoration: "none", 
+                  fontSize: "14px",
+                  transition: "color 0.2s"
+                }}>
+                  Disclaimer
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h4 style={{ 
+              color: "#fff", 
+              margin: "0 0 16px", 
+              fontSize: "16px", 
+              fontWeight: "600" 
+            }}>
+              Contact
+            </h4>
+            <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              gap: "12px",
+              fontSize: "14px",
+              color: "#94a3b8"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontSize: "16px" }}>📱</span>
+                <a 
+                  href="tel:+9192754378976" 
+                  style={{ 
+                    color: "#94a3b8", 
+                    textDecoration: "none" 
+                  }}
+                >
+                  +91 92754378976
+                </a>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontSize: "16px" }}>✉️</span>
+                <a 
+                  href="mailto:info@jobportal.com" 
+                  style={{ 
+                    color: "#94a3b8", 
+                    textDecoration: "none" 
+                  }}
+                >
+                  info@jobportal.com
+                </a>
+              </div>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+                <span style={{ fontSize: "16px" }}>📍</span>
+                <span>Noida, Uttar Pradesh, India</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Bottom Bar - Simple Credits */}
+        <div style={{ 
+          padding: "24px 0",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "12px",
+          fontSize: "13px",
+          color: "#64748b"
+        }}>
+          <p style={{ margin: 0 }}>
+            © {new Date().getFullYear()} JobPortal. All rights reserved.
           </p>
-        </div>
-
-        <div>
-          <h4 style={{ color: "#fff", marginTop: 0 }}>Quick Links</h4>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <li style={{ marginBottom: "8px" }}><Link to="/" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "14px" }}>Home</Link></li>
-            <li style={{ marginBottom: "8px" }}><Link to="/jobs" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "14px" }}>All Jobs</Link></li>
-            <li style={{ marginBottom: "8px" }}><Link to="/employer-login" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "14px" }}>Post a Job</Link></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 style={{ color: "#fff", marginTop: 0 }}>Legal</h4>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <li style={{ marginBottom: "8px" }}><Link to="/about-us" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "14px" }}>About Us</Link></li>
-            <li style={{ marginBottom: "8px" }}><Link to="/contact-us" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "14px" }}>Contact Us</Link></li>
-            <li style={{ marginBottom: "8px" }}><Link to="/privacy-policy" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "14px" }}>Privacy Policy</Link></li>
-            <li style={{ marginBottom: "8px" }}><Link to="/terms-conditions" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "14px" }}>Terms & Conditions</Link></li>
-            <li style={{ marginBottom: "8px" }}><Link to="/disclaimer" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "14px" }}>Disclaimer</Link></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 style={{ color: "#fff", marginTop: 0 }}>Connect With Us</h4>
-          <p style={{ fontSize: "14px", color: "#94a3b8" }}>Get instant job alerts.</p>
-          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-            <a href="https://wa.me/919999999999" target="_blank" rel="noreferrer" style={{ backgroundColor: "#25D366", color: "#fff", padding: "8px 14px", borderRadius: "6px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}>
-              WhatsApp
-            </a>
-            <a href="https://t.me/yourchannel" target="_blank" rel="noreferrer" style={{ backgroundColor: "#0088cc", color: "#fff", padding: "8px 14px", borderRadius: "6px", textDecoration: "none", fontSize: "14px", fontWeight: "bold" }}>
-              Telegram
-            </a>
+          
+          <div style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "8px",
+            flexWrap: "wrap"
+          }}>
+            <span>
+              Design:{" "}
+              <a 
+                href="https://instagram.com/subh.ai" 
+                target="_blank" 
+                rel="noreferrer" 
+                style={{ 
+                  color: "#e1306c", 
+                  textDecoration: "none"
+                }}
+              >
+                subh.ai
+              </a>
+            </span>
+            <span style={{ color: "#475569" }}>•</span>
+            <span>
+              Development:{" "}
+              <a 
+                href="https://mohitspace.in" 
+                target="_blank" 
+                rel="noreferrer" 
+                style={{ 
+                  color: "#60a5fa", 
+                  textDecoration: "none"
+                }}
+              >
+                mohitspace.in
+              </a>
+            </span>
           </div>
         </div>
 
-      </div>
-      
-      <div style={{ textAlign: "center", marginTop: "40px", borderTop: "1px solid #334155", paddingTop: "20px", fontSize: "14px", color: "#64748b" }}>
-        <p style={{ margin: "0 0 8px" }}>
-          &copy; {new Date().getFullYear()} JobPortal. All rights reserved.
-        </p>
-        <p style={{ margin: 0, fontSize: "11px", color: "#475569" }}>
-          Designed by{" "}
-          <a 
-            href="https://mohitspace.in" 
-            target="_blank" 
-            rel="noreferrer" 
-            style={{ color: "#475569", textDecoration: "none" }}
-          >
-            subh.ai
-          </a>
-        </p>
-        
-        <p style={{ margin: 0, fontSize: "11px", color: "#475569" }}>
-          Developed by{" "}
-          <a 
-            href="https://mohitspace.in" 
-            target="_blank" 
-            rel="noreferrer" 
-            style={{ color: "#475569", textDecoration: "none" }}
-          >
-            MohitSpace.in
-          </a>
-        </p>
       </div>
     </footer>
   );

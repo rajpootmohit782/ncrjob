@@ -90,6 +90,19 @@ export default function PostJob() {
     }
 
     if (employer.status !== "active") {
+          // Check if subscription has expired
+    if (employer.subscription_expires_at && new Date(employer.subscription_expires_at) < new Date()) {
+      setMessage("Your subscription has expired. Please renew your plan.");
+      setMessageType("error");
+      return;
+    }
+
+    // Check job limit
+    if (employer.job_limit !== null && employer.job_limit <= 0) {
+      setMessage("You have reached your job posting limit. Please upgrade your plan.");
+      setMessageType("error");
+      return;
+    }
       setMessage(
         "Your employer account is not active yet. Admin must approve your company before you can post jobs."
       );
@@ -144,6 +157,16 @@ export default function PostJob() {
     } else {
       setMessage("Job created successfully. It is pending admin approval.");
       setMessageType("success");
+
+
+           // Deduct 1 from job limit
+      if (employer.job_limit !== null) {
+        const newLimit = employer.job_limit - 1;
+        await supabase
+          .from("employers")
+          .update({ job_limit: newLimit })
+          .eq("id", employer.id);
+      }
 
       setForm({
         title: "",

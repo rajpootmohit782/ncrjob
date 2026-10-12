@@ -75,7 +75,7 @@ export default function Home() {
       
       {/* ==================== HERO SECTION ==================== */}
       <section style={{ 
-        background: "linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%)", 
+        background: "linear-gradient(135deg, #669ee7 0%, #7e0d62 100%)", 
         padding: "70px 20px 80px", 
         textAlign: "center", 
         color: "#fff",
@@ -89,11 +89,11 @@ export default function Home() {
         <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: 1 }}>
           <div style={{ 
             display: "inline-block", 
-            backgroundColor: "rgba(37, 99, 235, 0.2)", 
+            backgroundColor: "rgba(123, 159, 238, 0.2)", 
             padding: "6px 16px", 
             borderRadius: "20px", 
             marginBottom: "20px",
-            border: "1px solid rgba(37, 99, 235, 0.3)"
+            border: "1px solid rgba(124, 164, 250, 0.3)"
           }}>
             <span style={{ fontSize: "14px", color: "#93c5fd" }}>
               🎯 India's Trusted Job Portal
@@ -105,9 +105,10 @@ export default function Home() {
             marginBottom: "12px", 
             fontWeight: "800", 
             lineHeight: "1.2",
+            margin: "0 auto 35px",
             letterSpacing: "-0.5px"
           }}>
-            Find Your <span style={{ color: "#60a5fa" }}>Dream Job</span> Today
+               Find Your <span style={{ color: "#60a5fa" }}>Dream Job</span> Today
           </h1>
           
           <p style={{ 
@@ -512,7 +513,7 @@ export default function Home() {
             Post your job listings and reach thousands of job seekers.
           </p>
           <Link 
-            to="/employer-login" 
+            to="/become-employer" 
             style={{ 
               display: "inline-block",
               padding: "14px 35px", 

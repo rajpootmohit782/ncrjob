@@ -24,6 +24,9 @@ import AdminJobs from "./pages/admin/AdminJobs";
 import Home from "./pages/public/Home";
 import Footer from "./components/Footer";
 
+import BecomeEmployer from "./pages/public/BecomeEmployer";
+import AdminEmployers from "./pages/admin/AdminEmployers";
+
 import AboutUs from "./pages/static/AboutUs";
 import ContactUs from "./pages/static/ContactUs";
 import PrivacyPolicy from "./pages/static/PrivacyPolicy";
@@ -49,10 +52,10 @@ function App() {
           <Route path="/employer-login" element={<EmployerLogin />} />
 
           {/* Static pages */}
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-conditions" element={<TermsConditions />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsConditions />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
 
           {/* Employer protected pages */}
@@ -73,6 +76,12 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Public - Become Employer */}
+<Route path="/become-employer" element={<BecomeEmployer />} />
+
+{/* Admin - Approve Employers */}
+<Route path="/admin/employers" element={<ProtectedRoute allowedRoles={["admin"]}><AdminEmployers /></ProtectedRoute>} />
 
           <Route
             path="/employer/post-job"

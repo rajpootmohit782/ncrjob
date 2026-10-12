@@ -12,6 +12,14 @@ export default function AdminMenu() {
       to: "/admin/jobs",
       label: "Manage Jobs",
     },
+    {
+      to: "/admin/employers",
+      label: "Approve Employers",
+    },
+    {
+      to: "/admin/ads",
+      label: "Manage Ads",
+    },
   ];
 
   return (
