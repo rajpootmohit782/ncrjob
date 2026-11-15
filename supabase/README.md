@@ -1,4 +1,8 @@
-# Supabase — NCR Job database
+# Supabase — VMWjobs database
+
+> Full project setup, environment variables and deployment are covered in the
+> [root README](../README.md). This file focuses on the database and Edge
+> Functions.
 
 ## 1. Run the reset (first time / clean slate)
 
@@ -16,14 +20,15 @@ It is **destructive**:
 | Categories | seeded **without** `Government Jobs` |
 | Plans | `basic` ₹9 / 5 jobs / 30 days, `pro` ₹29 / 35 jobs / 90 days |
 
-Before running, edit section 7:
+Before running, edit section 7 and set a **strong** admin password:
 
 ```sql
-v_admin_email text := 'admin@ncrjob.in';
-v_admin_pass  text := 'Admin@12345';
+v_admin_email text := 'admin@ncrjob.in';               -- your admin email
+v_admin_pass  text := 'CHANGE_ME_BEFORE_RUNNING';      -- set 12+ characters
 ```
 
-Then log in at `/admin/login` with those credentials and change the password.
+The script refuses to run while the password is still the placeholder or shorter
+than 12 characters. Never commit a real admin password.
 
 ## 2. Optional helpers
 

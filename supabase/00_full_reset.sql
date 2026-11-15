@@ -1,5 +1,5 @@
 -- ============================================================================
---  NCR JOB  /  VMjobs  —  COMPLETE DATABASE RESET & SCHEMA
+--  VMWjobs  —  COMPLETE DATABASE RESET & SCHEMA
 -- ============================================================================
 --  HOW TO RUN
 --    1. Open  https://supabase.com/dashboard  ->  your project
@@ -686,11 +686,15 @@ on conflict (id) do update
 -- ----------------------------------------------------------------------------
 do $$
 declare
-  v_admin_email text := 'admin@ncrjob.in';      -- <-- your admin email
-  v_admin_pass  text := 'Admin@12345';          -- <-- your admin password
-  v_admin_name  text := 'NCR Job Admin';
+  v_admin_email text := 'admin@ncrjob.in';               -- <-- your admin email
+  v_admin_pass  text := 'CHANGE_ME_BEFORE_RUNNING';      -- <-- your admin password
+  v_admin_name  text := 'VMWjobs Admin';
   v_uid uuid;
 begin
+  if v_admin_pass = 'CHANGE_ME_BEFORE_RUNNING' or length(v_admin_pass) < 12 then
+    raise exception 'Set a strong admin password (12+ characters) in section 7 before running this reset.';
+  end if;
+
   select id into v_uid from auth.users where lower(email) = lower(v_admin_email) limit 1;
 
   if v_uid is null then

@@ -1,5 +1,5 @@
 -- ============================================================================
---  NCR JOB — OPTIONAL HELPERS  (safe: no data is deleted)
+--  VMWjobs — OPTIONAL HELPERS  (safe: no data is deleted)
 -- ============================================================================
 --  Run these one at a time in the Supabase SQL Editor, only if you need them.
 --  The full reset (00_full_reset.sql) already handles a fresh start.
