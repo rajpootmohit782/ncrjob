@@ -1,130 +1,147 @@
 import { Link } from "react-router-dom";
+import { SITE } from "../../lib/site";
 
 export default function PrivacyPolicy() {
+  const lastUpdated = new Date().toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
   return (
-    <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", padding: "40px 20px" }}>
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <Link to="/" style={{ color: "#2563eb", textDecoration: "none", fontSize: "14px" }}>
-          ← Back to Home
-        </Link>
+    <div className="page">
+      <div className="container container-sm">
+        <div className="page-head">
+          <div>
+            <span className="eyebrow">Legal</span>
+            <h1>Privacy policy</h1>
+            <p className="page-sub">Last updated: {lastUpdated}</p>
+          </div>
+        </div>
 
-        <h1 style={{ fontSize: "32px", color: "#0f172a", margin: "20px 0 10px" }}>
-          Privacy Policy
-        </h1>
-
-        <p style={{ color: "#64748b", fontSize: "14px", marginBottom: "20px" }}>
-          Last updated: {new Date().toLocaleDateString()}
-        </p>
-
-        <div style={{ 
-          backgroundColor: "#fff", 
-          padding: "30px", 
-          borderRadius: "12px", 
-          border: "1px solid #e2e8f0",
-          lineHeight: "1.8",
-          color: "#334155",
-          fontSize: "15px"
-        }}>
-          <h2 style={{ color: "#0f172a", marginTop: 0 }}>1. Introduction</h2>
+        <div className="card card-pad prose">
+          <h2>1. Introduction</h2>
           <p>
-            Welcome to Job Portal ("we," "our," or "us"). We are committed to protecting your privacy. 
-            This Privacy Policy explains how we collect, use, disclose, and safeguard your information 
-            when you visit our website and use our services.
+            {SITE.name} ("we", "our" or "us") is a private-sector job marketplace
+            for Delhi NCR. This policy explains what information we collect, why
+            we collect it and the choices you have. By using {SITE.name}, you
+            agree to this policy.
           </p>
 
-          <h2 style={{ color: "#0f172a" }}>2. Information We Collect</h2>
-          <p>We may collect the following types of information:</p>
-          <h3 style={{ color: "#0f172a", fontSize: "16px" }}>Personal Information</h3>
-          <ul style={{ paddingLeft: "20px" }}>
-            <li>Name</li>
-            <li>Email address</li>
-            <li>Phone number</li>
-            <li>Resume/CV details</li>
-            <li>Job preferences and location</li>
-          </ul>
-          <h3 style={{ color: "#0f172a", fontSize: "16px" }}>Automatically Collected Information</h3>
-          <ul style={{ paddingLeft: "20px" }}>
-            <li>IP address</li>
-            <li>Browser type and version</li>
-            <li>Pages visited and time spent</li>
-            <li>Device information</li>
-            <li>Cookies and tracking technologies data</li>
-          </ul>
-
-          <h2 style={{ color: "#0f172a" }}>3. How We Use Your Information</h2>
-          <ul style={{ paddingLeft: "20px" }}>
-            <li>To provide and maintain our job listing services</li>
-            <li>To match you with relevant job opportunities</li>
-            <li>To communicate with you about job alerts and updates</li>
-            <li>To improve our website and services</li>
-            <li>To prevent fraud and ensure security</li>
-            <li>To comply with legal obligations</li>
+          <h2>2. Information we collect</h2>
+          <p>We collect only what we need to run the service:</p>
+          <ul>
+            <li>
+              <strong>Employer account details</strong> — company name, contact
+              person, email address, phone number and password (stored securely
+              by our authentication provider).
+            </li>
+            <li>
+              <strong>Company profile</strong> — description, industry, company
+              size, location, website and WhatsApp number.
+            </li>
+            <li>
+              <strong>Job listings</strong> — the role, salary, location,
+              experience, description and requirements you publish.
+            </li>
+            <li>
+              <strong>Payment confirmation</strong> — the plan purchased, amount,
+              Razorpay order and payment identifiers, and the payment status.
+              Card, UPI and bank details are handled by Razorpay and are never
+              stored by us.
+            </li>
+            <li>
+              <strong>Technical data</strong> — basic logs such as IP address,
+              browser type and pages visited, used for security and to keep the
+              site working.
+            </li>
           </ul>
 
-          <h2 style={{ color: "#0f172a" }}>4. Third-Party Advertising</h2>
-          <p>
-            We may use third-party advertising services, including Google AdSense, to display ads on our website. 
-            These third-party vendors use cookies to serve ads based on your prior visits to our website and other 
-            websites on the internet.
-          </p>
-          <p>
-            You may opt out of personalized advertising by visiting 
-            <a href="https://adssettings.google.com/" target="_blank" rel="noreferrer" style={{ color: "#2563eb" }}>
-              Google Ads Settings
-            </a>.
-          </p>
-
-          <h2 style={{ color: "#0f172a" }}>5. Cookies</h2>
-          <p>
-            We use cookies and similar tracking technologies to track activity on our website and store certain 
-            information. Cookies are files with a small amount of data which may include an anonymous unique identifier.
-          </p>
-          <p>You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.</p>
-
-          <h2 style={{ color: "#0f172a" }}>6. Data Security</h2>
-          <p>
-            We implement appropriate technical and organizational security measures to protect your personal data 
-            against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission 
-            over the internet is 100% secure.
-          </p>
-
-          <h2 style={{ color: "#0f172a" }}>7. Data Sharing</h2>
-          <p>We do not sell your personal information. We may share your data with:</p>
-          <ul style={{ paddingLeft: "20px" }}>
-            <li>Employers when you apply for a job</li>
-            <li>Service providers who assist in operating our website</li>
-            <li>Law enforcement when required by law</li>
+          <h2>3. How we use your information</h2>
+          <ul>
+            <li>To create and manage employer accounts and job listings.</li>
+            <li>To process payments and activate plans.</li>
+            <li>To show job listings to candidates and route applications.</li>
+            <li>To respond to support requests and investigate reports.</li>
+            <li>To prevent fraud, abuse and misuse of the platform.</li>
+            <li>To meet legal and accounting obligations.</li>
           </ul>
 
-          <h2 style={{ color: "#0f172a" }}>8. Your Rights</h2>
-          <p>You have the right to:</p>
-          <ul style={{ paddingLeft: "20px" }}>
-            <li>Access your personal data</li>
-            <li>Correct inaccurate data</li>
-            <li>Request deletion of your data</li>
-            <li>Object to processing of your data</li>
-            <li>Withdraw consent at any time</li>
+          <h2>4. Payments</h2>
+          <p>
+            Employer payments are processed by Razorpay. When you pay, Razorpay
+            collects and processes your payment details under its own privacy
+            policy. We receive a confirmation of the payment and the identifiers
+            needed to activate your plan.
+          </p>
+
+          <h2>5. Cookies and local storage</h2>
+          <p>
+            We use cookies and browser storage to keep you signed in and to
+            remember basic preferences. You can clear these through your browser
+            settings; some parts of the site, such as the employer dashboard,
+            may then stop working until you sign in again.
+          </p>
+
+          <h2>6. Who we share data with</h2>
+          <p>We do not sell your personal information. We share data only with:</p>
+          <ul>
+            <li>
+              <strong>Service providers</strong> — Supabase (database and
+              authentication) and Razorpay (payments), who process data on our
+              behalf.
+            </li>
+            <li>
+              <strong>Employers</strong> — when a candidate contacts them from a
+              job page, the conversation happens directly on WhatsApp.
+            </li>
+            <li>
+              <strong>Authorities</strong> — where required by law or to protect
+              the safety of our users.
+            </li>
           </ul>
 
-          <h2 style={{ color: "#0f172a" }}>9. Children's Privacy</h2>
+          <h2>7. Data security</h2>
           <p>
-            Our services are not intended for individuals under the age of 18. We do not knowingly collect 
-            personal information from children.
+            We use encryption in transit, access controls and database row-level
+            security to protect your data. No method of transmission or storage
+            is completely secure, so please use a strong, unique password and
+            keep your login details private.
           </p>
 
-          <h2 style={{ color: "#0f172a" }}>10. Changes to This Policy</h2>
+          <h2>8. Your rights</h2>
+          <p>You can ask us to:</p>
+          <ul>
+            <li>Show you the personal data we hold about you.</li>
+            <li>Correct inaccurate information.</li>
+            <li>Delete your account and associated data.</li>
+            <li>Stop processing your data where the law allows it.</li>
+          </ul>
           <p>
-            We may update this Privacy Policy from time to time. We will notify you of any changes by posting 
-            the new Privacy Policy on this page and updating the "Last updated" date.
+            To make a request, email{" "}
+            <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. We may need to
+            verify your identity before acting on it.
           </p>
 
-          <h2 style={{ color: "#0f172a" }}>11. Contact Us</h2>
+          <h2>9. Children's privacy</h2>
           <p>
-            If you have any questions about this Privacy Policy, please contact us at:
+            The service is intended for people aged 18 and above. We do not
+            knowingly collect personal information from children. If you believe
+            a child has provided us with data, please contact us so we can remove
+            it.
           </p>
+
+          <h2>10. Changes to this policy</h2>
           <p>
-            Email: <a href="mailto:info@yourjobportal.com" style={{ color: "#2563eb" }}>info@yourjobportal.com</a><br />
-            Address: Noida, Uttar Pradesh, India - 201301
+            We may update this policy from time to time. The latest version will
+            always be on this page, with the date shown at the top.
+          </p>
+
+          <h2>11. Contact</h2>
+          <p>
+            Questions about this policy? Email{" "}
+            <a href={`mailto:${SITE.email}`}>{SITE.email}</a> or use the{" "}
+            <Link to="/contact">contact page</Link>.
           </p>
         </div>
       </div>

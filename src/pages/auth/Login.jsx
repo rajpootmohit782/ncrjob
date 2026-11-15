@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabaseClient";
+import { AlertIcon } from "../../components/Icons";
 
 export default function Login({ employerMode = false }) {
   const [email, setEmail] = useState("");
@@ -12,17 +13,17 @@ export default function Login({ employerMode = false }) {
   const { signIn } = useAuth();
   const navigate = useNavigate();
 
-  const title = employerMode ? "Employer Login" : "Login";
+  const title = employerMode ? "Employer sign in" : "Sign in";
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
     setError("");
     setLoading(true);
 
-    const { data, error } = await signIn(email, password);
+    const { data, error: signInError } = await signIn(email, password);
 
-    if (error) {
-      setError(error.message);
+    if (signInError) {
+      setError(signInError.message);
       setLoading(false);
       return;
     }
@@ -43,7 +44,7 @@ export default function Login({ employerMode = false }) {
 
     if (profileError) {
       console.error(profileError);
-      setError("Unable to read profile after login.");
+      setError("Unable to read your profile after login.");
       setLoading(false);
       return;
     }
@@ -51,11 +52,20 @@ export default function Login({ employerMode = false }) {
     if (employerMode) {
       if (profileRow?.role !== "employer") {
         await supabase.auth.signOut();
-        setError("This login is for employer accounts only.");
+        setError(
+          "This sign-in is for employer accounts only. Job seekers can browse without an account.",
+        );
         setLoading(false);
         return;
       }
 
+      navigate("/employer-dashboard");
+      return;
+    }
+
+    if (profileRow?.role === "admin") {
+      navigate("/admin/dashboard");
+    } else if (profileRow?.role === "employer") {
       navigate("/employer-dashboard");
     } else {
       navigate("/");
@@ -63,56 +73,80 @@ export default function Login({ employerMode = false }) {
   }
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px" }}>
-      <h2>{title}</h2>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label>Email</label>
-          <br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-head">
+          <span className="brand-mark" aria-hidden="true">
+            V
+          </span>
+          <h1>{title}</h1>
+          <p>
+            {employerMode
+              ? "Access your hiring dashboard and job listings."
+              : "Sign in to manage your VMWjobs account."}
+          </p>
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>Password</label>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {error && (
+            <div className="alert alert-error" role="alert">
+              <AlertIcon />
+              <span>{error}</span>
+            </div>
+          )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ padding: "10px 20px", cursor: "pointer" }}
-        >
-          {loading ? "Logging in..." : title}
-        </button>
-      </form>
+          <label className="field">
+            <span className="field-label">Email address</span>
+            <input
+              className="input"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              autoComplete="email"
+              placeholder="you@company.com"
+            />
+          </label>
 
-      {!employerMode && (
-        <p>
-          Don't have an account? <Link to="/register">Register</Link>
+          <label className="field">
+            <span className="field-label">Password</span>
+            <input
+              className="input"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              autoComplete="current-password"
+              placeholder="Your password"
+            />
+          </label>
+
+          <button
+            className="btn btn-primary btn-lg btn-block"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Signing in…" : title}
+          </button>
+        </form>
+
+        {employerMode ? (
+          <p className="auth-switch">
+            New to VMWjobs?{" "}
+            <Link to="/become-employer">Create an employer account</Link>
+          </p>
+        ) : (
+          <p className="auth-switch">
+            New here? <Link to="/register">Create an account</Link>
+            {" · "}
+            <Link to="/employer-login">Employer sign in</Link>
+          </p>
+        )}
+
+        <p className="auth-foot">
+          <Link to="/">← Back to VMWjobs</Link>
         </p>
-      )}
-
-      {employerMode && (
-        <p>
-          Normal user? <Link to="/login">Go to normal login</Link>
-        </p>
-      )}
+      </div>
     </div>
   );
 }

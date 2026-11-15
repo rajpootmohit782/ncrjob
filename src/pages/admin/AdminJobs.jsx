@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
 import AdminMenu from "../../components/AdminMenu";
+import { statusTone } from "../../lib/format";
+import {
+  AlertIcon,
+  BriefcaseIcon,
+  CheckIcon,
+  ExternalIcon,
+  ShieldIcon,
+} from "../../components/Icons";
+
+const FILTERS = ["all", "pending", "active", "rejected", "closed"];
 
 export default function AdminJobs() {
   const [jobs, setJobs] = useState([]);
@@ -17,8 +27,6 @@ export default function AdminJobs() {
 
   async function fetchJobs() {
     setLoading(true);
-    setError("");
-    setSuccess("");
 
     let query = supabase
       .from("jobs")
@@ -29,16 +37,10 @@ export default function AdminJobs() {
         status,
         is_featured,
         created_at,
-        employers (
-          company_name
-        ),
-        categories (
-          name
-        ),
-        locations (
-          name
-        )
-        `
+        employers ( company_name ),
+        categories ( name ),
+        locations ( name )
+        `,
       )
       .order("created_at", { ascending: false })
       .limit(100);
@@ -47,11 +49,11 @@ export default function AdminJobs() {
       query = query.eq("status", statusFilter);
     }
 
-    const { data, error } = await query;
+    const { data, error: fetchError } = await query;
 
-    if (error) {
-      console.error(error);
-      setError("Unable to load jobs.");
+    if (fetchError) {
+      console.error(fetchError);
+      setError("Unable to load jobs right now.");
     } else {
       setJobs(data || []);
     }
@@ -64,14 +66,14 @@ export default function AdminJobs() {
     setError("");
     setSuccess("");
 
-    const { error } = await supabase
+    const { error: updateError } = await supabase
       .from("jobs")
       .update(payload)
       .eq("id", jobId);
 
-    if (error) {
-      console.error(error);
-      setError("Unable to update job.");
+    if (updateError) {
+      console.error(updateError);
+      setError("Unable to update this job. Please try again.");
     } else {
       setSuccess(successMessage);
       await fetchJobs();
@@ -82,7 +84,7 @@ export default function AdminJobs() {
 
   async function handleDelete(job) {
     const confirmDelete = window.confirm(
-      `Are you sure you want to delete "${job.title}"?`
+      `Delete "${job.title}" permanently? This cannot be undone.`,
     );
 
     if (!confirmDelete) return;
@@ -91,275 +93,234 @@ export default function AdminJobs() {
     setError("");
     setSuccess("");
 
-    const { error } = await supabase
+    const { error: deleteError } = await supabase
       .from("jobs")
       .delete()
       .eq("id", job.id);
 
-    if (error) {
-      console.error(error);
-      setError("Unable to delete job.");
+    if (deleteError) {
+      console.error(deleteError);
+      setError("Unable to delete this job.");
     } else {
-      setSuccess("Job deleted successfully.");
+      setSuccess("Job deleted.");
       await fetchJobs();
     }
 
     setActionLoadingId(null);
   }
 
-  function getStatusStyle(status) {
-    if (status === "active") {
-      return {
-        backgroundColor: "#dcfce7",
-        color: "#166534",
-      };
-    }
-
-    if (status === "pending") {
-      return {
-        backgroundColor: "#fef3c7",
-        color: "#92400e",
-      };
-    }
-
-    if (status === "rejected") {
-      return {
-        backgroundColor: "#fee2e2",
-        color: "#991b1b",
-      };
-    }
-
-    if (status === "closed") {
-      return {
-        backgroundColor: "#e5e7eb",
-        color: "#374151",
-      };
-    }
-
-    return {
-      backgroundColor: "#e5e7eb",
-      color: "#111",
-    };
-  }
-
-  const filters = ["all", "pending", "active", "rejected", "closed"];
-
-  const smallButtonStyle = {
-    padding: "6px 10px",
-    marginRight: "6px",
-    marginBottom: "6px",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "12px",
-  };
-
   return (
-    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "20px" }}>
-      <h1>Manage Jobs</h1>
+    <div className="page dash">
+      <div className="container">
+        <div className="dash-head">
+          <div className="dash-title">
+            <span className="avatar-lg">
+              <BriefcaseIcon />
+            </span>
+            <div>
+              <span className="eyebrow">Admin console</span>
+              <h1>Jobs</h1>
+              <p>Review, publish and manage every listing on VMWjobs.</p>
+            </div>
+          </div>
 
-      <AdminMenu />
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
-
-      <div style={{ marginBottom: "16px" }}>
-        {filters.map((filter) => (
-          <button
-            key={filter}
-            onClick={() => setStatusFilter(filter)}
-            style={{
-              padding: "8px 14px",
-              marginRight: "8px",
-              marginBottom: "8px",
-              borderRadius: "6px",
-              border: "1px solid #e2e8f0",
-              cursor: "pointer",
-              backgroundColor:
-                statusFilter === filter ? "#0f172a" : "#fff",
-              color: statusFilter === filter ? "#fff" : "#111",
-            }}
-          >
-            {filter.toUpperCase()}
-          </button>
-        ))}
-      </div>
-
-      {loading && <p>Loading jobs...</p>}
-
-      {!loading && jobs.length === 0 && <p>No jobs found.</p>}
-
-      {!loading && jobs.length > 0 && (
-        <div style={{ overflowX: "auto" }}>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              backgroundColor: "#fff",
-            }}
-          >
-            <thead>
-              <tr>
-                <th style={{ textAlign: "left", padding: "10px" }}>Job</th>
-                <th style={{ textAlign: "left", padding: "10px" }}>Company</th>
-                <th style={{ textAlign: "left", padding: "10px" }}>Location</th>
-                <th style={{ textAlign: "left", padding: "10px" }}>Status</th>
-                <th style={{ textAlign: "left", padding: "10px" }}>Featured</th>
-                <th style={{ textAlign: "left", padding: "10px" }}>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {jobs.map((job) => (
-                <tr
-                  key={job.id}
-                  style={{
-                    borderTop: "1px solid #e2e8f0",
-                  }}
-                >
-                  <td style={{ padding: "10px" }}>
-                    <strong>{job.title}</strong>
-                    <br />
-                    <Link
-                      to={`/jobs/${job.id}`}
-                      style={{
-                        fontSize: "13px",
-                        color: "#2563eb",
-                        textDecoration: "none",
-                      }}
-                    >
-                      View public page
-                    </Link>
-                  </td>
-
-                  <td style={{ padding: "10px" }}>
-                    {job.employers?.company_name || "N/A"}
-                  </td>
-
-                  <td style={{ padding: "10px" }}>
-                    {job.locations?.name || "N/A"}
-                  </td>
-
-                  <td style={{ padding: "10px" }}>
-                    <span
-                      style={{
-                        padding: "4px 10px",
-                        borderRadius: "999px",
-                        fontSize: "12px",
-                        ...getStatusStyle(job.status),
-                      }}
-                    >
-                      {job.status}
-                    </span>
-                  </td>
-
-                  <td style={{ padding: "10px" }}>
-                    {job.is_featured ? "Yes" : "No"}
-                  </td>
-
-                  <td style={{ padding: "10px" }}>
-                    {job.status !== "active" && (
-                      <button
-                        disabled={actionLoadingId === job.id}
-                        onClick={() =>
-                          updateJob(
-                            job.id,
-                            { status: "active" },
-                            "Job approved and published."
-                          )
-                        }
-                        style={{
-                          ...smallButtonStyle,
-                          backgroundColor: "#16a34a",
-                          color: "#fff",
-                        }}
-                      >
-                        Approve
-                      </button>
-                    )}
-
-                    {job.status !== "rejected" && (
-                      <button
-                        disabled={actionLoadingId === job.id}
-                        onClick={() =>
-                          updateJob(
-                            job.id,
-                            { status: "rejected" },
-                            "Job rejected."
-                          )
-                        }
-                        style={{
-                          ...smallButtonStyle,
-                          backgroundColor: "#dc2626",
-                          color: "#fff",
-                        }}
-                      >
-                        Reject
-                      </button>
-                    )}
-
-                    {job.status !== "closed" && (
-                      <button
-                        disabled={actionLoadingId === job.id}
-                        onClick={() =>
-                          updateJob(
-                            job.id,
-                            { status: "closed" },
-                            "Job closed."
-                          )
-                        }
-                        style={{
-                          ...smallButtonStyle,
-                          backgroundColor: "#6b7280",
-                          color: "#fff",
-                        }}
-                      >
-                        Close
-                      </button>
-                    )}
-
-                    <button
-                      disabled={actionLoadingId === job.id}
-                      onClick={() =>
-                        updateJob(
-                          job.id,
-                          { is_featured: !job.is_featured },
-                          "Featured status updated."
-                        )
-                      }
-                      style={{
-                        ...smallButtonStyle,
-                        backgroundColor: "#d97706",
-                        color: "#fff",
-                      }}
-                    >
-                      {job.is_featured ? "Remove Featured" : "Make Featured"}
-                    </button>
-
-                    <button
-                      disabled={actionLoadingId === job.id}
-                      onClick={() => handleDelete(job)}
-                      style={{
-                        ...smallButtonStyle,
-                        backgroundColor: "#0f172a",
-                        color: "#fff",
-                      }}
-                    >
-                      Delete
-                    </button>
-
-                    {actionLoadingId === job.id && (
-                      <span style={{ fontSize: "12px", color: "#555" }}>
-                        Processing...
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="dash-actions">
+            <span className="badge badge-brand">
+              {loading ? "Loading…" : `${jobs.length} shown`}
+            </span>
+            <Link className="btn btn-secondary btn-sm" to="/jobs">
+              <ExternalIcon size={14} /> View public site
+            </Link>
+          </div>
         </div>
-      )}
+
+        <AdminMenu />
+
+        {error && (
+          <div className="alert alert-error" role="alert">
+            <AlertIcon />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {success && (
+          <div className="alert alert-success" role="status">
+            <CheckIcon />
+            <span>{success}</span>
+          </div>
+        )}
+
+        <div className="filter-bar">
+          {FILTERS.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              className={`filter-pill${statusFilter === filter ? " active" : ""}`}
+              onClick={() => {
+                setStatusFilter(filter);
+                setError("");
+                setSuccess("");
+              }}
+            >
+              {filter === "all" ? "All jobs" : filter}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <div className="stack-sm">
+            <div className="skeleton skeleton-row" />
+            <div className="skeleton skeleton-row" />
+            <div className="skeleton skeleton-row" />
+          </div>
+        ) : jobs.length === 0 ? (
+          <div className="empty-state">
+            <span className="empty-ico">
+              <BriefcaseIcon />
+            </span>
+            <h3>No jobs in this view</h3>
+            <p>
+              {statusFilter === "all"
+                ? "Employers have not posted any jobs yet."
+                : `There are no ${statusFilter} jobs right now.`}
+            </p>
+          </div>
+        ) : (
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Job</th>
+                  <th>Company</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                  <th>Featured</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {jobs.map((job) => {
+                  const busy = actionLoadingId === job.id;
+
+                  return (
+                    <tr key={job.id}>
+                      <td>
+                        <div className="cell-title">{job.title}</div>
+                        <div className="cell-sub">
+                          <Link to={`/jobs/${job.id}`}>View public page</Link>
+                          {job.categories?.name ? ` · ${job.categories.name}` : ""}
+                        </div>
+                      </td>
+
+                      <td>{job.employers?.company_name || "—"}</td>
+                      <td>{job.locations?.name || "—"}</td>
+
+                      <td>
+                        <span className={`badge badge-${statusTone(job.status)}`}>
+                          {job.status}
+                        </span>
+                      </td>
+
+                      <td>
+                        {job.is_featured ? (
+                          <span className="badge badge-featured">Featured</span>
+                        ) : (
+                          <span className="muted small">—</span>
+                        )}
+                      </td>
+
+                      <td>
+                        <div className="table-actions">
+                          {job.status !== "active" && (
+                            <button
+                              className="btn btn-success btn-sm"
+                              disabled={busy}
+                              onClick={() =>
+                                updateJob(
+                                  job.id,
+                                  { status: "active" },
+                                  "Job approved and published.",
+                                )
+                              }
+                            >
+                              Approve
+                            </button>
+                          )}
+
+                          {job.status !== "rejected" && (
+                            <button
+                              className="btn btn-danger btn-sm"
+                              disabled={busy}
+                              onClick={() =>
+                                updateJob(
+                                  job.id,
+                                  { status: "rejected" },
+                                  "Job rejected.",
+                                )
+                              }
+                            >
+                              Reject
+                            </button>
+                          )}
+
+                          {job.status !== "closed" && (
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              disabled={busy}
+                              onClick={() =>
+                                updateJob(
+                                  job.id,
+                                  { status: "closed" },
+                                  "Job closed.",
+                                )
+                              }
+                            >
+                              Close
+                            </button>
+                          )}
+
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            disabled={busy}
+                            onClick={() =>
+                              updateJob(
+                                job.id,
+                                { is_featured: !job.is_featured },
+                                "Featured status updated.",
+                              )
+                            }
+                          >
+                            {job.is_featured ? "Unfeature" : "Feature"}
+                          </button>
+
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            disabled={busy}
+                            onClick={() => handleDelete(job)}
+                          >
+                            Delete
+                          </button>
+
+                          {busy && <span className="small muted">Working…</span>}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="notice notice-info mt-2">
+          <ShieldIcon />
+          <div>
+            <strong>Jobs go live only after approval.</strong> Check the pay,
+            location and contact details before publishing a listing.
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

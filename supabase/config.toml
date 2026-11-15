@@ -1,0 +1,12 @@
+# Local Supabase config. Used by the CLI for `supabase link` / `functions deploy`.
+
+project_id = "ncrjob"
+
+# The functions verify the caller's Supabase JWT themselves (auth.getUser),
+# so gateway-level verification is disabled to stay compatible with both the
+# legacy JWT keys and the new publishable/secret keys.
+[functions.create-order]
+verify_jwt = false
+
+[functions.verify-payment]
+verify_jwt = false

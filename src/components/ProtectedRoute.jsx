@@ -5,7 +5,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   const { user, profile, loading } = useAuth();
 
   if (loading) {
-    return <div className="route-state">Loading your workspace...</div>;
+    return <div className="route-state">Loading your workspace…</div>;
   }
 
   if (!user) {

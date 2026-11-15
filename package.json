@@ -16,7 +16,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sb:login": "supabase login --agent=no",
+    "sb:secrets": "supabase secrets set --env-file .env --remote=vqbatlkrteqzwlunhdln --yes",
+    "sb:deploy": "supabase functions deploy create-order verify-payment --remote=vqbatlkrteqzwlunhdln --use-api --yes"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.0",

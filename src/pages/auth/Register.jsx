@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { AlertIcon } from "../../components/Icons";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("seeker");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -19,63 +20,104 @@ export default function Register() {
     setSuccess("");
     setLoading(true);
 
-    const { error: signUpError } = await signUp(email, password, name, role);
+    const { error: signUpError } = await signUp(email, password, name, "seeker");
+
     if (signUpError) {
       setError(signUpError.message);
       setLoading(false);
       return;
     }
 
-    setSuccess("Account created. Check your email to confirm your account.");
+    setSuccess("Account created. Taking you to the homepage…");
     setLoading(false);
-    window.setTimeout(() => navigate("/login"), 2000);
+    window.setTimeout(() => navigate("/"), 1500);
   }
 
   return (
-    <main className="auth-shell register-shell">
-      <section className="auth-panel">
-        <p className="eyebrow">NCR JOB / GET STARTED</p>
-        <h1>Find your next right move.</h1>
-        <p className="auth-copy">Create a focused profile and make the search feel more like progress.</p>
-
-        {error && <p className="form-message form-message-error" role="alert">{error}</p>}
-        {success && <p className="form-message form-message-success" role="status">{success}</p>}
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-head">
+          <span className="brand-mark" aria-hidden="true">
+            V
+          </span>
+          <h1>Create your account</h1>
+          <p>Save your details and keep your job search in one place.</p>
+        </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <label>
-            Full name
-            <input type="text" value={name} onChange={(event) => setName(event.target.value)} required autoComplete="name" />
+          {error && (
+            <div className="alert alert-error" role="alert">
+              <AlertIcon />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {success && (
+            <div className="alert alert-success" role="status">
+              <span>{success}</span>
+            </div>
+          )}
+
+          <label className="field">
+            <span className="field-label">Full name</span>
+            <input
+              className="input"
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
+              autoComplete="name"
+              placeholder="Your name"
+            />
           </label>
-          <label>
-            Email
-            <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" />
+
+          <label className="field">
+            <span className="field-label">Email address</span>
+            <input
+              className="input"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+            />
           </label>
-          <label>
-            Password
-            <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={6} autoComplete="new-password" />
+
+          <label className="field">
+            <span className="field-label">Password</span>
+            <input
+              className="input"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              minLength={6}
+              autoComplete="new-password"
+              placeholder="At least 6 characters"
+            />
           </label>
-          <fieldset className="role-options">
-            <legend>I am joining as</legend>
-            <label className={role === "seeker" ? "role-option selected" : "role-option"}>
-              <input type="radio" name="role" value="seeker" checked={role === "seeker"} onChange={(event) => setRole(event.target.value)} />
-              <span><strong>Job seeker</strong><small>Discover work that fits.</small></span>
-            </label>
-            <label className={role === "employer" ? "role-option selected" : "role-option"}>
-              <input type="radio" name="role" value="employer" checked={role === "employer"} onChange={(event) => setRole(event.target.value)} />
-              <span><strong>Employer</strong><small>Find people who can.</small></span>
-            </label>
-          </fieldset>
-          <button className="button button-wide" type="submit" disabled={loading}>
-            {loading ? "Creating account..." : "Create account"}
+
+          <button
+            className="btn btn-primary btn-lg btn-block"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Creating account…" : "Create account"}
           </button>
         </form>
 
-        <p className="auth-switch">Already have an account? <Link to="/login">Sign in</Link></p>
-      </section>
-      <aside className="auth-aside register-aside" aria-label="NCR Job statement">
-        <span className="aside-mark">N</span>
-        <p>A better job search starts with a clear direction.</p>
-      </aside>
-    </main>
+        <div className="auth-switch">
+          Hiring instead?{" "}
+          <Link to="/become-employer">Create an employer account</Link>
+          <br />
+          Already have an account? <Link to="/login">Sign in</Link>
+        </div>
+
+        <p className="auth-foot">
+          <Link to="/">← Back to VMWjobs</Link>
+        </p>
+      </div>
+    </div>
   );
 }

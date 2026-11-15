@@ -1,535 +1,519 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
+import {
+  formatSalary,
+  initials,
+  jobTypeLabel,
+  timeAgo,
+} from "../../lib/format";
+import {
+  ArrowRightIcon,
+  BriefcaseIcon,
+  CheckCircleIcon,
+  ChevronRightIcon,
+  ClockIcon,
+  PinIcon,
+  SearchIcon,
+  ShieldIcon,
+  WhatsAppIcon,
+} from "../../components/Icons";
+
+function FeaturedCard({ job }) {
+  return (
+    <Link className="job-card" to={`/jobs/${job.id}`}>
+      <div className="job-top">
+        <span className="company-mark company-mark-green">
+          {initials(job.employers?.company_name)}
+        </span>
+        <div className="grow">
+          <h3>{job.title}</h3>
+          <p className="job-company">
+            {job.employers?.company_name || "Employer"}
+          </p>
+        </div>
+        <span className="badge badge-featured">Featured</span>
+      </div>
+
+      <div className="job-meta">
+        <span className="chip">
+          <PinIcon />
+          {job.locations?.name || "Delhi NCR"}
+        </span>
+        <span className="chip">
+          <BriefcaseIcon />
+          {jobTypeLabel(job.job_type)}
+        </span>
+        <span className="chip">
+          <ClockIcon />
+          {timeAgo(job.created_at)}
+        </span>
+      </div>
+
+      <div className="job-foot">
+        <span className="salary">{formatSalary(job.min_salary, job.max_salary)}</span>
+        <span className="link-arrow">
+          View job <ArrowRightIcon size={14} />
+        </span>
+      </div>
+    </Link>
+  );
+}
 
 export default function Home() {
   const navigate = useNavigate();
+
   const [categories, setCategories] = useState([]);
-  const [featuredJobs, setFeaturedJobs] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [latestJobs, setLatestJobs] = useState([]);
+  const [featuredJobs, setFeaturedJobs] = useState([]);
+  const [stats, setStats] = useState({ jobs: 0, employers: 0, locations: 0 });
   const [loading, setLoading] = useState(true);
 
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [searchLocation, setSearchLocation] = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [locationId, setLocationId] = useState("");
 
   useEffect(() => {
-    fetchHomeData();
+    let active = true;
+
+    async function loadHome() {
+      const [categoryRes, locationRes, latestRes, featuredRes, jobsCount, employersCount, locationsCount] =
+        await Promise.all([
+          supabase
+            .from("categories")
+            .select("id, name")
+            .eq("status", "active")
+            .order("name")
+            .limit(10),
+          supabase
+            .from("locations")
+            .select("id, name")
+            .eq("status", "active")
+            .order("name"),
+          supabase
+            .from("jobs")
+            .select(
+              "id, title, job_type, min_salary, max_salary, is_featured, created_at, employers(company_name), locations(name)",
+            )
+            .eq("status", "active")
+            .order("created_at", { ascending: false })
+            .limit(6),
+          supabase
+            .from("jobs")
+            .select(
+              "id, title, job_type, min_salary, max_salary, created_at, employers(company_name), locations(name)",
+            )
+            .eq("status", "active")
+            .eq("is_featured", true)
+            .order("created_at", { ascending: false })
+            .limit(3),
+          supabase
+            .from("jobs")
+            .select("*", { count: "exact", head: true })
+            .eq("status", "active"),
+          supabase
+            .from("employers")
+            .select("*", { count: "exact", head: true })
+            .eq("status", "active"),
+          supabase
+            .from("locations")
+            .select("*", { count: "exact", head: true })
+            .eq("status", "active"),
+        ]);
+
+      if (!active) return;
+
+      setCategories(categoryRes.data || []);
+      setLocations(locationRes.data || []);
+      setLatestJobs(latestRes.data || []);
+      setFeaturedJobs(featuredRes.data || []);
+      setStats({
+        jobs: jobsCount.count || 0,
+        employers: employersCount.count || 0,
+        locations: locationsCount.count || 0,
+      });
+      setLoading(false);
+    }
+
+    loadHome();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
-  async function fetchHomeData() {
-    setLoading(true);
+  function handleSearch(event) {
+    event.preventDefault();
 
-    const [catRes, featRes, latestRes] = await Promise.all([
-      supabase.from("categories").select("id, name, slug").eq("status", "active").limit(8),
-      supabase.from("jobs").select("*, employers(company_name), locations(name)").eq("status", "active").eq("is_featured", true).limit(6),
-      supabase.from("jobs").select("*, employers(company_name), locations(name)").eq("status", "active").order("created_at", { ascending: false }).limit(6)
-    ]);
+    const params = new URLSearchParams();
+    if (keyword.trim()) params.set("keyword", keyword.trim());
+    if (locationId) params.set("location", locationId);
 
-    setCategories(catRes.data || []);
-    setFeaturedJobs(featRes.data || []);
-    setLatestJobs(latestRes.data || []);
-
-    setLoading(false);
+    const query = params.toString();
+    navigate(`/jobs${query ? `?${query}` : ""}`);
   }
 
-  function handleSearch(e) {
-    e.preventDefault();
-    navigate(`/jobs?keyword=${searchKeyword}&location=${searchLocation}`);
-  }
-
-  function formatSalary(min, max) {
-    if (!min && !max) return "Not disclosed";
-    const format = (v) => Number(v).toLocaleString("en-IN", { maximumFractionDigits: 0 });
-    if (min && max) return `₹${format(min)} - ₹${format(max)}`;
-    if (min) return `₹${format(min)}`;
-    return `₹${format(max)}`;
-  }
-
-  // Category icons mapping
-  function getCategoryIcon(slug) {
-    const icons = {
-      "government-jobs": "🏛️",
-      "private-jobs": "🏢",
-      "data-entry-back-office": "💻",
-      "bpo-customer-care": "📞",
-      "delivery-driver-logistics": "🚚",
-      "sales-marketing": "📊",
-      "receptionist-front-office": "🪑",
-      "security-housekeeping": "🛡️",
-      "accounts-finance": "💰",
-      "hr-admin": "👥",
-      "teaching-tutoring": "📚",
-      "campus-trainee": "🎓",
-      "aadhar-field-verification": "🪪",
-      "iit-institute-jobs": "🏫",
-      "work-from-home": "🏠",
-      "noida-jobs": "📍",
-      "gurgaon-jobs": "📍",
-      "other-jobs": "📋",
-    };
-    return icons[slug] || "💼";
-  }
+  const panelJobs = latestJobs.slice(0, 3);
 
   return (
-    <div style={{ backgroundColor: "#f1f5f9", minHeight: "100vh" }}>
-      
-      {/* ==================== HERO SECTION ==================== */}
-      <section style={{ 
-        background: "linear-gradient(135deg, #669ee7 0%, #7e0d62 100%)", 
-        padding: "70px 20px 80px", 
-        textAlign: "center", 
-        color: "#fff",
-        position: "relative",
-        overflow: "hidden"
-      }}>
-        {/* Decorative circles */}
-        <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "200px", height: "200px", borderRadius: "50%", backgroundColor: "rgba(37, 99, 235, 0.1)" }}></div>
-        <div style={{ position: "absolute", bottom: "-30px", left: "-30px", width: "150px", height: "150px", borderRadius: "50%", backgroundColor: "rgba(37, 99, 235, 0.08)" }}></div>
-        
-        <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <div style={{ 
-            display: "inline-block", 
-            backgroundColor: "rgba(123, 159, 238, 0.2)", 
-            padding: "6px 16px", 
-            borderRadius: "20px", 
-            marginBottom: "20px",
-            border: "1px solid rgba(124, 164, 250, 0.3)"
-          }}>
-            <span style={{ fontSize: "14px", color: "#93c5fd" }}>
-              🎯 India's Trusted Job Portal
+    <div>
+      {/* Hero */}
+      <section className="hero home-hero">
+        <div className="container home-hero-grid">
+          <div className="hero-copy">
+            <span className="hero-badge">
+              <ShieldIcon size={14} />
+              Verified private-sector jobs across Delhi NCR
             </span>
-          </div>
-          
-          <h1 style={{ 
-            fontSize: "42px", 
-            marginBottom: "12px", 
-            fontWeight: "800", 
-            lineHeight: "1.2",
-            margin: "0 auto 35px",
-            letterSpacing: "-0.5px"
-          }}>
-               Find Your <span style={{ color: "#60a5fa" }}>Dream Job</span> Today
-          </h1>
-          
-          <p style={{ 
-            fontSize: "18px", 
-            marginBottom: "35px", 
-            color: "#94a3b8",
-            maxWidth: "500px",
-            margin: "0 auto 35px"
-          }}>
-            Connect with top employers and genuine job opportunities across NCR.
-          </p>
-          
-          {/* Search Box */}
-          <form onSubmit={handleSearch} style={{ 
-            maxWidth: "750px", 
-            margin: "0 auto", 
-            display: "flex", 
-            gap: "12px", 
-            flexWrap: "wrap", 
-            justifyContent: "center", 
-            backgroundColor: "#fff", 
-            padding: "12px", 
-            borderRadius: "16px", 
-            boxShadow: "0 20px 60px rgba(0,0,0,0.3)" 
-          }}>
-            <div style={{ flex: "1 1 220px", position: "relative" }}>
-              <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", fontSize: "18px" }}>🔍</span>
-              <input 
-                type="text" 
-                placeholder="Job title or Keyword" 
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                style={{ 
-                  width: "100%", 
-                  padding: "14px 15px 14px 45px", 
-                  border: "2px solid #e2e8f0", 
-                  borderRadius: "10px", 
-                  fontSize: "15px", 
-                  color: "#0f172a",
-                  outline: "none",
-                  boxSizing: "border-box"
-                }}
-              />
+
+            <h1>
+              Good work, closer to home. <span className="accent">Start here.</span>
+            </h1>
+
+            <p className="hero-sub">
+              VMWjobs brings together genuine openings from Noida, Greater Noida,
+              Gurugram and Delhi — with clear salaries, real employers and a direct
+              way to apply.
+            </p>
+
+            <form className="search-card" onSubmit={handleSearch}>
+              <label className="search-field">
+                <SearchIcon />
+                <span className="sr-only">Job title, skill or company</span>
+                <input
+                  type="search"
+                  value={keyword}
+                  onChange={(event) => setKeyword(event.target.value)}
+                  placeholder="Job title, skill or company"
+                />
+              </label>
+
+              <label className="search-field">
+                <PinIcon />
+                <span className="sr-only">Location</span>
+                <select
+                  value={locationId}
+                  onChange={(event) => setLocationId(event.target.value)}
+                >
+                  <option value="">All locations</option>
+                  {locations.map((location) => (
+                    <option key={location.id} value={location.id}>
+                      {location.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <button className="btn btn-primary btn-lg" type="submit">
+                Search jobs
+              </button>
+            </form>
+
+            <div className="trust-row">
+              <span className="trust-item">
+                <CheckCircleIcon /> Free for candidates
+              </span>
+              <span className="trust-item">
+                <CheckCircleIcon /> No middlemen
+              </span>
+              <span className="trust-item">
+                <CheckCircleIcon /> Apply on WhatsApp
+              </span>
             </div>
-            
-            <div style={{ flex: "1 1 180px", position: "relative" }}>
-              <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", fontSize: "18px" }}>📍</span>
-              <input 
-                type="text" 
-                placeholder="Location" 
-                value={searchLocation}
-                onChange={(e) => setSearchLocation(e.target.value)}
-                style={{ 
-                  width: "100%", 
-                  padding: "14px 15px 14px 45px", 
-                  border: "2px solid #e2e8f0", 
-                  borderRadius: "10px", 
-                  fontSize: "15px", 
-                  color: "#0f172a",
-                  outline: "none",
-                  boxSizing: "border-box"
-                }}
-              />
-            </div>
-            
-            <button type="submit" style={{ 
-              padding: "14px 35px", 
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)", 
-              color: "#fff", 
-              border: "none", 
-              borderRadius: "10px", 
-              fontWeight: "bold", 
-              cursor: "pointer", 
-              fontSize: "16px",
-              boxShadow: "0 4px 15px rgba(37, 99, 235, 0.4)",
-              transition: "all 0.3s"
-            }}>
-              Search Jobs
-            </button>
-          </form>
-          
-          {/* Quick Stats */}
-          <div style={{ 
-            display: "flex", 
-            justifyContent: "center", 
-            gap: "40px", 
-            marginTop: "35px",
-            flexWrap: "wrap"
-          }}>
-            <div>
-              <p style={{ fontSize: "28px", fontWeight: "800", margin: 0, color: "#60a5fa" }}>500+</p>
-              <p style={{ fontSize: "13px", color: "#94a3b8", margin: "4px 0 0" }}>Active Jobs</p>
-            </div>
-            <div>
-              <p style={{ fontSize: "28px", fontWeight: "800", margin: 0, color: "#60a5fa" }}>100+</p>
-              <p style={{ fontSize: "13px", color: "#94a3b8", margin: "4px 0 0" }}>Companies</p>
-            </div>
-            <div>
-              <p style={{ fontSize: "28px", fontWeight: "800", margin: 0, color: "#60a5fa" }}>10K+</p>
-              <p style={{ fontSize: "13px", color: "#94a3b8", margin: "4px 0 0" }}>Job Seekers</p>
+
+            <div className="stats-strip">
+              <div className="stat">
+                <b>{stats.jobs.toLocaleString("en-IN")}</b>
+                <span>Live openings</span>
+              </div>
+              <div className="stat">
+                <b>{stats.employers.toLocaleString("en-IN")}</b>
+                <span>Active employers</span>
+              </div>
+              <div className="stat">
+                <b>{stats.locations.toLocaleString("en-IN")}</b>
+                <span>NCR locations</span>
+              </div>
             </div>
           </div>
+
+          <aside className="hero-panel" aria-label="Recently added jobs">
+            <div className="hero-panel-head">
+              <span className="live-dot" aria-hidden="true" /> Recently added
+            </div>
+
+            {loading ? (
+              <>
+                <div className="skeleton skeleton-row" />
+                <div className="skeleton skeleton-row" />
+                <div className="skeleton skeleton-row" />
+              </>
+            ) : panelJobs.length > 0 ? (
+              panelJobs.map((job) => (
+                <Link className="hero-job" to={`/jobs/${job.id}`} key={job.id}>
+                  <span className="company-mark">
+                    {initials(job.employers?.company_name)}
+                  </span>
+                  <span className="hero-job-main">
+                    <strong>{job.title}</strong>
+                    <span>
+                      {job.employers?.company_name || "Employer"} ·{" "}
+                      {job.locations?.name || "NCR"}
+                    </span>
+                  </span>
+                  {job.is_featured ? (
+                    <span className="badge badge-featured">Featured</span>
+                  ) : (
+                    <ChevronRightIcon size={15} />
+                  )}
+                </Link>
+              ))
+            ) : (
+              <p className="hero-panel-empty">
+                New roles are added every week. Check back soon.
+              </p>
+            )}
+
+            <div className="hero-panel-foot">
+              <span>
+                <ShieldIcon /> Reviewed before publishing
+              </span>
+              <Link to="/jobs" className="link-arrow">
+                All jobs <ArrowRightIcon size={14} />
+              </Link>
+            </div>
+          </aside>
         </div>
       </section>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
-        
-        {/* ==================== CATEGORIES SECTION ==================== */}
-        <section style={{ marginBottom: "50px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-            <div>
-              <h2 style={{ fontSize: "26px", margin: "0 0 6px", color: "#0f172a", fontWeight: "700" }}>
-                Browse by Category
-              </h2>
-              <p style={{ margin: 0, color: "#64748b", fontSize: "15px" }}>
-                Find jobs in your preferred field
-              </p>
-            </div>
+      <div className="container">
+        {/* Category shortcuts */}
+        <section className="section-sm">
+          <div className="term-row">
+            <span className="small muted">Popular searches:</span>
+            {categories.slice(0, 8).map((category) => (
+              <Link
+                key={category.id}
+                className="term"
+                to={`/jobs?category=${category.id}`}
+              >
+                {category.name}
+              </Link>
+            ))}
+            <Link className="term" to="/jobs">
+              All categories
+            </Link>
           </div>
-          
-          {loading ? (
-            <p style={{ color: "#64748b" }}>Loading categories...</p>
-          ) : (
-            <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", 
-              gap: "14px" 
-            }}>
-              {categories.map((cat) => (
-                <Link 
-                  key={cat.id} 
-                  to={`/jobs?category=${cat.id}`} 
-                  style={{ 
-                    textDecoration: "none", 
-                    backgroundColor: "#fff", 
-                    padding: "20px 16px", 
-                    borderRadius: "12px", 
-                    border: "1px solid #e2e8f0", 
-                    textAlign: "center", 
-                    transition: "all 0.3s ease", 
-                    color: "#0f172a",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-4px)";
-                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(37, 99, 235, 0.15)";
-                    e.currentTarget.style.borderColor = "#2563eb";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                  }}
-                >
-                  <div style={{ 
-                    fontSize: "32px", 
-                    marginBottom: "10px",
-                    height: "40px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}>
-                    {getCategoryIcon(cat.slug)}
-                  </div>
-                  <h3 style={{ margin: "0 0 4px", fontSize: "14px", fontWeight: "600", color: "#0f172a" }}>
-                    {cat.name}
-                  </h3>
-                  <p style={{ margin: 0, color: "#94a3b8", fontSize: "12px" }}>
-                    View jobs →
-                  </p>
-                </Link>
-              ))}
-            </div>
-          )}
         </section>
 
-        {/* ==================== FEATURED JOBS ==================== */}
+        {/* Latest openings + promise */}
+        <section className="section">
+          <div className="home-split">
+            <div>
+              <div className="section-head">
+                <div>
+                  <h2>Latest openings</h2>
+                  <p className="section-sub">
+                    Fresh roles from employers hiring right now.
+                  </p>
+                </div>
+                <Link to="/jobs" className="link-arrow">
+                  View all <ArrowRightIcon size={15} />
+                </Link>
+              </div>
+
+              {loading ? (
+                <div className="stack-sm">
+                  <div className="skeleton skeleton-row" />
+                  <div className="skeleton skeleton-row" />
+                  <div className="skeleton skeleton-row" />
+                  <div className="skeleton skeleton-row" />
+                </div>
+              ) : latestJobs.length > 0 ? (
+                <div className="job-list">
+                  {latestJobs.map((job) => (
+                    <Link className="job-row" to={`/jobs/${job.id}`} key={job.id}>
+                      <span className="company-mark">
+                        {initials(job.employers?.company_name)}
+                      </span>
+
+                      <div className="job-row-main">
+                        <div className="job-row-title">
+                          <h3>{job.title}</h3>
+                          {job.is_featured && (
+                            <span className="badge badge-featured">Featured</span>
+                          )}
+                        </div>
+                        <div className="job-meta">
+                          <span className="chip">
+                            <PinIcon />
+                            {job.locations?.name || "Delhi NCR"}
+                          </span>
+                          <span className="chip">
+                            <BriefcaseIcon />
+                            {jobTypeLabel(job.job_type)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="job-row-side">
+                        <span className="salary">
+                          {formatSalary(job.min_salary, job.max_salary)}
+                        </span>
+                        <span className="small muted">{timeAgo(job.created_at)}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <span className="empty-ico">
+                    <BriefcaseIcon />
+                  </span>
+                  <h3>No openings just yet</h3>
+                  <p>
+                    Employers are preparing their listings. Check back shortly or
+                    browse all jobs.
+                  </p>
+                  <Link className="btn btn-secondary btn-sm mt-2" to="/jobs">
+                    Browse jobs
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <aside className="home-aside">
+              <div className="card card-pad">
+                <span className="eyebrow">The VMWjobs promise</span>
+                <h3>Listings you can act on.</h3>
+
+                <ul className="promise-list">
+                  <li>
+                    <ShieldIcon />
+                    <span>Every employer is reviewed before a job goes live.</span>
+                  </li>
+                  <li>
+                    <CheckCircleIcon />
+                    <span>Never pay for a job, interview or registration.</span>
+                  </li>
+                  <li>
+                    <WhatsAppIcon />
+                    <span>Apply directly with the employer on WhatsApp.</span>
+                  </li>
+                  <li>
+                    <ClockIcon />
+                    <span>New private-sector roles added through the week.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="card card-pad side-cta">
+                <span className="eyebrow">For employers</span>
+                <h3>Hiring in NCR?</h3>
+                <p>
+                  Put your vacancy in front of local candidates. No agency, no
+                  long contracts.
+                </p>
+
+                <div className="price-line">
+                  <b>₹9</b>
+                  <span>for 5 job posts · 30 days</span>
+                </div>
+
+                <Link to="/become-employer" className="btn btn-light btn-block">
+                  Post a job <ArrowRightIcon size={15} />
+                </Link>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        {/* Featured roles */}
         {featuredJobs.length > 0 && (
-          <section style={{ marginBottom: "50px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+          <section className="section">
+            <div className="section-head">
               <div>
-                <h2 style={{ fontSize: "26px", margin: "0 0 6px", color: "#0f172a", fontWeight: "700" }}>
-                  ⭐ Featured Jobs
-                </h2>
-                <p style={{ margin: 0, color: "#64748b", fontSize: "15px" }}>
-                  Hand-picked opportunities for you
+                <h2>Featured roles</h2>
+                <p className="section-sub">
+                  Hand-picked openings from verified employers.
                 </p>
               </div>
-              <Link to="/jobs" style={{ 
-                color: "#2563eb", 
-                textDecoration: "none", 
-                fontWeight: "600", 
-                fontSize: "14px",
-                padding: "8px 16px",
-                backgroundColor: "#eff6ff",
-                borderRadius: "8px"
-              }}>
-                View All →
+              <Link to="/jobs" className="link-arrow">
+                Browse all <ArrowRightIcon size={15} />
               </Link>
             </div>
-            
-            <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", 
-              gap: "18px" 
-            }}>
+
+            <div className="job-grid-3">
               {featuredJobs.map((job) => (
-                <Link 
-                  to={`/jobs/${job.id}`} 
-                  key={job.id} 
-                  style={{ 
-                    textDecoration: "none", 
-                    backgroundColor: "#fff", 
-                    border: "1px solid #e2e8f0", 
-                    borderRadius: "14px", 
-                    padding: "22px", 
-                    position: "relative", 
-                    color: "#111",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                    transition: "all 0.3s ease"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-3px)";
-                    e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
-                  }}
-                >
-                  <span style={{ 
-                    position: "absolute", 
-                    top: "14px", 
-                    right: "14px", 
-                    background: "linear-gradient(135deg, #f59e0b, #d97706)", 
-                    color: "#fff", 
-                    fontSize: "10px", 
-                    padding: "4px 10px", 
-                    borderRadius: "20px", 
-                    fontWeight: "bold",
-                    letterSpacing: "0.5px"
-                  }}>
-                    ⭐ FEATURED
-                  </span>
-                  
-                  <h3 style={{ margin: "0 0 10px", fontSize: "17px", color: "#0f172a", fontWeight: "700", paddingRight: "80px" }}>
-                    {job.title}
-                  </h3>
-                  
-                  <p style={{ margin: "0 0 6px", fontWeight: "600", color: "#2563eb", fontSize: "14px" }}>
-                    {job.employers?.company_name || "Company"}
-                  </p>
-                  
-                  <div style={{ display: "flex", gap: "12px", marginBottom: "12px", flexWrap: "wrap" }}>
-                    <span style={{ fontSize: "13px", color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}>
-                      📍 {job.locations?.name || "Location"}
-                    </span>
-                    <span style={{ fontSize: "13px", color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}>
-                      💼 {job.job_type}
-                    </span>
-                  </div>
-                  
-                  <div style={{ 
-                    display: "flex", 
-                    justifyContent: "space-between", 
-                    alignItems: "center",
-                    paddingTop: "12px",
-                    borderTop: "1px solid #f1f5f9"
-                  }}>
-                    <p style={{ margin: 0, fontWeight: "bold", color: "#16a34a", fontSize: "15px" }}>
-                      {formatSalary(job.min_salary, job.max_salary)}
-                    </p>
-                    <span style={{ 
-                      fontSize: "12px", 
-                      color: "#2563eb", 
-                      fontWeight: "600",
-                      backgroundColor: "#eff6ff",
-                      padding: "4px 10px",
-                      borderRadius: "6px"
-                    }}>
-                      Apply Now →
-                    </span>
-                  </div>
-                </Link>
+                <FeaturedCard job={job} key={job.id} />
               ))}
             </div>
           </section>
         )}
 
-        {/* ==================== LATEST JOBS ==================== */}
-        <section style={{ marginBottom: "50px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+        {/* How it works */}
+        <section className="section">
+          <div className="card card-pad how-card">
+            <div className="section-head">
+              <div>
+                <span className="eyebrow">Simple by design</span>
+                <h2>How VMWjobs works</h2>
+              </div>
+            </div>
+
+            <div className="steps-grid">
+              <div className="step-card">
+                <span className="step-num">1</span>
+                <h3>Search without signing up</h3>
+                <p>
+                  Browse every live opening by role or location. No account needed
+                  to look around.
+                </p>
+              </div>
+
+              <div className="step-card">
+                <span className="step-num">2</span>
+                <h3>Check the details</h3>
+                <p>
+                  Salary, experience and location are shown on every listing —
+                  before you apply.
+                </p>
+              </div>
+
+              <div className="step-card">
+                <span className="step-num">3</span>
+                <h3>Apply directly</h3>
+                <p>
+                  Message the employer on WhatsApp and take the conversation from
+                  there. No fees, ever.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Employer CTA */}
+        <section className="section">
+          <div className="cta-band">
             <div>
-              <h2 style={{ fontSize: "26px", margin: "0 0 6px", color: "#0f172a", fontWeight: "700" }}>
-                🆕 Latest Jobs
-              </h2>
-              <p style={{ margin: 0, color: "#64748b", fontSize: "15px" }}>
-                Recently posted opportunities
+              <span className="eyebrow">For employers</span>
+              <h2>Hire locally. Hire with confidence.</h2>
+              <p>
+                Post your first role today — plans start at ₹9 for five job
+                listings, valid for 30 days.
               </p>
             </div>
-            <Link to="/jobs" style={{ 
-              color: "#2563eb", 
-              textDecoration: "none", 
-              fontWeight: "600", 
-              fontSize: "14px",
-              padding: "8px 16px",
-              backgroundColor: "#eff6ff",
-              borderRadius: "8px"
-            }}>
-              View All →
-            </Link>
-          </div>
-          
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {latestJobs.map((job) => (
-              <Link 
-                to={`/jobs/${job.id}`} 
-                key={job.id} 
-                style={{ 
-                  textDecoration: "none", 
-                  backgroundColor: "#fff", 
-                  border: "1px solid #e2e8f0", 
-                  borderRadius: "12px", 
-                  padding: "18px 20px", 
-                  display: "flex", 
-                  justifyContent: "space-between", 
-                  alignItems: "center", 
-                  flexWrap: "wrap", 
-                  gap: "12px", 
-                  color: "#111",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                  transition: "all 0.3s ease"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateX(4px)";
-                  e.currentTarget.style.boxShadow = "0 4px 15px rgba(37, 99, 235, 0.1)";
-                  e.currentTarget.style.borderColor = "#2563eb";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateX(0)";
-                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
-                  e.currentTarget.style.borderColor = "#e2e8f0";
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                  <div style={{ 
-                    width: "48px", 
-                    height: "48px", 
-                    borderRadius: "10px", 
-                    background: "linear-gradient(135deg, #eff6ff, #dbeafe)", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center",
-                    fontSize: "22px",
-                    flexShrink: 0
-                  }}>
-                    💼
-                  </div>
-                  <div>
-                    <h3 style={{ margin: "0 0 5px", fontSize: "16px", fontWeight: "600", color: "#0f172a" }}>
-                      {job.title}
-                    </h3>
-                    <p style={{ margin: 0, color: "#64748b", fontSize: "13px" }}>
-                      {job.employers?.company_name} • 📍 {job.locations?.name} • {job.job_type}
-                    </p>
-                  </div>
-                </div>
-                
-                <div style={{ textAlign: "right", display: "flex", alignItems: "center", gap: "12px" }}>
-                  <p style={{ margin: 0, fontWeight: "bold", color: "#16a34a", fontSize: "14px" }}>
-                    {formatSalary(job.min_salary, job.max_salary)}
-                  </p>
-                  <span style={{ 
-                    fontSize: "12px", 
-                    color: "#2563eb", 
-                    fontWeight: "600",
-                    backgroundColor: "#eff6ff",
-                    padding: "6px 12px",
-                    borderRadius: "6px",
-                    whiteSpace: "nowrap"
-                  }}>
-                    Apply →
-                  </span>
-                </div>
+
+            <div className="row wrap">
+              <Link to="/become-employer" className="btn btn-light btn-lg">
+                Post a job <ArrowRightIcon size={16} />
               </Link>
-            ))}
+              <Link to="/employer-login" className="btn btn-ghost btn-lg">
+                Employer login
+              </Link>
+            </div>
           </div>
         </section>
-
-        {/* ==================== CTA SECTION ==================== */}
-        <section style={{ 
-          background: "linear-gradient(135deg, #1e3a5f, #0f172a)", 
-          borderRadius: "16px", 
-          padding: "40px", 
-          textAlign: "center",
-          color: "#fff"
-        }}>
-          <h2 style={{ fontSize: "28px", margin: "0 0 10px", fontWeight: "700" }}>
-            Are You an Employer?
-          </h2>
-          <p style={{ fontSize: "16px", color: "#94a3b8", margin: "0 0 25px" }}>
-            Post your job listings and reach thousands of job seekers.
-          </p>
-          <Link 
-            to="/become-employer" 
-            style={{ 
-              display: "inline-block",
-              padding: "14px 35px", 
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)", 
-              color: "#fff", 
-              textDecoration: "none", 
-              borderRadius: "10px", 
-              fontWeight: "bold",
-              fontSize: "16px",
-              boxShadow: "0 4px 15px rgba(37, 99, 235, 0.4)"
-            }}
-          >
-            Post a Job →
-          </Link>
-        </section>
-
       </div>
     </div>
   );
