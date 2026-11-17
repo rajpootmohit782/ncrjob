@@ -1,78 +1,74 @@
 import { Link } from "react-router-dom";
-import { SITE } from "../../lib/site";
 
 export default function Disclaimer() {
   return (
-    <div className="page">
-      <div className="container container-sm">
-        <div className="page-head">
-          <div>
-            <span className="eyebrow">Legal</span>
-            <h1>Disclaimer</h1>
-            <p className="page-sub">
-              Please read this before applying for a job through {SITE.name}.
-            </p>
-          </div>
-        </div>
+    <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", padding: "40px 20px" }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <Link to="/" style={{ color: "#2563eb", textDecoration: "none", fontSize: "14px" }}>
+          ← Back to Home
+        </Link>
 
-        <div className="card card-pad prose">
-          <h2>Important notice</h2>
+        <h1 style={{ fontSize: "32px", color: "#0f172a", margin: "20px 0 10px" }}>
+          Disclaimer
+        </h1>
+
+        <div style={{ 
+          backgroundColor: "#fff", 
+          padding: "30px", 
+          borderRadius: "12px", 
+          border: "1px solid #e2e8f0",
+          lineHeight: "1.8",
+          color: "#334155",
+          fontSize: "15px"
+        }}>
+          <h2 style={{ color: "#0f172a", marginTop: 0 }}>Important Notice</h2>
           <p>
-            {SITE.name} is a job listing platform for private-sector roles in
-            Delhi NCR. We work to keep listings accurate and genuine, but we
-            cannot guarantee that every detail is complete, current or correct.
+            VMWjobs is a job listing platform that aggregates and displays job opportunities 
+            from various sources. While we strive to ensure the accuracy and genuineness of all 
+            listings, we cannot guarantee that all information is 100% accurate or complete.
           </p>
 
-          <h2>No employment guarantee</h2>
+          <h2 style={{ color: "#0f172a" }}>No Employment Guarantee</h2>
           <p>
-            We do not guarantee employment to any candidate. We are a listing
-            platform only and do not take part in hiring decisions. All
-            employment decisions are made solely by the employer.
+            VMWjobs does not guarantee employment to any user. We are a listing platform only 
+            and do not participate in the hiring process. All employment decisions are made solely 
+            by the employers.
           </p>
 
-          <div className="prose-note">
-            <strong>Never pay for a job.</strong> Legitimate employers do not ask
-            candidates to pay for an application, interview, registration or
-            training. If an employer asks you for money, treat it as a red flag
-            and report the listing to us.
-          </div>
-
-          <h2>Verify before you apply</h2>
-          <ul>
-            <li>Confirm the role, salary and location with the employer.</li>
-            <li>Research the company before sharing documents or joining.</li>
-            <li>Never share bank details, OTPs or passwords with anyone.</li>
-            <li>Report suspicious listings to us immediately.</li>
+          <h2 style={{ color: "#0f172a" }}>Verification Responsibility</h2>
+          <p>
+            Job seekers are advised to:
+          </p>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li>Verify job details directly with the employer before applying</li>
+            <li>Never pay money for job applications or interviews</li>
+            <li>Report any suspicious job listings to us immediately</li>
+            <li>Do thorough research about the company before joining</li>
           </ul>
 
-          <h2>External links</h2>
+          <h2 style={{ color: "#0f172a" }}>No Fees for Job Seekers</h2>
           <p>
-            Job pages include links to WhatsApp so you can contact the employer
-            directly. We are not responsible for conversations or transactions
-            that happen on external platforms.
+            <strong>⚠️ WARNING:</strong> Legitimate employers never ask candidates to pay money 
+            for job applications, registration, or interviews. If any employer asks you for money, 
+            it is likely a scam. Please report such listings to us immediately.
           </p>
 
-          <h2>Accuracy of information</h2>
+          <h2 style={{ color: "#0f172a" }}>External Links</h2>
           <p>
-            Some positions may be filled or withdrawn after they are published.
-            We recommend confirming availability with the employer before you
-            travel to an interview.
+            Our website may redirect you to external platforms (such as WhatsApp) for job applications. 
+            We are not responsible for any interactions that occur on these external platforms.
           </p>
 
-          <h2>Limitation of liability</h2>
+          <h2 style={{ color: "#0f172a" }}>Accuracy of Information</h2>
           <p>
-            To the extent permitted by law, {SITE.name} is not liable for any
-            direct, indirect, incidental or consequential loss arising from your
-            use of the platform or reliance on information published on it.
+            While we make every effort to keep job listings updated, some positions may already be 
+            filled or expired. We recommend contacting the employer directly to confirm availability.
           </p>
 
-          <h2>Report a listing</h2>
+          <h2 style={{ color: "#0f172a" }}>Limitation of Liability</h2>
           <p>
-            To report a job or employer, email{" "}
-            <a href={`mailto:${SITE.email}`}>{SITE.email}</a> with the job title,
-            company name and a short description of the issue. We investigate
-            every report. You can also use the{" "}
-            <Link to="/contact">contact page</Link>.
+            VMWjobs shall not be held liable for any direct, indirect, incidental, or consequential 
+            damages arising from the use of our platform or reliance on any information provided herein.
           </p>
         </div>
       </div>

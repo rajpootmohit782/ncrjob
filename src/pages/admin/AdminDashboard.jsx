@@ -1,18 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabaseClient";
 import AdminMenu from "../../components/AdminMenu";
-import {
-  AlertIcon,
-  ArrowRightIcon,
-  BriefcaseIcon,
-  BuildingIcon,
-  ClockIcon,
-  ExternalIcon,
-  LogOutIcon,
-  ShieldIcon,
-} from "../../components/Icons";
 
 export default function AdminDashboard() {
   const { signOut } = useAuth();
@@ -36,7 +26,10 @@ export default function AdminDashboard() {
   }, []);
 
   function getCount(result) {
-    if (result.error) throw result.error;
+    if (result.error) {
+      throw result.error;
+    }
+
     return result.count || 0;
   }
 
@@ -83,7 +76,7 @@ export default function AdminDashboard() {
       });
     } catch (err) {
       console.error(err);
-      setError("Unable to load dashboard stats right now.");
+      setError("Unable to load admin dashboard stats.");
     }
 
     setLoading(false);
@@ -94,199 +87,128 @@ export default function AdminDashboard() {
     navigate("/admin/login");
   }
 
-  const primaryStats = [
+  const cards = [
     {
-      label: "Total jobs",
+      title: "Total Jobs",
       value: stats.totalJobs,
-      meta: "All listings",
+      color: "#0f172a",
     },
     {
-      label: "Live jobs",
+      title: "Active Jobs",
       value: stats.activeJobs,
-      meta: "Visible to candidates",
+      color: "#16a34a",
     },
     {
-      label: "Pending jobs",
+      title: "Pending Jobs",
       value: stats.pendingJobs,
-      meta: "Awaiting review",
+      color: "#d97706",
     },
     {
-      label: "Employers",
+      title: "Total Employers",
       value: stats.totalEmployers,
-      meta: "Registered companies",
+      color: "#2563eb",
     },
-  ];
-
-  const platformStats = [
     {
-      label: "Pending employers",
+      title: "Pending Employers",
       value: stats.pendingEmployers,
-      meta: "Need a plan or approval",
+      color: "#9333ea",
     },
     {
-      label: "Categories",
+      title: "Categories",
       value: stats.totalCategories,
-      meta: "Job categories",
+      color: "#0891b2",
     },
     {
-      label: "Locations",
+      title: "Locations",
       value: stats.totalLocations,
-      meta: "NCR locations",
+      color: "#65a30d",
     },
   ];
 
   return (
-    <div className="page dash">
-      <div className="container">
-        <div className="dash-head">
-          <div className="dash-title">
-            <span className="avatar-lg">
-              <ShieldIcon />
-            </span>
-            <div>
-              <span className="eyebrow">Admin console</span>
-              <h1>Overview</h1>
-              <p>Jobs, employers and listing health at a glance.</p>
-            </div>
-          </div>
+    <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "20px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <h1 style={{ margin: 0 }}>Admin Dashboard</h1>
 
-          <div className="dash-actions">
-            <Link className="btn btn-secondary btn-sm" to="/">
-              <ExternalIcon size={14} /> View site
-            </Link>
-            <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
-              <LogOutIcon size={15} /> Sign out
-            </button>
-          </div>
+        <button
+          onClick={handleLogout}
+          style={{
+            padding: "8px 14px",
+            backgroundColor: "#ef4444",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+          }}
+        >
+          Logout
+        </button>
+      </div>
+
+      <AdminMenu />
+
+      {loading && <p>Loading dashboard stats...</p>}
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {!loading && !error && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "16px",
+          }}
+        >
+          {cards.map((card) => (
+            <div
+              key={card.title}
+              style={{
+                border: "1px solid #e2e8f0",
+                borderRadius: "10px",
+                padding: "20px",
+                backgroundColor: "#fff",
+              }}
+            >
+              <p
+                style={{
+                  margin: "0 0 8px 0",
+                  color: "#555",
+                  fontSize: "14px",
+                }}
+              >
+                {card.title}
+              </p>
+
+              <h2
+                style={{
+                  margin: 0,
+                  color: card.color,
+                }}
+              >
+                {card.value}
+              </h2>
+            </div>
+          ))}
         </div>
+      )}
 
-        <AdminMenu />
-
-        {loading ? (
-          <>
-            <div className="stat-grid">
-              <div className="skeleton" style={{ height: "6rem" }} />
-              <div className="skeleton" style={{ height: "6rem" }} />
-              <div className="skeleton" style={{ height: "6rem" }} />
-              <div className="skeleton" style={{ height: "6rem" }} />
-            </div>
-          </>
-        ) : error ? (
-          <div className="alert alert-error">
-            <AlertIcon />
-            <span>{error}</span>
-          </div>
-        ) : (
-          <>
-            {stats.pendingJobs > 0 && (
-              <div className="notice notice-warn">
-                <ClockIcon />
-                <div className="grow">
-                  <strong>
-                    {stats.pendingJobs}{" "}
-                    {stats.pendingJobs === 1 ? "listing is" : "listings are"}{" "}
-                    awaiting review.
-                  </strong>{" "}
-                  Approve them to make them visible to candidates.
-                </div>
-                <Link className="btn btn-primary btn-sm" to="/admin/jobs">
-                  Review jobs <ArrowRightIcon size={14} />
-                </Link>
-              </div>
-            )}
-
-            {stats.pendingEmployers > 0 && (
-              <div className="notice notice-info">
-                <BuildingIcon />
-                <div className="grow">
-                  <strong>
-                    {stats.pendingEmployers}{" "}
-                    {stats.pendingEmployers === 1 ? "employer is" : "employers are"}{" "}
-                    pending activation.
-                  </strong>{" "}
-                  Check their payment status before approving.
-                </div>
-                <Link className="btn btn-secondary btn-sm" to="/admin/employers">
-                  Review employers <ArrowRightIcon size={14} />
-                </Link>
-              </div>
-            )}
-
-            <div className="stat-grid">
-              {primaryStats.map((card) => (
-                <div className="card stat-card" key={card.label}>
-                  <div className="stat-label">{card.label}</div>
-                  <div className="stat-value">{card.value}</div>
-                  <div className="stat-meta">{card.meta}</div>
-                </div>
-              ))}
-            </div>
-
-            <section className="section">
-              <div className="section-head">
-                <div>
-                  <h2>Quick actions</h2>
-                  <p className="section-sub">
-                    The tasks that keep the marketplace healthy.
-                  </p>
-                </div>
-              </div>
-
-              <div className="quick-grid">
-                <Link className="quick-card" to="/admin/jobs">
-                  <span className="quick-ico">
-                    <BriefcaseIcon />
-                  </span>
-                  <div>
-                    <h3>Review jobs</h3>
-                    <p>Approve, reject, feature or close listings.</p>
-                  </div>
-                </Link>
-
-                <Link className="quick-card" to="/admin/employers">
-                  <span className="quick-ico">
-                    <BuildingIcon />
-                  </span>
-                  <div>
-                    <h3>Approve employers</h3>
-                    <p>Check payments and activate company accounts.</p>
-                  </div>
-                </Link>
-
-                <Link className="quick-card" to="/">
-                  <span className="quick-ico">
-                    <ExternalIcon />
-                  </span>
-                  <div>
-                    <h3>View public site</h3>
-                    <p>See the homepage and listings as candidates do.</p>
-                  </div>
-                </Link>
-              </div>
-            </section>
-
-            <section className="section">
-              <div className="section-head">
-                <div>
-                  <h2>Platform totals</h2>
-                  <p className="section-sub">
-                    Supporting data behind the marketplace.
-                  </p>
-                </div>
-              </div>
-
-              <div className="stat-grid">
-                {platformStats.map((card) => (
-                  <div className="card stat-card" key={card.label}>
-                    <div className="stat-label">{card.label}</div>
-                    <div className="stat-value">{card.value}</div>
-                    <div className="stat-meta">{card.meta}</div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </>
-        )}
+      <div
+        style={{
+          marginTop: "24px",
+          border: "1px solid #e2e8f0",
+          borderRadius: "10px",
+          padding: "20px",
+          backgroundColor: "#fff",
+        }}
+      >
+        
       </div>
     </div>
   );

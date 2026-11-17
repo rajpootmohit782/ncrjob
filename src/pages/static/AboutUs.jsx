@@ -1,122 +1,85 @@
 import { Link } from "react-router-dom";
-import { SITE } from "../../lib/site";
-import { CheckCircleIcon, ShieldIcon, WhatsAppIcon } from "../../components/Icons";
-
-const OFFERINGS = [
-  "Private-sector roles in Noida, Greater Noida, Gurugram and Delhi",
-  "Data entry, back office, logistics and field roles",
-  "Work-from-home and hybrid openings",
-  "Fresher and trainee positions",
-  "Delivery and operations roles",
-  "Support, sales and admin positions",
-];
-
-const PROMISES = [
-  "Free for job seekers — always",
-  "Employers are reviewed before listings go live",
-  "No middlemen or placement fees",
-  "Apply directly with the employer on WhatsApp",
-  "No account needed to browse jobs",
-  "Clear salary, location and experience details",
-];
 
 export default function AboutUs() {
   return (
-    <div className="page">
-      <div className="container container-sm">
-        <div className="page-head">
-          <div>
-            <span className="eyebrow">About VMWjobs</span>
-            <h1>Good work, closer to home.</h1>
-            <p className="page-sub">
-              VMWjobs is a private-sector job marketplace for Delhi NCR — built
-              to make local hiring simple, transparent and trustworthy.
-            </p>
-          </div>
-        </div>
+    <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", padding: "40px 20px" }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <Link to="/" style={{ color: "#2563eb", textDecoration: "none", fontSize: "14px" }}>
+          ← Back to Home
+        </Link>
 
-        <div className="card card-pad prose">
-          <h2>Why we built VMWjobs</h2>
+        <h1 style={{ fontSize: "32px", color: "#0f172a", margin: "20px 0 10px" }}>
+          About Us
+        </h1>
+
+        <div style={{ 
+          backgroundColor: "#fff", 
+          padding: "30px", 
+          borderRadius: "12px", 
+          border: "1px solid #e2e8f0",
+          lineHeight: "1.8",
+          color: "#334155",
+          fontSize: "15px"
+        }}>
+          <h2 style={{ color: "#0f172a", marginTop: 0 }}>Who We Are</h2>
           <p>
-            Finding a good local job should not mean scrolling through
-            copy-pasted listings, calling unknown numbers or paying a fee before
-            you even get an interview. {SITE.name} was built to fix that.
-          </p>
-          <p>
-            We bring genuine openings from reviewed employers into one clean,
-            easy-to-browse place. Every listing shows the salary, location and
-            experience up front, and every application goes directly to the
-            employer on WhatsApp.
+            Welcome to <strong>VMWjobs</strong> — a private-sector job marketplace for
+            Delhi NCR. We connect candidates with legitimate employers across
+            Noida, Greater Noida, Gurugram and Delhi.
           </p>
 
-          <h2>What you will find here</h2>
-          <ul>
-            {OFFERINGS.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
+          <h2 style={{ color: "#0f172a" }}>Our Mission</h2>
+          <p>
+            Our mission is simple: to provide <strong>free, genuine, and verified job listings</strong> to every job seeker. 
+            We understand the frustration of encountering fake job postings, and we work tirelessly to ensure that 
+            every listing on our platform is authentic and trustworthy.
+          </p>
+
+          <h2 style={{ color: "#0f172a" }}>What We Offer</h2>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li><strong>Private-sector roles</strong> — Opportunities in manufacturing, electronics, and more</li>
+            <li><strong>Data Entry & Back Office</strong> — Office and computer-based roles</li>
+            <li><strong>Delivery & Logistics</strong> — Warehouse, delivery and supply-chain roles</li>
+            <li><strong>Work From Home</strong> — Remote opportunities where available</li>
+            <li><strong>Campus & Trainee Jobs</strong> — For freshers and students</li>
+            <li><strong>Field & Verification Roles</strong> — Private field and verification work</li>
           </ul>
 
-          <h2>Our promise to candidates</h2>
-          <ul className="check-list">
-            {PROMISES.map((item) => (
-              <li key={item}>
-                <CheckCircleIcon />
-                {item}
-              </li>
-            ))}
+          <h2 style={{ color: "#0f172a" }}>Why Choose Us?</h2>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li>✅ 100% Free for job seekers</li>
+            <li>✅ Verified and genuine job listings</li>
+            <li>✅ Updated daily with new opportunities</li>
+            <li>✅ Direct WhatsApp apply — no middlemen</li>
+            <li>✅ Jobs across Noida, Greater Noida, Gurgaon, Delhi, and more</li>
+            <li>✅ No registration required to browse jobs</li>
           </ul>
 
-          <div className="prose-note">
-            <strong>Never pay for a job.</strong> A genuine employer will never
-            ask you for money for an application, interview, registration or
-            training. If a listing asks for payment, report it to us right away.
-          </div>
-
-          <h2>For employers</h2>
+          <h2 style={{ color: "#0f172a" }}>Our Coverage Area</h2>
           <p>
-            Hiring in NCR? Create a company account, choose a simple one-time
-            plan and publish your role. Applications land directly on your
-            WhatsApp number — no agency, no long contracts and no commission on
-            hires.
+            We focus on private-sector job opportunities in:
           </p>
-          <p>
-            <Link to="/become-employer">See employer plans</Link> or{" "}
-            <Link to="/contact">talk to our team</Link> if you have a question.
-          </p>
-
-          <h2>How we keep listings trustworthy</h2>
-          <ul>
-            <li>
-              Every employer account is reviewed before it can publish jobs.
-            </li>
-            <li>
-              New listings are checked by our team before they appear publicly.
-            </li>
-            <li>
-              We remove roles that look misleading, discriminatory or unsafe.
-            </li>
-            <li>
-              Candidates can report a listing and we investigate every report.
-            </li>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li>Noida (Sector 62, 63, 65, 80, 81, 90, 151, 156, 159)</li>
+            <li>Greater Noida (Kasna, Surajpur, Choganpur, Phase 2)</li>
+            <li>Gurgaon / Gurugram</li>
+            <li>Delhi NCR</li>
+            <li>Remote / Work From Home (where offered)</li>
           </ul>
 
-          <h2>Contact us</h2>
+          <h2 style={{ color: "#0f172a" }}>For Employers</h2>
           <p>
-            Questions, feedback or a listing to report? Email us at{" "}
-            <a href={`mailto:${SITE.email}`}>{SITE.email}</a> or use the{" "}
-            <Link to="/contact">contact page</Link>. We usually reply within one
-            working day.
+            Are you an employer looking to hire? We make it easy for you to post job listings 
+            and reach thousands of active job seekers. Simply register as an employer, 
+            post your job, and our admin team will review and publish it.
           </p>
-        </div>
 
-        <div className="row wrap mt-2">
-          <span className="badge badge-success">
-            <ShieldIcon /> Reviewed employers
-          </span>
-          <span className="badge badge-brand">
-            <WhatsAppIcon /> Direct applications
-          </span>
-          <span className="badge badge-muted">Delhi NCR only</span>
+          <h2 style={{ color: "#0f172a" }}>Contact Us</h2>
+          <p>
+            Have questions or suggestions? We'd love to hear from you. 
+            Visit our <Link to="/contact" style={{ color: "#2563eb" }}>Contact Us</Link> page 
+            to get in touch with our team.
+          </p>
         </div>
       </div>
     </div>

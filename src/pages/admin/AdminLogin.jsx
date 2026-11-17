@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabaseClient";
-import { AlertIcon, ShieldIcon } from "../../components/Icons";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -13,15 +12,15 @@ export default function AdminLogin() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
 
-  async function handleSubmit(event) {
-    event.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
     setError("");
     setLoading(true);
 
-    const { data, error: signInError } = await signIn(email, password);
+    const { data, error } = await signIn(email, password);
 
-    if (signInError) {
-      setError(signInError.message);
+    if (error) {
+      setError(error.message);
       setLoading(false);
       return;
     }
@@ -49,7 +48,7 @@ export default function AdminLogin() {
 
     if (profileRow?.role !== "admin") {
       await supabase.auth.signOut();
-      setError("This sign-in is for admin accounts only.");
+      setError("This login is for admin accounts only.");
       setLoading(false);
       return;
     }
@@ -58,64 +57,51 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-head">
-          <span className="brand-mark" aria-hidden="true">
-            V
-          </span>
-          <h1>Admin sign in</h1>
-          <p>Review employers, jobs and listing activity.</p>
+    <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px" }}>
+      <h2>Admin Login</h2>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: "15px" }}>
+          <label>Admin Email</label>
+          <br />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            style={{ width: "100%", padding: "8px" }}
+          />
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          {error && (
-            <div className="alert alert-error" role="alert">
-              <AlertIcon />
-              <span>{error}</span>
-            </div>
-          )}
+        <div style={{ marginBottom: "15px" }}>
+          <label>Password</label>
+          <br />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={{ width: "100%", padding: "8px" }}
+          />
+        </div>
 
-          <label className="field">
-            <span className="field-label">Admin email</span>
-            <input
-              className="input"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-              autoComplete="email"
-              placeholder="admin@vmwjobs.in"
-            />
-          </label>
-
-          <label className="field">
-            <span className="field-label">Password</span>
-            <input
-              className="input"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              autoComplete="current-password"
-              placeholder="Your password"
-            />
-          </label>
-
-          <button
-            className="btn btn-primary btn-lg btn-block"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? "Signing in…" : "Sign in to admin"}
-          </button>
-        </form>
-
-        <p className="auth-foot">
-          <ShieldIcon size={13} /> Restricted area ·{" "}
-          <Link to="/">Back to VMWjobs</Link>
-        </p>
-      </div>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#0f172a",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: loading ? "not-allowed" : "pointer",
+          }}
+        >
+          {loading ? "Logging in..." : "Admin Login"}
+        </button>
+      </form>
     </div>
   );
 }

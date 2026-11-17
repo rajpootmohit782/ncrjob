@@ -23,7 +23,7 @@ Built with **React 19 + Vite 7**, **Supabase** and **Razorpay**.
 | Layer | Technology |
 | --- | --- |
 | Frontend | React 19, React Router 7, Vite 7 |
-| Styling | Token-based CSS in `src/index.css` |
+| Styling | Page-level inline styles + shared font/reset in `src/index.css` |
 | Database & auth | Supabase (Postgres, Auth, RLS) |
 | Payments | Razorpay Standard Web Checkout |
 | Serverless | Supabase Edge Functions (Deno) |
@@ -193,7 +193,7 @@ src/
     admin/             Dashboard, Jobs, Employers, AdminLogin
     static/            About, Contact, Privacy, Terms, Disclaimer
   App.jsx              Routes
-  index.css            Design tokens and all component styles
+  index.css            Global fonts and base reset (page styles are inline)
 supabase/
   functions/           create-order, verify-payment, shared HTTP helper
   00_full_reset.sql    Full schema + seed + admin bootstrap
@@ -205,7 +205,7 @@ supabase/
 | What | Where |
 | --- | --- |
 | Brand, contact email, phone, address, socials | `src/lib/site.js` |
-| Design tokens and component styles | `src/index.css` |
+| Global fonts and base reset | `src/index.css` |
 | Plans and prices | `plans` table (seeded by the reset SQL) |
 | Razorpay checkout branding | `src/lib/razorpay.js` |
 | Production URL rewrites | `vercel.json` |

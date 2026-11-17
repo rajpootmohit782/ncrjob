@@ -30,8 +30,8 @@ Thanks for helping improve VMWjobs. This project is a production job marketplace
 
 ## Code conventions
 
-- Use the existing design tokens and component classes in `src/index.css`; avoid new inline styles except for skeleton dimensions or one-off icon sizing.
-- Reuse shared helpers from `src/lib/` and icons from `src/components/Icons.jsx`.
+- Match the existing page-level inline style patterns. `src/index.css` is only a font import and base reset, so keep new page styles local to the component.
+- Reuse shared helpers from `src/lib/` and keep brand/contact values in `src/lib/site.js`.
 - Keep brand/contact values in `src/lib/site.js`.
 - Follow the existing file and component naming (PascalCase pages/components, camelCase helpers).
 - Prefer accessible markup: labels on inputs, button text, focus states, meaningful link text.

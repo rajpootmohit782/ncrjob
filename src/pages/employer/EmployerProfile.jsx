@@ -2,12 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
 import useEmployer from "../../hooks/useEmployer";
-import { statusTone } from "../../lib/format";
-import {
-  AlertIcon,
-  CheckIcon,
-  ChevronRightIcon,
-} from "../../components/Icons";
 
 export default function EmployerProfile() {
   const { employer, loading, error, refetch } = useEmployer();
@@ -40,10 +34,10 @@ export default function EmployerProfile() {
     }
   }, [employer]);
 
-  function handleChange(event) {
+  function handleChange(e) {
     setForm({
       ...form,
-      [event.target.name]: event.target.value,
+      [e.target.name]: e.target.value,
     });
   }
 
@@ -51,8 +45,8 @@ export default function EmployerProfile() {
     return value.replace(/[^0-9]/g, "");
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
 
     setMessage("");
     setMessageType("");
@@ -72,14 +66,14 @@ export default function EmployerProfile() {
     const whatsappNumber = cleanWhatsAppNumber(form.whatsapp_number);
 
     if (whatsappNumber && whatsappNumber.length < 10) {
-      setMessage("WhatsApp number should include the country code and number.");
+      setMessage("WhatsApp number should include country code and number.");
       setMessageType("error");
       return;
     }
 
     setSaving(true);
 
-    const { error: updateError } = await supabase
+    const { error } = await supabase
       .from("employers")
       .update({
         company_name: form.company_name.trim(),
@@ -92,9 +86,9 @@ export default function EmployerProfile() {
       })
       .eq("id", employer.id);
 
-    if (updateError) {
-      console.error(updateError);
-      setMessage("Unable to update the company profile. Please try again.");
+    if (error) {
+      console.error(error);
+      setMessage("Unable to update company profile.");
       setMessageType("error");
     } else {
       setMessage("Company profile updated successfully.");
@@ -106,198 +100,155 @@ export default function EmployerProfile() {
   }
 
   if (loading) {
-    return (
-      <div className="page">
-        <div className="container container-sm">
-          <div className="skeleton" style={{ height: "12rem" }} />
-        </div>
-      </div>
-    );
+    return <div style={{ padding: "20px" }}>Loading company profile...</div>;
   }
 
   if (error) {
-    return (
-      <div className="page">
-        <div className="container container-sm">
-          <div className="empty-state">
-            <span className="empty-ico">
-              <AlertIcon />
-            </span>
-            <h1>Profile unavailable</h1>
-            <p>{error}</p>
-            <Link className="btn btn-secondary btn-sm mt-2" to="/employer-dashboard">
-              Back to dashboard
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    return <div style={{ padding: "20px", color: "red" }}>{error}</div>;
   }
 
   if (!employer) {
     return (
-      <div className="page">
-        <div className="container container-sm">
-          <div className="empty-state">
-            <h1>No employer profile found</h1>
-            <p>Create your employer account to add company details.</p>
-            <Link className="btn btn-primary btn-sm mt-2" to="/become-employer">
-              Create employer account
-            </Link>
-          </div>
-        </div>
+      <div style={{ padding: "20px" }}>
+        <p>No employer profile found.</p>
       </div>
     );
   }
 
   return (
-    <div className="page">
-      <div className="container container-sm">
-        <nav className="breadcrumb" aria-label="Breadcrumb">
-          <Link to="/employer-dashboard">Employer dashboard</Link>
-          <ChevronRightIcon />
-          <span>Company profile</span>
-        </nav>
+    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "20px" }}>
+      <Link to="/employer-dashboard">← Back to dashboard</Link>
 
-        <div className="page-head">
-          <div>
-            <span className="eyebrow">Employer workspace</span>
-            <h1>Company profile</h1>
-            <p className="page-sub">
-              These details appear on your public job listings.
-            </p>
-          </div>
+      <h1>Company Profile</h1>
 
-          <span className={`badge badge-${statusTone(employer.status)}`}>
-            {employer.status}
-          </span>
+      {message && (
+        <p
+          style={{
+            color: messageType === "success" ? "green" : "red",
+          }}
+        >
+          {message}
+        </p>
+      )}
+
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          border: "1px solid #e2e8f0",
+          borderRadius: "10px",
+          padding: "20px",
+          backgroundColor: "#fff",
+        }}
+      >
+        <div style={{ marginBottom: "15px" }}>
+          <label>Company Name *</label>
+          <br />
+          <input
+            type="text"
+            name="company_name"
+            value={form.company_name}
+            onChange={handleChange}
+            required
+            style={{ width: "100%", padding: "8px" }}
+          />
         </div>
 
-        {message && (
-          <div
-            className={`alert ${
-              messageType === "success" ? "alert-success" : "alert-error"
-            }`}
-            role="status"
-          >
-            {messageType === "success" ? <CheckIcon /> : <AlertIcon />}
-            <span>{message}</span>
-          </div>
-        )}
+        <div style={{ marginBottom: "15px" }}>
+          <label>WhatsApp Number</label>
+          <br />
+          <input
+            type="text"
+            name="whatsapp_number"
+            value={form.whatsapp_number}
+            onChange={handleChange}
+            placeholder="Example: 919876543210"
+            style={{ width: "100%", padding: "8px" }}
+          />
+          <small style={{ color: "#666" }}>
+            Use country code + number, digits only. Example: 919876543210
+          </small>
+        </div>
 
-        <form className="card card-pad form-grid mt-2" onSubmit={handleSubmit}>
-          <fieldset className="fieldset">
-            <div className="fieldset-title">Company details</div>
+        <div style={{ marginBottom: "15px" }}>
+          <label>Website</label>
+          <br />
+          <input
+            type="text"
+            name="website"
+            value={form.website}
+            onChange={handleChange}
+            placeholder="https://example.com"
+            style={{ width: "100%", padding: "8px" }}
+          />
+        </div>
 
-            <div className="field-row">
-              <label className="field">
-                <span className="field-label">Company name *</span>
-                <input
-                  className="input"
-                  type="text"
-                  name="company_name"
-                  value={form.company_name}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
+        <div style={{ marginBottom: "15px" }}>
+          <label>Industry</label>
+          <br />
+          <input
+            type="text"
+            name="industry"
+            value={form.industry}
+            onChange={handleChange}
+            placeholder="Example: IT / Software"
+            style={{ width: "100%", padding: "8px" }}
+          />
+        </div>
 
-              <label className="field">
-                <span className="field-label">WhatsApp number</span>
-                <input
-                  className="input"
-                  type="text"
-                  name="whatsapp_number"
-                  value={form.whatsapp_number}
-                  onChange={handleChange}
-                  placeholder="919876543210"
-                  inputMode="numeric"
-                />
-                <span className="field-help">
-                  Country code + number, digits only. Candidates apply here.
-                </span>
-              </label>
-            </div>
+        <div style={{ marginBottom: "15px" }}>
+          <label>Company Size</label>
+          <br />
+          <input
+            type="text"
+            name="company_size"
+            value={form.company_size}
+            onChange={handleChange}
+            placeholder="Example: 10-50"
+            style={{ width: "100%", padding: "8px" }}
+          />
+        </div>
 
-            <div className="field-row mt-2">
-              <label className="field">
-                <span className="field-label">Website</span>
-                <input
-                  className="input"
-                  type="text"
-                  name="website"
-                  value={form.website}
-                  onChange={handleChange}
-                  placeholder="https://example.com"
-                />
-              </label>
+        <div style={{ marginBottom: "15px" }}>
+          <label>Location</label>
+          <br />
+          <input
+            type="text"
+            name="location"
+            value={form.location}
+            onChange={handleChange}
+            placeholder="Example: Mumbai"
+            style={{ width: "100%", padding: "8px" }}
+          />
+        </div>
 
-              <label className="field">
-                <span className="field-label">Industry</span>
-                <input
-                  className="input"
-                  type="text"
-                  name="industry"
-                  value={form.industry}
-                  onChange={handleChange}
-                  placeholder="e.g. IT / Software"
-                />
-              </label>
-            </div>
+        <div style={{ marginBottom: "15px" }}>
+          <label>Company Description</label>
+          <br />
+          <textarea
+            name="description"
+            rows={5}
+            value={form.description}
+            onChange={handleChange}
+            placeholder="Write about your company..."
+            style={{ width: "100%", padding: "8px" }}
+          />
+        </div>
 
-            <div className="field-row mt-2">
-              <label className="field">
-                <span className="field-label">Company size</span>
-                <input
-                  className="input"
-                  type="text"
-                  name="company_size"
-                  value={form.company_size}
-                  onChange={handleChange}
-                  placeholder="e.g. 10–50 employees"
-                />
-              </label>
-
-              <label className="field">
-                <span className="field-label">Location</span>
-                <input
-                  className="input"
-                  type="text"
-                  name="location"
-                  value={form.location}
-                  onChange={handleChange}
-                  placeholder="e.g. Noida, Sector 62"
-                />
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset className="fieldset">
-            <div className="fieldset-title">About the company</div>
-
-            <label className="field">
-              <span className="field-label">Company description</span>
-              <textarea
-                className="textarea"
-                name="description"
-                rows={5}
-                value={form.description}
-                onChange={handleChange}
-                placeholder="Tell candidates what your company does and what it is like to work there."
-              />
-            </label>
-          </fieldset>
-
-          <div className="form-actions">
-            <button className="btn btn-primary" type="submit" disabled={saving}>
-              {saving ? "Saving…" : "Save changes"}
-            </button>
-            <Link className="btn btn-ghost" to="/employer-dashboard">
-              Cancel
-            </Link>
-          </div>
-        </form>
-      </div>
+        <button
+          type="submit"
+          disabled={saving}
+          style={{
+            padding: "10px 18px",
+            backgroundColor: "#0f172a",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: saving ? "not-allowed" : "pointer",
+          }}
+        >
+          {saving ? "Saving..." : "Save Company Profile"}
+        </button>
+      </form>
     </div>
   );
 }

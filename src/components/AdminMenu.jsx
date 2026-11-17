@@ -1,26 +1,49 @@
-import { NavLink } from "react-router-dom";
-import { BriefcaseIcon, BuildingIcon, ShieldIcon } from "./Icons";
-
-const LINKS = [
-  { to: "/admin/dashboard", label: "Overview", Icon: ShieldIcon, end: true },
-  { to: "/admin/jobs", label: "Jobs", Icon: BriefcaseIcon },
-  { to: "/admin/employers", label: "Employers", Icon: BuildingIcon },
-];
+import { Link, useLocation } from "react-router-dom";
 
 export default function AdminMenu() {
+  const location = useLocation();
+
+  const links = [
+    {
+      to: "/admin/dashboard",
+      label: "Overview",
+    },
+    {
+      to: "/admin/jobs",
+      label: "Jobs",
+    },
+    {
+      to: "/admin/employers",
+      label: "Employers",
+    },
+  ];
+
   return (
-    <nav className="admin-menu" aria-label="Admin sections">
-      {LINKS.map(({ to, label, Icon, end }) => (
-        <NavLink
-          key={to}
-          to={to}
-          end={end}
-          className={({ isActive }) => (isActive ? "active" : undefined)}
+    <div
+      style={{
+        display: "flex",
+        gap: "10px",
+        marginBottom: "20px",
+        flexWrap: "wrap",
+      }}
+    >
+      {links.map((link) => (
+        <Link
+          key={link.to}
+          to={link.to}
+          style={{
+            textDecoration: "none",
+            padding: "8px 14px",
+            borderRadius: "6px",
+            backgroundColor:
+              location.pathname === link.to ? "#0f172a" : "#f1f5f9",
+            color: location.pathname === link.to ? "#fff" : "#111",
+            fontSize: "14px",
+          }}
         >
-          <Icon size={14} />
-          {label}
-        </NavLink>
+          {link.label}
+        </Link>
       ))}
-    </nav>
+    </div>
   );
 }
