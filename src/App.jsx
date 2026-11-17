@@ -118,8 +118,12 @@ function App() {
           <Route
             path="*"
             element={
-              <div style={{ padding: "20px" }}>
-                <h2>Page not found</h2>
+              <div className="page-shell">
+                <div className="container-page flex min-h-[60vh] items-center justify-center py-12">
+                  <div className="card max-w-md p-8 text-center">
+                    <h2 className="text-2xl font-bold text-ink">Page not found</h2>
+                  </div>
+                </div>
               </div>
             }
           />

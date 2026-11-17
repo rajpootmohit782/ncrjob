@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-    "author": {
+  "author": {
     "name": "MohitSpace.in",
     "url": "https://mohitspace.in"
   },
@@ -22,14 +22,18 @@
     "sb:deploy": "supabase functions deploy create-order verify-payment --remote=vqbatlkrteqzwlunhdln --use-api --yes"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/sora": "^5.3.0",
     "@supabase/supabase-js": "^2.117.0",
+    "lucide-react": "^1.74.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
     "@vitejs/plugin-react": "^5.0.2",
+    "tailwindcss": "^4.3.5",
     "vite": "^7.1.7"
   }
 }
-

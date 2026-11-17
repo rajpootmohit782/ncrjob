@@ -1,65 +1,66 @@
 import { Link } from "react-router-dom";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
+
+const reasons = [
+  "100% Free for job seekers",
+  "Verified and genuine job listings",
+  "Updated daily with new opportunities",
+  "Direct WhatsApp apply — no middlemen",
+  "Jobs across Noida, Greater Noida, Gurgaon, Delhi, and more",
+  "No registration required to browse jobs",
+];
 
 export default function AboutUs() {
   return (
-    <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", padding: "40px 20px" }}>
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <Link to="/" style={{ color: "#2563eb", textDecoration: "none", fontSize: "14px" }}>
-          ← Back to Home
+    <div className="page-shell">
+      <div className="container-page max-w-4xl py-10 sm:py-14">
+        <Link to="/" className="link-arrow mb-6">
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to Home
         </Link>
 
-        <h1 style={{ fontSize: "32px", color: "#0f172a", margin: "20px 0 10px" }}>
-          About Us
-        </h1>
+        <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">About Us</h1>
 
-        <div style={{ 
-          backgroundColor: "#fff", 
-          padding: "30px", 
-          borderRadius: "12px", 
-          border: "1px solid #e2e8f0",
-          lineHeight: "1.8",
-          color: "#334155",
-          fontSize: "15px"
-        }}>
-          <h2 style={{ color: "#0f172a", marginTop: 0 }}>Who We Are</h2>
+        <div className="card static-content mt-6 p-6 sm:p-8">
+          <h2>Who We Are</h2>
           <p>
             Welcome to <strong>VMWjobs</strong> — a private-sector job marketplace for
             Delhi NCR. We connect candidates with legitimate employers across
             Noida, Greater Noida, Gurugram and Delhi.
           </p>
 
-          <h2 style={{ color: "#0f172a" }}>Our Mission</h2>
+          <h2>Our Mission</h2>
           <p>
-            Our mission is simple: to provide <strong>free, genuine, and verified job listings</strong> to every job seeker. 
-            We understand the frustration of encountering fake job postings, and we work tirelessly to ensure that 
+            Our mission is simple: to provide <strong>free, genuine, and verified job listings</strong> to every job seeker.
+            We understand the frustration of encountering fake job postings, and we work tirelessly to ensure that
             every listing on our platform is authentic and trustworthy.
           </p>
 
-          <h2 style={{ color: "#0f172a" }}>What We Offer</h2>
-          <ul style={{ paddingLeft: "20px" }}>
+          <h2>What We Offer</h2>
+          <ul>
             <li><strong>Private-sector roles</strong> — Opportunities in manufacturing, electronics, and more</li>
-            <li><strong>Data Entry & Back Office</strong> — Office and computer-based roles</li>
-            <li><strong>Delivery & Logistics</strong> — Warehouse, delivery and supply-chain roles</li>
+            <li><strong>Data Entry &amp; Back Office</strong> — Office and computer-based roles</li>
+            <li><strong>Delivery &amp; Logistics</strong> — Warehouse, delivery and supply-chain roles</li>
             <li><strong>Work From Home</strong> — Remote opportunities where available</li>
-            <li><strong>Campus & Trainee Jobs</strong> — For freshers and students</li>
-            <li><strong>Field & Verification Roles</strong> — Private field and verification work</li>
+            <li><strong>Campus &amp; Trainee Jobs</strong> — For freshers and students</li>
+            <li><strong>Field &amp; Verification Roles</strong> — Private field and verification work</li>
           </ul>
 
-          <h2 style={{ color: "#0f172a" }}>Why Choose Us?</h2>
-          <ul style={{ paddingLeft: "20px" }}>
-            <li>✅ 100% Free for job seekers</li>
-            <li>✅ Verified and genuine job listings</li>
-            <li>✅ Updated daily with new opportunities</li>
-            <li>✅ Direct WhatsApp apply — no middlemen</li>
-            <li>✅ Jobs across Noida, Greater Noida, Gurgaon, Delhi, and more</li>
-            <li>✅ No registration required to browse jobs</li>
+          <h2>Why Choose Us?</h2>
+          <ul className="list-none space-y-2.5 pl-0">
+            {reasons.map((reason) => (
+              <li key={reason} className="flex items-start gap-2.5">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
+                <span>{reason}</span>
+              </li>
+            ))}
           </ul>
 
-          <h2 style={{ color: "#0f172a" }}>Our Coverage Area</h2>
+          <h2>Our Coverage Area</h2>
           <p>
             We focus on private-sector job opportunities in:
           </p>
-          <ul style={{ paddingLeft: "20px" }}>
+          <ul>
             <li>Noida (Sector 62, 63, 65, 80, 81, 90, 151, 156, 159)</li>
             <li>Greater Noida (Kasna, Surajpur, Choganpur, Phase 2)</li>
             <li>Gurgaon / Gurugram</li>
@@ -67,17 +68,17 @@ export default function AboutUs() {
             <li>Remote / Work From Home (where offered)</li>
           </ul>
 
-          <h2 style={{ color: "#0f172a" }}>For Employers</h2>
+          <h2>For Employers</h2>
           <p>
-            Are you an employer looking to hire? We make it easy for you to post job listings 
-            and reach thousands of active job seekers. Simply register as an employer, 
+            Are you an employer looking to hire? We make it easy for you to post job listings
+            and reach thousands of active job seekers. Simply register as an employer,
             post your job, and our admin team will review and publish it.
           </p>
 
-          <h2 style={{ color: "#0f172a" }}>Contact Us</h2>
+          <h2>Contact Us</h2>
           <p>
-            Have questions or suggestions? We'd love to hear from you. 
-            Visit our <Link to="/contact" style={{ color: "#2563eb" }}>Contact Us</Link> page 
+            Have questions or suggestions? We'd love to hear from you.
+            Visit our <Link to="/contact">Contact Us</Link> page
             to get in touch with our team.
           </p>
         </div>

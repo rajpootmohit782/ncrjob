@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { Briefcase, MapPin, Search, SlidersHorizontal, SearchX } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
+import JobCard, { JobCardSkeleton } from "../../components/JobCard";
+import { EmptyState } from "../../components/ui";
 
 export default function Jobs() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -106,102 +109,108 @@ export default function Jobs() {
   }
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "30px 20px", backgroundColor: "#f8fafc", minHeight: "80vh" }}>
-      <h1 style={{ marginBottom: "20px", color: "#0f172a" }}>Find Jobs</h1>
+    <div className="page-shell">
+      <div className="container-page py-8 sm:py-12">
+        <div className="mb-8 max-w-2xl">
+          <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">Find Jobs</h1>
+        </div>
 
-      {/* Search & Filter Bar */}
-      <form onSubmit={handleSearch} style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "30px", backgroundColor: "#fff", padding: "15px", borderRadius: "10px", border: "1px solid #e2e8f0", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
-        <input 
-          type="text" 
-          placeholder="Job title or keyword..." 
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          style={{ flex: "1 1 250px", padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "15px" }}
-        />
-        
-        <select 
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          style={{ flex: "1 1 200px", padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "15px", backgroundColor: "#fff" }}
+        {/* Search & Filter Bar */}
+        <form
+          onSubmit={handleSearch}
+          className="sticky top-[73px] z-30 mb-8 rounded-2xl border border-line bg-white/90 p-3 shadow-soft backdrop-blur-xl sm:p-4"
         >
-          <option value="">All Categories</option>
-          {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+            <div className="relative min-w-0 flex-1">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+              <input
+                type="text"
+                placeholder="Job title or keyword..."
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                aria-label="Job title or keyword"
+                className="input pl-10"
+              />
+            </div>
 
-        <select 
-          value={locationId}
-          onChange={(e) => setLocationId(e.target.value)}
-          style={{ flex: "1 1 200px", padding: "10px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "15px", backgroundColor: "#fff" }}
-        >
-          <option value="">All Locations</option>
-          {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-        </select>
+            <div className="relative min-w-0 flex-1 lg:max-w-[16rem]">
+              <Briefcase className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                aria-label="Category"
+                className={`select pl-10 ${categoryId ? "border-indigo-300 bg-indigo-50/60 ring-2 ring-indigo-500/10" : ""}`}
+              >
+                <option value="">All Categories</option>
+                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
 
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button type="submit" style={{ padding: "10px 20px", backgroundColor: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>
-            Search
-          </button>
-          <button type="button" onClick={clearFilters} style={{ padding: "10px 20px", backgroundColor: "#f1f5f9", color: "#0f172a", border: "1px solid #cbd5e1", borderRadius: "6px", cursor: "pointer" }}>
-            Clear
-          </button>
-        </div>
-      </form>
+            <div className="relative min-w-0 flex-1 lg:max-w-[16rem]">
+              <MapPin className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+              <select
+                value={locationId}
+                onChange={(e) => setLocationId(e.target.value)}
+                aria-label="Location"
+                className={`select pl-10 ${locationId ? "border-indigo-300 bg-indigo-50/60 ring-2 ring-indigo-500/10" : ""}`}
+              >
+                <option value="">All Locations</option>
+                {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+              </select>
+            </div>
 
-      {/* Results Area */}
-      {loading && <p style={{ textAlign: "center", color: "#64748b" }}>Loading jobs...</p>}
+            <div className="flex gap-2">
+              <button type="submit" className="btn btn-primary flex-1 px-6 lg:flex-none">
+                <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+                Search
+              </button>
+              <button type="button" onClick={clearFilters} className="btn btn-secondary flex-1 px-5 lg:flex-none">
+                Clear
+              </button>
+            </div>
+          </div>
+        </form>
 
-      {!loading && jobs.length === 0 && (
-        <div style={{ textAlign: "center", padding: "40px", backgroundColor: "#fff", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
-          <h3 style={{ color: "#0f172a" }}>No jobs found</h3>
-          <p style={{ color: "#64748b" }}>Try changing your search filters or check back later.</p>
-        </div>
-      )}
+        {/* Results Area */}
+        {loading && (
+          <div>
+            <p className="mb-5 text-sm text-muted">Loading jobs...</p>
+            <div className="flex flex-col gap-2.5">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <JobCardSkeleton key={index} />
+              ))}
+            </div>
+          </div>
+        )}
 
-      {!loading && jobs.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <p style={{ color: "#64748b", marginBottom: "0" }}>Showing <strong>{jobs.length}</strong> jobs</p>
-          
-          {jobs.map((job) => (
-            <Link 
-              to={`/jobs/${job.id}`} 
-              key={job.id} 
-              style={{ 
-                textDecoration: "none", 
-                backgroundColor: "#fff", 
-                border: "1px solid #e2e8f0", 
-                borderRadius: "10px", 
-                padding: "20px", 
-                display: "flex", 
-                justifyContent: "space-between", 
-                alignItems: "center", 
-                flexWrap: "wrap", 
-                gap: "15px", 
-                color: "#111",
-                transition: "all 0.2s",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.05)"
-              }}
-            >
-              <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "5px" }}>
-                  <h3 style={{ margin: 0, fontSize: "18px", color: "#0f172a" }}>{job.title}</h3>
-                  {job.is_featured && <span style={{ backgroundColor: "#fef3c7", color: "#92400e", fontSize: "11px", padding: "2px 8px", borderRadius: "20px", fontWeight: "bold" }}>FEATURED</span>}
-                </div>
-                <p style={{ margin: "0 0 5px 0", color: "#2563eb", fontWeight: "500" }}>{job.employers?.company_name || "Company"}</p>
-                <p style={{ margin: 0, color: "#64748b", fontSize: "14px" }}>
-                  📍 {job.locations?.name || "Location"} &nbsp;•&nbsp; 💼 {job.categories?.name || "Category"} &nbsp;•&nbsp; ⏱️ {job.job_type}
-                </p>
-              </div>
-              
-              <div style={{ textAlign: "right" }}>
-                <p style={{ margin: 0, fontWeight: "bold", color: "#16a34a", fontSize: "16px" }}>{formatSalary(job.min_salary, job.max_salary)}</p>
-                <p style={{ margin: "5px 0 0 0", color: "#94a3b8", fontSize: "12px" }}>
-                  {new Date(job.created_at).toLocaleDateString()}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
+        {!loading && jobs.length === 0 && (
+          <EmptyState
+            icon={SearchX}
+            title="No jobs found"
+            description="Try changing your search filters or check back later."
+          />
+        )}
+
+        {!loading && jobs.length > 0 && (
+          <div>
+            <p className="mb-5 text-sm text-muted">
+              Showing <strong className="font-semibold text-ink">{jobs.length}</strong> jobs
+            </p>
+
+            <div className="flex flex-col gap-2.5">
+              {jobs.map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  salary={formatSalary(job.min_salary, job.max_salary)}
+                  featured={Boolean(job.is_featured)}
+                  showDate
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

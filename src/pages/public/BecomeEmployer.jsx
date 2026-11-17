@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Check,
+  CreditCard,
+  Lock,
+  Sparkles,
+} from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { payForPlan } from "../../lib/razorpay";
+import { FormMessage } from "../../components/ui";
 
 const FALLBACK_PLANS = [
   { id: "basic", name: "Basic Plan", price: 9, jobs: 5, validity: "30 Days" },
@@ -207,146 +215,185 @@ export default function BecomeEmployer() {
   }
 
   return (
-    <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", padding: "40px 20px" }}>
-      <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-        <Link to="/" style={{ color: "#2563eb", textDecoration: "none", fontSize: "14px" }}>← Back to Home</Link>
+    <div className="page-shell">
+      <section className="hero-gradient relative overflow-hidden pb-24 pt-12 sm:pt-16">
+        <div className="hero-dots pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
+        <div className="hero-glow pointer-events-none absolute -right-24 top-0 h-80 w-80 rounded-full blur-3xl" aria-hidden="true" />
+        <div className="container-page relative z-10">
+          <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-indigo-100 transition hover:text-white">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Back to Home
+          </Link>
 
-        <div style={{ textAlign: "center", margin: "20px 0 40px" }}>
-          <div style={{ display: "inline-block", backgroundColor: "#fef3c7", color: "#92400e", padding: "4px 12px", borderRadius: "20px", fontSize: "14px", fontWeight: "bold", marginBottom: "12px" }}>
-            🎉 Launch Offer - Limited Time!
-          </div>
-          <h1 style={{ fontSize: "32px", color: "#0f172a", margin: "0 0 8px" }}>Register as Employer & Post Jobs</h1>
-          <p style={{ color: "#64748b", fontSize: "16px" }}>Create your account, choose a plan, and start hiring.</p>
-        </div>
-
-        {/* STEP 1: Select Plan */}
-        <div style={{ marginBottom: "30px" }}>
-          <h2 style={{ color: "#0f172a", marginBottom: "16px" }}>Step 1: Select Your Plan</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
-            {plans.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => !loading && setSelectedPlan(item.id)}
-                style={{
-                  backgroundColor: "#fff",
-                  padding: "24px",
-                  borderRadius: "12px",
-                  border: selectedPlan === item.id ? "3px solid #2563eb" : "1px solid #e2e8f0",
-                  cursor: loading ? "not-allowed" : "pointer",
-                  transition: "all 0.2s",
-                  boxShadow: selectedPlan === item.id ? "0 8px 20px rgba(37, 99, 235, 0.15)" : "none"
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                  <h3 style={{ margin: 0, color: "#0f172a", fontSize: "18px" }}>{item.name}</h3>
-                  {selectedPlan === item.id && <span style={{ color: "#2563eb", fontSize: "22px" }}>✓</span>}
-                </div>
-                <p style={{ fontSize: "32px", fontWeight: "800", color: "#0f172a", margin: "0 0 8px" }}>₹{item.price}</p>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, color: "#475569", lineHeight: "2", fontSize: "14px" }}>
-                  <li>✅ Post up to <strong>{item.jobs} Jobs</strong></li>
-                  <li>✅ Valid for <strong>{item.validity}</strong></li>
-                  <li>✅ Direct WhatsApp Applications</li>
-                  <li>✅ No per-hire commission</li>
-                </ul>
-              </div>
-            ))}
+          <div className="mx-auto mt-8 max-w-3xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full bg-amber-400/15 px-4 py-2 text-sm font-semibold text-amber-300 ring-1 ring-amber-300/20">
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
+              Launch Offer - Limited Time!
+            </span>
+            <h1 className="mt-5 text-3xl font-extrabold text-white sm:text-5xl">
+              Register as Employer &amp; Post Jobs
+            </h1>
+            <p className="mt-4 text-sm leading-7 text-indigo-100/80 sm:text-base">
+              Create your account, choose a plan, and start hiring.
+            </p>
           </div>
         </div>
+      </section>
 
-        {plan && (
-          <>
-            {/* STEP 2: Payment Summary */}
-            <div style={{ backgroundColor: "#eff6ff", padding: "20px", borderRadius: "12px", marginBottom: "24px", textAlign: "center", border: "1px solid #bfdbfe" }}>
-              <p style={{ margin: "0 0 8px", fontWeight: "bold", color: "#1e3a8a", fontSize: "16px" }}>
-                Step 2: Pay ₹{plan.price} securely via Razorpay
-              </p>
-              <p style={{ margin: 0, fontSize: "14px", color: "#475569" }}>
-                UPI, card, net banking and wallets are supported. Your account is
-                activated automatically once the payment is verified.
-              </p>
-              <p style={{ margin: "8px 0 0", fontSize: "12px", color: "#64748b" }}>
-                🔒 Secured by Razorpay. We never see or store your card details.
-              </p>
+      <div className="container-page -mt-14 pb-16">
+        <div className="mx-auto max-w-4xl">
+          {/* STEP 1: Select Plan */}
+          <div>
+            <div className="mb-5 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
+                1
+              </span>
+              <h2 className="text-xl font-bold text-ink sm:text-2xl">Step 1: Select Your Plan</h2>
             </div>
 
-            {/* STEP 3: Registration Form */}
-            <div ref={detailsRef} style={{ backgroundColor: "#fff", padding: "30px", borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
-              <h2 style={{ marginTop: 0, color: "#0f172a", marginBottom: "20px" }}>Step 3: Fill Your Details</h2>
-
-              <form onSubmit={handleSubmit}>
-                {/* Company Details */}
-                <h3 style={{ color: "#475569", fontSize: "15px", marginBottom: "12px" }}>Company Details</h3>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "14px", marginBottom: "20px" }}>
-                  <input type="text" placeholder="Company Name *" value={companyName} onChange={e => setCompanyName(e.target.value)} required disabled={loading} style={{ padding: "12px 14px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "15px" }} />
-                  <input type="text" placeholder="Contact Person *" value={contactPerson} onChange={e => setContactPerson(e.target.value)} required disabled={loading} style={{ padding: "12px 14px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "15px" }} />
-                  <input type="tel" placeholder="Phone Number *" value={phone} onChange={e => setPhone(e.target.value)} required disabled={loading} style={{ padding: "12px 14px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "15px" }} />
-                </div>
-
-                {/* Login Credentials */}
-                <h3 style={{ color: "#475569", fontSize: "15px", marginBottom: "12px" }}>Login Credentials</h3>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "14px", marginBottom: "20px" }}>
-                  <input type="email" placeholder="Email (for login) *" value={email} onChange={e => setEmail(e.target.value)} required disabled={loading} style={{ padding: "12px 14px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "15px" }} />
-                  <input type="password" placeholder="Password (min 6 chars) *" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} disabled={loading} style={{ padding: "12px 14px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "15px" }} />
-                </div>
-
-                {/* Payment Summary */}
-                <h3 style={{ color: "#475569", fontSize: "15px", marginBottom: "12px" }}>Payment</h3>
-                <div style={{ backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", padding: "16px", borderRadius: "10px", marginBottom: "18px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-                    <div>
-                      <p style={{ margin: 0, fontWeight: "bold", color: "#0f172a" }}>
-                        {plan.name} — {plan.jobs} job posts
-                      </p>
-                      <p style={{ margin: "4px 0 0", fontSize: "13px", color: "#64748b" }}>
-                        Valid for {plan.validity} from activation.
-                      </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              {plans.map((item) => {
+                const selected = selectedPlan === item.id;
+                return (
+                  <div
+                    key={item.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={selected}
+                    onClick={() => !loading && setSelectedPlan(item.id)}
+                    onKeyDown={(event) => {
+                      if ((event.key === "Enter" || event.key === " ") && !loading) {
+                        event.preventDefault();
+                        setSelectedPlan(item.id);
+                      }
+                    }}
+                    className={`card relative cursor-pointer p-6 transition-all duration-200 ${
+                      selected
+                        ? "border-2 border-brand shadow-lift ring-4 ring-indigo-500/10"
+                        : "hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lift"
+                    } ${loading ? "cursor-not-allowed opacity-70" : ""}`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-wider text-muted">{item.name}</p>
+                        <p className="mt-3 font-display text-4xl font-extrabold text-ink">
+                          ₹{item.price}
+                        </p>
+                      </div>
+                      <span className={`flex h-8 w-8 items-center justify-center rounded-full border ${selected ? "border-brand bg-brand text-white" : "border-line bg-white text-transparent"}`}>
+                        <Check className="h-4 w-4" aria-hidden="true" />
+                      </span>
                     </div>
-                    <strong style={{ fontSize: "24px", color: "#0f172a" }}>₹{plan.price}</strong>
+
+                    <ul className="mt-6 space-y-3 text-sm text-slate-600">
+                      <li className="flex items-start gap-2.5">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
+                        <span>Post up to <strong className="text-ink">{item.jobs} Jobs</strong></span>
+                      </li>
+                      <li className="flex items-start gap-2.5">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
+                        <span>Valid for <strong className="text-ink">{item.validity}</strong></span>
+                      </li>
+                      <li className="flex items-start gap-2.5">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
+                        <span>Direct WhatsApp Applications</span>
+                      </li>
+                      <li className="flex items-start gap-2.5">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
+                        <span>No per-hire commission</span>
+                      </li>
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {plan && (
+            <>
+              {/* STEP 2: Payment Summary */}
+              <div className="mt-8 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-5 sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="flex items-center gap-2 text-base font-bold text-indigo-950">
+                      <CreditCard className="h-5 w-5 text-brand" aria-hidden="true" />
+                      Step 2: Pay ₹{plan.price} securely via Razorpay
+                    </p>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                      UPI, card, net banking and wallets are supported. Your account is
+                      activated automatically once the payment is verified.
+                    </p>
+                    <p className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
+                      <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+                      Secured by Razorpay. We never see or store your card details.
+                    </p>
                   </div>
                 </div>
+              </div>
 
-                {/* Message */}
-                {message && (
-                  <p style={{
-                    padding: "12px 16px",
-                    borderRadius: "8px",
-                    marginBottom: "16px",
-                    backgroundColor: messageType === "success" ? "#dcfce7" : messageType === "info" ? "#dbeafe" : "#fee2e2",
-                    color: messageType === "success" ? "#166534" : messageType === "info" ? "#1e40af" : "#991b1b",
-                    fontWeight: "600",
-                    fontSize: "14px"
-                  }}>
-                    {message}
+              {/* STEP 3: Registration Form */}
+              <div ref={detailsRef} className="card mt-6 scroll-mt-24 p-6 sm:p-8">
+                <div className="mb-6 flex items-center gap-3">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
+                    3
+                  </span>
+                  <h2 className="text-xl font-bold text-ink sm:text-2xl">Step 3: Fill Your Details</h2>
+                </div>
+
+                <form onSubmit={handleSubmit}>
+                  {/* Company Details */}
+                  <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted">Company Details</h3>
+                  <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <input type="text" placeholder="Company Name *" value={companyName} onChange={e => setCompanyName(e.target.value)} required disabled={loading} className="input" />
+                    <input type="text" placeholder="Contact Person *" value={contactPerson} onChange={e => setContactPerson(e.target.value)} required disabled={loading} className="input" />
+                    <input type="tel" placeholder="Phone Number *" value={phone} onChange={e => setPhone(e.target.value)} required disabled={loading} className="input" />
+                  </div>
+
+                  {/* Login Credentials */}
+                  <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted">Login Credentials</h3>
+                  <div className="mb-6 grid gap-3 sm:grid-cols-2">
+                    <input type="email" placeholder="Email (for login) *" value={email} onChange={e => setEmail(e.target.value)} required disabled={loading} className="input" />
+                    <input type="password" placeholder="Password (min 6 chars) *" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} disabled={loading} className="input" />
+                  </div>
+
+                  {/* Payment Summary */}
+                  <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted">Payment</h3>
+                  <div className="mb-5 rounded-xl border border-line bg-slate-50 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <p className="font-semibold text-ink">
+                          {plan.name} — {plan.jobs} job posts
+                        </p>
+                        <p className="mt-1 text-sm text-muted">
+                          Valid for {plan.validity} from activation.
+                        </p>
+                      </div>
+                      <strong className="font-display text-2xl font-extrabold text-ink">₹{plan.price}</strong>
+                    </div>
+                  </div>
+
+                  {/* Message */}
+                  {message && (
+                    <div className="mb-4">
+                      <FormMessage type={messageType === "success" ? "success" : messageType === "info" ? "info" : "error"}>
+                        {message}
+                      </FormMessage>
+                    </div>
+                  )}
+
+                  {/* Submit */}
+                  <button type="submit" disabled={loading} className="btn btn-accent w-full">
+                    {loading ? "Opening Razorpay..." : `Pay ₹${plan.price} & Activate`}
+                  </button>
+
+                  <p className="mt-4 text-center text-sm text-muted">
+                    Already registered? <Link to="/employer-login" className="font-semibold text-brand hover:underline">Login here</Link>
                   </p>
-                )}
-
-                {/* Submit */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  style={{
-                    width: "100%",
-                    padding: "16px",
-                    background: loading ? "#94a3b8" : "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "10px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    cursor: loading ? "not-allowed" : "pointer",
-                    boxShadow: "0 4px 15px rgba(37, 99, 235, 0.3)"
-                  }}
-                >
-                  {loading ? "Opening Razorpay..." : `Pay ₹${plan.price} & Activate`}
-                </button>
-
-                <p style={{ textAlign: "center", marginTop: "14px", fontSize: "13px", color: "#64748b" }}>
-                  Already registered? <Link to="/employer-login" style={{ color: "#2563eb" }}>Login here</Link>
-                </p>
-              </form>
-            </div>
-          </>
-        )}
+                </form>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,8 +1,29 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  BriefcaseBusiness,
+  Building2,
+  CheckCircle2,
+  Clock3,
+  Grid2X2,
+  LogOut,
+  MapPin,
+  Users,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabaseClient";
 import AdminMenu from "../../components/AdminMenu";
+import { CountUp, FormMessage, LoadingState } from "../../components/ui";
+
+const CARD_STYLES = {
+  ink: { chip: "bg-slate-100 text-slate-600", value: "text-ink" },
+  emerald: { chip: "bg-emerald-50 text-emerald-600", value: "text-emerald-600" },
+  amber: { chip: "bg-amber-50 text-amber-600", value: "text-amber-600" },
+  indigo: { chip: "bg-indigo-50 text-indigo-600", value: "text-indigo-600" },
+  violet: { chip: "bg-violet-50 text-violet-600", value: "text-violet-600" },
+  sky: { chip: "bg-sky-50 text-sky-600", value: "text-sky-600" },
+  lime: { chip: "bg-lime-50 text-lime-600", value: "text-lime-600" },
+};
 
 export default function AdminDashboard() {
   const { signOut } = useAuth();
@@ -91,124 +112,94 @@ export default function AdminDashboard() {
     {
       title: "Total Jobs",
       value: stats.totalJobs,
-      color: "#0f172a",
+      tone: "ink",
+      icon: BriefcaseBusiness,
     },
     {
       title: "Active Jobs",
       value: stats.activeJobs,
-      color: "#16a34a",
+      tone: "emerald",
+      icon: CheckCircle2,
     },
     {
       title: "Pending Jobs",
       value: stats.pendingJobs,
-      color: "#d97706",
+      tone: "amber",
+      icon: Clock3,
     },
     {
       title: "Total Employers",
       value: stats.totalEmployers,
-      color: "#2563eb",
+      tone: "indigo",
+      icon: Building2,
     },
     {
       title: "Pending Employers",
       value: stats.pendingEmployers,
-      color: "#9333ea",
+      tone: "violet",
+      icon: Users,
     },
     {
       title: "Categories",
       value: stats.totalCategories,
-      color: "#0891b2",
+      tone: "sky",
+      icon: Grid2X2,
     },
     {
       title: "Locations",
       value: stats.totalLocations,
-      color: "#65a30d",
+      tone: "lime",
+      icon: MapPin,
     },
   ];
 
   return (
-    <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "20px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h1 style={{ margin: 0 }}>Admin Dashboard</h1>
+    <div className="page-shell">
+      <div className="container-page max-w-6xl py-8 sm:py-12">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">
+            Admin Dashboard
+          </h1>
 
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: "8px 14px",
-            backgroundColor: "#ef4444",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          Logout
-        </button>
-      </div>
-
-      <AdminMenu />
-
-      {loading && <p>Loading dashboard stats...</p>}
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {!loading && !error && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "16px",
-          }}
-        >
-          {cards.map((card) => (
-            <div
-              key={card.title}
-              style={{
-                border: "1px solid #e2e8f0",
-                borderRadius: "10px",
-                padding: "20px",
-                backgroundColor: "#fff",
-              }}
-            >
-              <p
-                style={{
-                  margin: "0 0 8px 0",
-                  color: "#555",
-                  fontSize: "14px",
-                }}
-              >
-                {card.title}
-              </p>
-
-              <h2
-                style={{
-                  margin: 0,
-                  color: card.color,
-                }}
-              >
-                {card.value}
-              </h2>
-            </div>
-          ))}
+          <button onClick={handleLogout} className="btn btn-secondary min-h-10 px-4 py-2 text-xs text-rose-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700">
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+            Logout
+          </button>
         </div>
-      )}
 
-      <div
-        style={{
-          marginTop: "24px",
-          border: "1px solid #e2e8f0",
-          borderRadius: "10px",
-          padding: "20px",
-          backgroundColor: "#fff",
-        }}
-      >
-        
+        <AdminMenu />
+
+        {error && (
+          <div className="mb-5">
+            <FormMessage type="error">{error}</FormMessage>
+          </div>
+        )}
+
+        {loading ? (
+          <LoadingState label="Loading dashboard stats..." />
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {cards.map((card) => {
+              const style = CARD_STYLES[card.tone] || CARD_STYLES.ink;
+              const Icon = card.icon;
+
+              return (
+                <div key={card.title} className="card card-hover p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-sm font-medium text-muted">{card.title}</p>
+                    <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${style.chip}`}>
+                      <Icon className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                  </div>
+
+                  <p className={`mt-4 font-display text-3xl font-extrabold ${style.value}`}>
+                    <CountUp value={card.value} />
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

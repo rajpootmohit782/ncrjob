@@ -1,9 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  BriefcaseBusiness,
+  Building2,
+  CalendarDays,
+  CreditCard,
+  LogOut,
+  Pencil,
+  Plus,
+  ShieldCheck,
+  TriangleAlert,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import useEmployer from "../../hooks/useEmployer";
 import { supabase } from "../../lib/supabaseClient";
 import { formatDate } from "../../lib/format";
+import { EmptyState, LoadingState } from "../../components/ui";
+
+function statusClasses(status) {
+  if (status === "active") return "bg-emerald-50 text-emerald-700 ring-emerald-200";
+  if (status === "pending") return "bg-amber-50 text-amber-700 ring-amber-200";
+  if (status === "blocked") return "bg-rose-50 text-rose-700 ring-rose-200";
+  return "bg-slate-100 text-slate-600 ring-slate-200";
+}
 
 export default function EmployerDashboard() {
   const { profile, signOut } = useAuth();
@@ -51,33 +71,43 @@ export default function EmployerDashboard() {
     navigate("/");
   }
 
-  function getStatusColor(status) {
-    if (status === "active") return "#dcfce7";
-    if (status === "pending") return "#fef3c7";
-    if (status === "blocked") return "#fee2e2";
-    return "#e5e7eb";
-  }
-
-  function getStatusTextColor(status) {
-    if (status === "active") return "#166534";
-    if (status === "pending") return "#92400e";
-    if (status === "blocked") return "#991b1b";
-    return "#374151";
-  }
-
   if (loading) {
-    return <div style={{ padding: "20px" }}>Loading employer dashboard...</div>;
+    return (
+      <div className="page-shell">
+        <div className="container-page py-12">
+          <LoadingState label="Loading employer dashboard..." />
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div style={{ padding: "20px", color: "red" }}>{error}</div>;
+    return (
+      <div className="page-shell">
+        <div className="container-page py-12">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium text-rose-700">
+            {error}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!employer) {
     return (
-      <div style={{ padding: "20px" }}>
-        <p>No employer profile found for this account.</p>
-        <Link to="/become-employer">Create an employer account</Link>
+      <div className="page-shell">
+        <div className="container-page py-12">
+          <EmptyState
+            icon={Building2}
+            title="No employer profile found for this account."
+            action={
+              <Link to="/become-employer" className="btn btn-primary">
+                Create an employer account
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            }
+          />
+        </div>
       </div>
     );
   }
@@ -90,290 +120,226 @@ export default function EmployerDashboard() {
   const outOfCredits = employer.job_limit != null && employer.job_limit <= 0;
 
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "20px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-          gap: "12px",
-          flexWrap: "wrap",
-        }}
-      >
-        <h1 style={{ margin: 0 }}>Employer Dashboard</h1>
+    <div className="page-shell">
+      <div className="container-page py-8 sm:py-12">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">Employer Dashboard</h1>
+          </div>
 
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-          <Link
-            to="/employer/post-job"
-            style={{
-              padding: "8px 14px",
-              backgroundColor: "#2563eb",
-              color: "#fff",
-              borderRadius: "6px",
-              textDecoration: "none",
-              fontSize: "14px",
-            }}
-          >
-            Post a Job
-          </Link>
-          <Link
-            to="/employer/profile"
-            style={{
-              padding: "8px 14px",
-              backgroundColor: "#f1f5f9",
-              color: "#0f172a",
-              border: "1px solid #cbd5e1",
-              borderRadius: "6px",
-              textDecoration: "none",
-              fontSize: "14px",
-            }}
-          >
-            Edit Profile
-          </Link>
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: "8px 14px",
-              backgroundColor: "#ef4444",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontSize: "14px",
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-
-      {employer.status === "blocked" && (
-        <div style={{ backgroundColor: "#fee2e2", border: "1px solid #fecaca", color: "#991b1b", padding: "14px 16px", borderRadius: "10px", marginBottom: "16px" }}>
-          This account is blocked. Please contact support if you think this is a
-          mistake.
-        </div>
-      )}
-
-      {employer.status !== "blocked" && needsPlan && (
-        <div style={{ backgroundColor: "#fffbeb", border: "1px solid #fde68a", color: "#92400e", padding: "14px 16px", borderRadius: "10px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-          <span>
-            <strong>
-              {employer.status === "active"
-                ? "Your plan has expired."
-                : "Your account is not active yet."}
-            </strong>{" "}
-            Choose a plan to publish jobs and receive applications.
-          </span>
-          <Link to="/become-employer" style={{ color: "#92400e", fontWeight: "bold" }}>
-            Choose a plan →
-          </Link>
-        </div>
-      )}
-
-      {employer.status === "active" && !needsPlan && outOfCredits && (
-        <div style={{ backgroundColor: "#fffbeb", border: "1px solid #fde68a", color: "#92400e", padding: "14px 16px", borderRadius: "10px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-          <span>
-            <strong>You have used all job credits.</strong> Renew your plan to
-            keep hiring.
-          </span>
-          <Link to="/become-employer" style={{ color: "#92400e", fontWeight: "bold" }}>
-            Renew plan →
-          </Link>
-        </div>
-      )}
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: "14px",
-          marginBottom: "20px",
-        }}
-      >
-        <div style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "16px", backgroundColor: "#fff" }}>
-          <p style={{ margin: "0 0 6px", color: "#64748b", fontSize: "13px" }}>Job credits</p>
-          <p style={{ margin: 0, fontSize: "26px", fontWeight: "800", color: outOfCredits ? "#dc2626" : "#0f172a" }}>
-            {employer.job_limit ?? 0}
-          </p>
-          <p style={{ margin: "4px 0 0", color: "#94a3b8", fontSize: "12px" }}>Remaining job posts</p>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/employer/post-job" className="btn btn-accent min-h-10 px-4 py-2 text-xs">
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Post a Job
+            </Link>
+            <Link to="/employer/profile" className="btn btn-secondary min-h-10 px-4 py-2 text-xs">
+              <Pencil className="h-4 w-4" aria-hidden="true" />
+              Edit Profile
+            </Link>
+            <button onClick={handleLogout} className="btn btn-ghost min-h-10 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700">
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              Logout
+            </button>
+          </div>
         </div>
 
-        <div style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "16px", backgroundColor: "#fff" }}>
-          <p style={{ margin: "0 0 6px", color: "#64748b", fontSize: "13px" }}>Plan valid till</p>
-          <p style={{ margin: 0, fontSize: "18px", fontWeight: "700", color: isExpired ? "#dc2626" : "#0f172a" }}>
-            {employer.subscription_expires_at
-              ? formatDate(employer.subscription_expires_at)
-              : "—"}
-          </p>
-          <p style={{ margin: "4px 0 0", color: "#94a3b8", fontSize: "12px" }}>
-            {isExpired ? "Expired — renew to continue" : "One-time plan"}
-          </p>
-        </div>
-
-        <div style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "16px", backgroundColor: "#fff" }}>
-          <p style={{ margin: "0 0 6px", color: "#64748b", fontSize: "13px" }}>Jobs posted</p>
-          <p style={{ margin: 0, fontSize: "26px", fontWeight: "800", color: "#0f172a" }}>{totalJobs}</p>
-          <p style={{ margin: "4px 0 0", color: "#94a3b8", fontSize: "12px" }}>Across all statuses</p>
-        </div>
-      </div>
-
-      <div
-        style={{
-          border: "1px solid #e2e8f0",
-          borderRadius: "10px",
-          padding: "20px",
-          backgroundColor: "#fff",
-          marginBottom: "20px",
-        }}
-      >
-        <h2 style={{ marginTop: 0 }}>
-          {employer.company_name || "Your Company"}
-        </h2>
-
-        <p style={{ margin: "4px 0" }}>
-          <strong>Logged in as:</strong> {profile?.name || "Employer"}
-        </p>
-
-        <p style={{ margin: "4px 0" }}>
-          <strong>Company Status:</strong>{" "}
-          <span
-            style={{
-              backgroundColor: getStatusColor(employer.status),
-              color: getStatusTextColor(employer.status),
-              padding: "4px 10px",
-              borderRadius: "999px",
-              fontSize: "13px",
-            }}
-          >
-            {employer.status}
-          </span>
-        </p>
-
-        <p style={{ margin: "4px 0" }}>
-          <strong>Verified:</strong>{" "}
-          {employer.is_verified ? "Yes" : "No"}
-        </p>
-
-        <p style={{ margin: "4px 0" }}>
-          <strong>WhatsApp Number:</strong>{" "}
-          {employer.whatsapp_number || "Not added"}
-        </p>
-
-        {employer.status !== "active" && (
-          <p style={{ color: "#b45309", marginTop: "10px" }}>
-            Your account is not active yet. Choose a plan to start posting jobs.
-          </p>
-        )}
-      </div>
-
-      <div
-        style={{
-          border: "1px solid #e2e8f0",
-          borderRadius: "10px",
-          padding: "20px",
-          backgroundColor: "#fff",
-          marginBottom: "20px",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-          <h2 style={{ margin: 0 }}>Recent Jobs</h2>
-          <Link to="/employer/post-job" style={{ color: "#2563eb", textDecoration: "none", fontSize: "14px", fontWeight: "600" }}>
-            Post a job →
-          </Link>
-        </div>
-
-        {jobsLoading ? (
-          <p style={{ color: "#64748b" }}>Loading jobs...</p>
-        ) : jobs.length === 0 ? (
-          <p style={{ color: "#64748b", marginBottom: 0 }}>
-            No jobs posted yet. Create your first listing to start receiving
-            applications.
-          </p>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "14px" }}>
-            {jobs.map((job) => (
-              <div
-                key={job.id}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: "12px",
-                  flexWrap: "wrap",
-                  padding: "12px 14px",
-                  border: "1px solid #f1f5f9",
-                  borderRadius: "8px",
-                  backgroundColor: "#f8fafc",
-                }}
-              >
-                <div>
-                  <p style={{ margin: 0, fontWeight: "600", color: "#0f172a" }}>
-                    {job.title}
-                  </p>
-                  <p style={{ margin: "2px 0 0", color: "#64748b", fontSize: "13px" }}>
-                    {job.locations?.name || "Location not set"} •{" "}
-                    {new Date(job.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <span
-                  style={{
-                    backgroundColor: getStatusColor(job.status),
-                    color: getStatusTextColor(job.status),
-                    padding: "4px 10px",
-                    borderRadius: "999px",
-                    fontSize: "12px",
-                    textTransform: "capitalize",
-                  }}
-                >
-                  {job.status}
-                </span>
-              </div>
-            ))}
+        {employer.status === "blocked" && (
+          <div className="mb-4 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800">
+            <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            This account is blocked. Please contact support if you think this is a
+            mistake.
           </div>
         )}
-      </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "16px",
-        }}
-      >
-        <Link
-          to="/employer/profile"
-          style={{
-            textDecoration: "none",
-            border: "1px solid #e2e8f0",
-            borderRadius: "10px",
-            padding: "20px",
-            backgroundColor: "#fff",
-            color: "#111",
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>Company Profile</h3>
-          <p style={{ marginBottom: 0, color: "#555" }}>
-            Update company details and WhatsApp number.
-          </p>
-        </Link>
+        {employer.status !== "blocked" && needsPlan && (
+          <div className="mb-4 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+            <span className="flex items-start gap-2">
+              <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden="true" />
+              <span>
+                <strong>
+                  {employer.status === "active"
+                    ? "Your plan has expired."
+                    : "Your account is not active yet."}
+                </strong>{" "}
+                Choose a plan to publish jobs and receive applications.
+              </span>
+            </span>
+            <Link to="/become-employer" className="inline-flex shrink-0 items-center gap-1 font-bold text-amber-900 hover:underline">
+              Choose a plan
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          </div>
+        )}
 
-        <Link
-          to="/employer/post-job"
-          style={{
-            textDecoration: "none",
-            border: "1px solid #e2e8f0",
-            borderRadius: "10px",
-            padding: "20px",
-            backgroundColor: "#fff",
-            color: "#111",
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>Post Job</h3>
-          <p style={{ marginBottom: 0, color: "#555" }}>
-            Create a new job listing for candidates.
-          </p>
-        </Link>
+        {employer.status === "active" && !needsPlan && outOfCredits && (
+          <div className="mb-4 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+            <span className="flex items-start gap-2">
+              <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden="true" />
+              <span>
+                <strong>You have used all job credits.</strong> Renew your plan to
+                keep hiring.
+              </span>
+            </span>
+            <Link to="/become-employer" className="inline-flex shrink-0 items-center gap-1 font-bold text-amber-900 hover:underline">
+              Renew plan
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </Link>
+          </div>
+        )}
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="card p-5">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-muted">Job credits</p>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                <CreditCard className="h-4 w-4" aria-hidden="true" />
+              </span>
+            </div>
+            <p className={`mt-4 font-display text-3xl font-extrabold ${outOfCredits ? "text-rose-600" : "text-ink"}`}>
+              {employer.job_limit ?? 0}
+            </p>
+            <p className="mt-1 text-xs text-slate-400">Remaining job posts</p>
+          </div>
+
+          <div className="card p-5">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-muted">Plan valid till</p>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                <CalendarDays className="h-4 w-4" aria-hidden="true" />
+              </span>
+            </div>
+            <p className={`mt-4 text-lg font-bold ${isExpired ? "text-rose-600" : "text-ink"}`}>
+              {employer.subscription_expires_at
+                ? formatDate(employer.subscription_expires_at)
+                : "—"}
+            </p>
+            <p className="mt-1 text-xs text-slate-400">
+              {isExpired ? "Expired — renew to continue" : "One-time plan"}
+            </p>
+          </div>
+
+          <div className="card p-5">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-muted">Jobs posted</p>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600">
+                <BriefcaseBusiness className="h-4 w-4" aria-hidden="true" />
+              </span>
+            </div>
+            <p className="mt-4 font-display text-3xl font-extrabold text-ink">{totalJobs}</p>
+            <p className="mt-1 text-xs text-slate-400">Across all statuses</p>
+          </div>
+        </div>
+
+        <div className="card mt-6 p-5 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-start gap-3">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-brand">
+                <Building2 className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="text-xl font-bold text-ink">{employer.company_name || "Your Company"}</h2>
+                <p className="mt-1 text-sm text-muted">
+                  <strong className="text-ink">Logged in as:</strong> {profile?.name || "Employer"}
+                </p>
+              </div>
+            </div>
+            <span className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ${statusClasses(employer.status)}`}>
+              {employer.status}
+            </span>
+          </div>
+
+          <div className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
+            <div className="rounded-xl bg-slate-50 p-3.5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Company Status</p>
+              <p className="mt-1 font-semibold capitalize text-ink">{employer.status}</p>
+            </div>
+            <div className="rounded-xl bg-slate-50 p-3.5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Verified</p>
+              <p className="mt-1 inline-flex items-center gap-1.5 font-semibold text-ink">
+                {employer.is_verified ? (
+                  <>
+                    <ShieldCheck className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+                    Yes
+                  </>
+                ) : (
+                  "No"
+                )}
+              </p>
+            </div>
+            <div className="rounded-xl bg-slate-50 p-3.5">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">WhatsApp Number</p>
+              <p className="mt-1 font-semibold text-ink">{employer.whatsapp_number || "Not added"}</p>
+            </div>
+          </div>
+
+          {employer.status !== "active" && (
+            <p className="mt-4 flex items-center gap-2 text-sm font-medium text-amber-700">
+              <TriangleAlert className="h-4 w-4" aria-hidden="true" />
+              Your account is not active yet. Choose a plan to start posting jobs.
+            </p>
+          )}
+        </div>
+
+        <div className="card mt-6 p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-bold text-ink">Recent Jobs</h2>
+            <Link to="/employer/post-job" className="link-arrow">
+              Post a job
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+
+          {jobsLoading ? (
+            <p className="mt-5 text-sm text-muted">Loading jobs...</p>
+          ) : jobs.length === 0 ? (
+            <p className="mt-5 text-sm leading-6 text-muted">
+              No jobs posted yet. Create your first listing to start receiving
+              applications.
+            </p>
+          ) : (
+            <div className="mt-4 space-y-2.5">
+              {jobs.map((job) => (
+                <div
+                  key={job.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-slate-50/70 px-4 py-3"
+                >
+                  <div>
+                    <p className="font-semibold text-ink">{job.title}</p>
+                    <p className="mt-0.5 text-xs text-muted">
+                      {job.locations?.name || "Location not set"} •{" "}
+                      {new Date(job.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ${statusClasses(job.status)}`}>
+                    {job.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <Link to="/employer/profile" className="card card-hover group p-5 sm:p-6">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+              <Building2 className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <h3 className="mt-4 text-lg font-bold text-ink">Company Profile</h3>
+            <p className="mt-1 text-sm leading-6 text-muted">
+              Update company details and WhatsApp number.
+            </p>
+          </Link>
+
+          <Link to="/employer/post-job" className="card card-hover group p-5 sm:p-6">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+              <Plus className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <h3 className="mt-4 text-lg font-bold text-ink">Post Job</h3>
+            <p className="mt-1 text-sm leading-6 text-muted">
+              Create a new job listing for candidates.
+            </p>
+          </Link>
+        </div>
       </div>
     </div>
   );

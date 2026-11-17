@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
+import {
+  Building2,
+  Check,
+  ShieldCheck,
+  TriangleAlert,
+  X,
+} from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import AdminMenu from "../../components/AdminMenu";
+import { FormMessage, LoadingState } from "../../components/ui";
 
 export default function AdminEmployers() {
   const [paymentRequests, setPaymentRequests] = useState([]);
@@ -25,7 +33,8 @@ export default function AdminEmployers() {
     const [subResult, empResult] = await Promise.all([
       supabase
         .from("employer_subscriptions")
-        .select(`
+        .select(
+          `
           id,
           plan_name,
           amount,
@@ -39,12 +48,14 @@ export default function AdminEmployers() {
           created_at,
           profiles (name, email),
           employers (company_name, user_id)
-        `)
+        `,
+        )
         .eq("status", "pending")
         .order("created_at", { ascending: false }),
       supabase
         .from("employers")
-        .select(`
+        .select(
+          `
           id,
           user_id,
           company_name,
@@ -53,7 +64,8 @@ export default function AdminEmployers() {
           job_limit,
           created_at,
           profiles (name, email)
-        `)
+        `,
+        )
         .eq("status", "pending")
         .order("created_at", { ascending: false }),
     ]);
@@ -202,161 +214,202 @@ export default function AdminEmployers() {
   }
 
   return (
-    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "20px" }}>
-      <h1>Employers</h1>
-      <AdminMenu />
+    <div className="page-shell">
+      <div className="container-page max-w-6xl py-8 sm:py-12">
+        <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">Employers</h1>
 
-      {message && (
-        <p
-          style={{
-            padding: "12px 16px",
-            borderRadius: "8px",
-            marginBottom: "16px",
-            backgroundColor: messageType === "success" ? "#dcfce7" : "#fee2e2",
-            color: messageType === "success" ? "#166534" : "#991b1b",
-            fontWeight: "600",
-            fontSize: "14px",
-          }}
-        >
-          {message}
-        </p>
-      )}
+        <div className="mt-6">
+          <AdminMenu />
+        </div>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <div style={{ backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", color: "#1e3a8a", padding: "14px 16px", borderRadius: "10px", marginBottom: "20px", fontSize: "14px" }}>
-            <strong>Automatic activation is on.</strong> When Razorpay confirms a
-            payment signature, the employer account is activated without a manual
-            step. Review this list only for payments that need attention.
+        {message && (
+          <div className="mb-5">
+            <FormMessage type={messageType === "success" ? "success" : "error"}>
+              {message}
+            </FormMessage>
           </div>
+        )}
 
-          <h2 style={{ color: "#0f172a", marginBottom: "16px" }}>
-            Payment Requests
-          </h2>
-
-          {paymentRequests.length === 0 ? (
-            <p style={{ color: "#64748b", marginBottom: "30px" }}>
-              No payment requests pending.
-            </p>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "30px" }}>
-              {paymentRequests.map((req) => {
-                const busy = actionLoadingId === req.id;
-                const reference =
-                  req.razorpay_payment_id ||
-                  req.upi_reference ||
-                  "Not provided";
-
-                return (
-                  <div key={req.id} style={{ border: "1px solid #e2e8f0", padding: "20px", borderRadius: "12px", backgroundColor: "#fff" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-                      <div>
-                        <h3 style={{ margin: "0 0 12px", color: "#0f172a" }}>
-                          {req.employers?.company_name || "New Company"}
-                        </h3>
-                        <p style={{ margin: "4px 0", color: "#475569", fontSize: "14px" }}><strong>Contact:</strong> {req.profiles?.name || "—"}</p>
-                        <p style={{ margin: "4px 0", color: "#475569", fontSize: "14px" }}><strong>Email:</strong> {req.profiles?.email || "—"}</p>
-                        <p style={{ margin: "4px 0", color: "#475569", fontSize: "14px" }}><strong>Plan:</strong> {req.plan_name} (₹{req.amount})</p>
-                        <p style={{ margin: "4px 0", color: "#475569", fontSize: "14px" }}><strong>Job Limit:</strong> {req.job_limit} Jobs</p>
-                        <p style={{ margin: "4px 0", color: "#475569", fontSize: "14px" }}><strong>Date:</strong> {new Date(req.created_at).toLocaleString()}</p>
-                      </div>
-
-                      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                        <div style={{ backgroundColor: "#f0fdf4", padding: "14px", borderRadius: "8px", marginBottom: "14px", border: "1px solid #bbf7d0" }}>
-                          <p style={{ margin: "0 0 4px", fontSize: "12px", color: "#166534", fontWeight: "bold" }}>
-                            {req.razorpay_payment_id ? "Razorpay Payment ID:" : "UTR / Transaction Number:"}
-                          </p>
-                          <p style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: "#0f172a", letterSpacing: "0.5px", wordBreak: "break-all" }}>
-                            {reference}
-                          </p>
-                          {req.razorpay_order_id && (
-                            <p style={{ margin: "6px 0 0", fontSize: "12px", color: "#475569", wordBreak: "break-all" }}>
-                              Order: {req.razorpay_order_id}
-                            </p>
-                          )}
-                        </div>
-                        <p style={{ fontSize: "12px", color: "#64748b", marginBottom: "12px" }}>
-                          Verify this payment in the Razorpay dashboard before
-                          approving. Approving activates the employer with the
-                          plan credit.
-                        </p>
-
-                        <div style={{ display: "flex", gap: "10px" }}>
-                          <button
-                            disabled={busy}
-                            onClick={() => handleApprovePayment(req)}
-                            style={{ flex: 1, padding: "12px", backgroundColor: "#16a34a", color: "#fff", border: "none", borderRadius: "6px", cursor: busy ? "not-allowed" : "pointer", fontWeight: "bold" }}
-                          >
-                            {busy ? "Working..." : "✓ Approve"}
-                          </button>
-                          <button
-                            disabled={busy}
-                            onClick={() => handleRejectPayment(req)}
-                            style={{ flex: 1, padding: "12px", backgroundColor: "#dc2626", color: "#fff", border: "none", borderRadius: "6px", cursor: busy ? "not-allowed" : "pointer", fontWeight: "bold" }}
-                          >
-                            ✗ Reject
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+        {loading ? (
+          <LoadingState label="Loading..." />
+        ) : (
+          <>
+            <div className="mb-6 flex items-start gap-3 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm leading-6 text-sky-900">
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-sky-600" aria-hidden="true" />
+              <p>
+                <strong>Automatic activation is on.</strong> When Razorpay confirms
+                a payment signature, the employer account is activated without a
+                manual step. Review this list only for payments that need attention.
+              </p>
             </div>
-          )}
 
-          <h2 style={{ color: "#0f172a", marginBottom: "16px" }}>
-            Pending Employers
-          </h2>
+            <h2 className="mb-4 text-xl font-bold text-ink">Payment Requests</h2>
 
-          {pendingEmployers.length === 0 ? (
-            <p style={{ color: "#64748b" }}>No pending employers.</p>
-          ) : (
-            <>
-              <div style={{ backgroundColor: "#fffbeb", border: "1px solid #fde68a", color: "#92400e", padding: "14px 16px", borderRadius: "10px", marginBottom: "16px", fontSize: "14px" }}>
-                <strong>Manual activation bypasses payment.</strong> Only use this
-                for older accounts. New employers should pay through Razorpay,
-                which activates them automatically.
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {pendingEmployers.map((emp) => {
-                  const busy = actionLoadingId === emp.id;
+            {paymentRequests.length === 0 ? (
+              <p className="mb-8 rounded-2xl border border-line bg-white px-5 py-6 text-sm text-muted shadow-soft">
+                No payment requests pending.
+              </p>
+            ) : (
+              <div className="mb-8 flex flex-col gap-4">
+                {paymentRequests.map((req) => {
+                  const busy = actionLoadingId === req.id;
+                  const reference =
+                    req.razorpay_payment_id || req.upi_reference || "Not provided";
 
                   return (
-                    <div key={emp.id} style={{ border: "1px solid #e2e8f0", padding: "16px", borderRadius: "10px", backgroundColor: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-                      <div>
-                        <h4 style={{ margin: "0 0 6px", color: "#0f172a" }}>{emp.company_name || "No Company Name"}</h4>
-                        <p style={{ margin: 0, color: "#64748b", fontSize: "13px" }}>
-                          {emp.profiles?.name} • {emp.profiles?.email} • {new Date(emp.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div style={{ display: "flex", gap: "10px" }}>
-                        <button
-                          disabled={busy}
-                          onClick={() => handleApproveEmployer(emp)}
-                          style={{ padding: "8px 16px", backgroundColor: "#16a34a", color: "#fff", border: "none", borderRadius: "6px", cursor: busy ? "not-allowed" : "pointer", fontWeight: "bold" }}
-                        >
-                          {busy ? "Working..." : "Activate (5 credits)"}
-                        </button>
-                        <button
-                          disabled={busy}
-                          onClick={() => handleRejectEmployer(emp)}
-                          style={{ padding: "8px 16px", backgroundColor: "#dc2626", color: "#fff", border: "none", borderRadius: "6px", cursor: busy ? "not-allowed" : "pointer" }}
-                        >
-                          Block
-                        </button>
+                    <div key={req.id} className="card p-5 sm:p-6">
+                      <div className="grid gap-6 lg:grid-cols-2">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-brand">
+                              <Building2 className="h-4 w-4" aria-hidden="true" />
+                            </span>
+                            <h3 className="text-lg font-bold text-ink">
+                              {req.employers?.company_name || "New Company"}
+                            </h3>
+                          </div>
+
+                          <div className="mt-4 space-y-2 text-sm text-slate-600">
+                            <p>
+                              <strong className="text-ink">Contact:</strong>{" "}
+                              {req.profiles?.name || "—"}
+                            </p>
+                            <p>
+                              <strong className="text-ink">Email:</strong>{" "}
+                              {req.profiles?.email || "—"}
+                            </p>
+                            <p>
+                              <strong className="text-ink">Plan:</strong>{" "}
+                              {req.plan_name} (₹{req.amount})
+                            </p>
+                            <p>
+                              <strong className="text-ink">Job Limit:</strong>{" "}
+                              {req.job_limit} Jobs
+                            </p>
+                            <p>
+                              <strong className="text-ink">Date:</strong>{" "}
+                              {new Date(req.created_at).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col justify-center">
+                          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                            <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
+                              {req.razorpay_payment_id
+                                ? "Razorpay Payment ID:"
+                                : "UTR / Transaction Number:"}
+                            </p>
+                            <p className="mt-1 break-all text-base font-extrabold tracking-wide text-ink">
+                              {reference}
+                            </p>
+                            {req.razorpay_order_id && (
+                              <p className="mt-1.5 break-all text-xs text-slate-500">
+                                Order: {req.razorpay_order_id}
+                              </p>
+                            )}
+                          </div>
+
+                          <p className="mt-3 text-xs leading-5 text-muted">
+                            Verify this payment in the Razorpay dashboard before
+                            approving. Approving activates the employer with the
+                            plan credit.
+                          </p>
+
+                          <div className="mt-4 flex gap-2">
+                            <button
+                              disabled={busy}
+                              onClick={() => handleApprovePayment(req)}
+                              className="btn min-h-11 flex-1 bg-emerald-600 px-4 py-2 text-xs text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500"
+                            >
+                              <Check className="h-4 w-4" aria-hidden="true" />
+                              {busy ? "Working..." : "Approve"}
+                            </button>
+                            <button
+                              disabled={busy}
+                              onClick={() => handleRejectPayment(req)}
+                              className="btn min-h-11 flex-1 bg-rose-600 px-4 py-2 text-xs text-white shadow-lg shadow-rose-600/20 hover:bg-rose-500"
+                            >
+                              <X className="h-4 w-4" aria-hidden="true" />
+                              Reject
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
-            </>
-          )}
-        </>
-      )}
+            )}
+
+            <h2 className="mb-4 text-xl font-bold text-ink">Pending Employers</h2>
+
+            {pendingEmployers.length === 0 ? (
+              <p className="rounded-2xl border border-line bg-white px-5 py-6 text-sm text-muted shadow-soft">
+                No pending employers.
+              </p>
+            ) : (
+              <>
+                <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+                  <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" aria-hidden="true" />
+                  <p>
+                    <strong>Manual activation bypasses payment.</strong> Only use
+                    this for older accounts. New employers should pay through
+                    Razorpay, which activates them automatically.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  {pendingEmployers.map((emp) => {
+                    const busy = actionLoadingId === emp.id;
+
+                    return (
+                      <div
+                        key={emp.id}
+                        className="card flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5"
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+                            <Building2 className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                          <div>
+                            <h4 className="font-bold text-ink">
+                              {emp.company_name || "No Company Name"}
+                            </h4>
+                            <p className="mt-1 text-xs leading-5 text-muted">
+                              {emp.profiles?.name} • {emp.profiles?.email} •{" "}
+                              {new Date(emp.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            disabled={busy}
+                            onClick={() => handleApproveEmployer(emp)}
+                            className="btn min-h-10 bg-emerald-600 px-4 py-2 text-xs text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500"
+                          >
+                            <Check className="h-4 w-4" aria-hidden="true" />
+                            {busy ? "Working..." : "Activate (5 credits)"}
+                          </button>
+                          <button
+                            disabled={busy}
+                            onClick={() => handleRejectEmployer(emp)}
+                            className="btn min-h-10 bg-rose-600 px-4 py-2 text-xs text-white shadow-md shadow-rose-600/20 hover:bg-rose-500"
+                          >
+                            <X className="h-4 w-4" aria-hidden="true" />
+                            Block
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

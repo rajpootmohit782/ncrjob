@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabaseClient";
+import { FormMessage } from "../../components/ui";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -57,51 +59,60 @@ export default function AdminLogin() {
   }
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px" }}>
-      <h2>Admin Login</h2>
+    <div className="page-shell relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden px-4 py-12">
+      <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-200/40 blur-3xl" aria-hidden="true" />
+      <div className="relative w-full max-w-md">
+        <div className="card p-6 sm:p-8">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-brand">
+            <ShieldCheck className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <h1 className="mt-4 text-2xl font-extrabold text-ink sm:text-3xl">Admin Login</h1>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+          {error && (
+            <div className="mt-5">
+              <FormMessage type="error">{error}</FormMessage>
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label>Admin Email</label>
-          <br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <div>
+              <label className="label" htmlFor="admin-email">Admin Email</label>
+              <div className="relative">
+                <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+                <input
+                  id="admin-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  className="input pl-10"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="label" htmlFor="admin-password">Password</label>
+              <div className="relative">
+                <LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+                <input
+                  id="admin-password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                  className="input pl-10"
+                />
+              </div>
+            </div>
+
+            <button type="submit" disabled={loading} className="btn btn-primary w-full">
+              {loading ? "Logging in..." : "Admin Login"}
+            </button>
+          </form>
         </div>
-
-        <div style={{ marginBottom: "15px" }}>
-          <label>Password</label>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#0f172a",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Logging in..." : "Admin Login"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 }

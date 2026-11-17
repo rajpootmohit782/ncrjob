@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowLeft, BriefcaseBusiness, CircleAlert } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import useEmployer from "../../hooks/useEmployer";
+import { FormMessage, LoadingState } from "../../components/ui";
 
 export default function PostJob() {
   const { employer, loading: employerLoading, error: employerError } = useEmployer();
@@ -188,255 +190,254 @@ export default function PostJob() {
   }
 
   if (employerLoading) {
-    return <div style={{ padding: "20px" }}>Loading...</div>;
+    return (
+      <div className="page-shell">
+        <div className="container-page py-12">
+          <LoadingState label="Loading..." />
+        </div>
+      </div>
+    );
   }
 
   if (employerError) {
-    return <div style={{ padding: "20px", color: "red" }}>{employerError}</div>;
+    return (
+      <div className="page-shell">
+        <div className="container-page py-12">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium text-rose-700">
+            {employerError}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!employer) {
-    return <div style={{ padding: "20px" }}>Employer profile not found.</div>;
+    return (
+      <div className="page-shell">
+        <div className="container-page py-12">
+          <div className="card p-8 text-sm text-muted">Employer profile not found.</div>
+        </div>
+      </div>
+    );
   }
 
   const remainingCredits = Math.max((employer.job_limit ?? 0) - creditsUsed, 0);
 
   return (
-    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "20px" }}>
-      <Link to="/employer-dashboard">← Back to dashboard</Link>
+    <div className="page-shell">
+      <div className="container-page max-w-4xl py-8 sm:py-12">
+        <Link to="/employer-dashboard" className="link-arrow mb-6">
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to dashboard
+        </Link>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-        <h1 style={{ marginBottom: 0 }}>Post Job</h1>
-        <span style={{ backgroundColor: remainingCredits > 0 ? "#dcfce7" : "#fee2e2", color: remainingCredits > 0 ? "#166534" : "#991b1b", padding: "6px 12px", borderRadius: "999px", fontSize: "13px", fontWeight: "bold" }}>
-          {remainingCredits} job {remainingCredits === 1 ? "credit" : "credits"} left
-        </span>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-brand">
+              <BriefcaseBusiness className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">Post Job</h1>
+          </div>
+          <span
+            className={`inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-bold ring-1 ${
+              remainingCredits > 0
+                ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                : "bg-rose-50 text-rose-700 ring-rose-200"
+            }`}
+          >
+            {remainingCredits} job {remainingCredits === 1 ? "credit" : "credits"} left
+          </span>
+        </div>
+
+        {employer.status !== "active" && (
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            Your account is not active yet. Choose a plan from your dashboard
+            before posting jobs.
+          </div>
+        )}
+
+        {employer.status === "active" && remainingCredits <= 0 && (
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            You have used all your job credits. Renew your plan to post another
+            job.
+          </div>
+        )}
+
+        {message && (
+          <div className="mb-4">
+            <FormMessage type={messageType === "success" ? "success" : "error"}>
+              {message}
+            </FormMessage>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="card p-5 sm:p-7">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="label" htmlFor="title">Job Title *</label>
+              <input
+                id="title"
+                type="text"
+                name="title"
+                value={form.title}
+                onChange={handleChange}
+                required
+                className="input"
+              />
+            </div>
+
+            <div>
+              <label className="label" htmlFor="category_id">Category</label>
+              <select
+                id="category_id"
+                name="category_id"
+                value={form.category_id}
+                onChange={handleChange}
+                className="select"
+              >
+                <option value="">Select category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="label" htmlFor="location_id">Location</label>
+              <select
+                id="location_id"
+                name="location_id"
+                value={form.location_id}
+                onChange={handleChange}
+                className="select"
+              >
+                <option value="">Select location</option>
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="label" htmlFor="job_type">Job Type</label>
+              <select
+                id="job_type"
+                name="job_type"
+                value={form.job_type}
+                onChange={handleChange}
+                className="select"
+              >
+                <option value="full-time">Full Time</option>
+                <option value="part-time">Part Time</option>
+                <option value="internship">Internship</option>
+                <option value="remote">Remote</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="label" htmlFor="deadline">Application Deadline</label>
+              <input
+                id="deadline"
+                type="date"
+                name="deadline"
+                value={form.deadline}
+                onChange={handleChange}
+                className="input"
+              />
+            </div>
+
+            <div>
+              <label className="label" htmlFor="min_salary">Min Salary</label>
+              <input
+                id="min_salary"
+                type="number"
+                name="min_salary"
+                value={form.min_salary}
+                onChange={handleChange}
+                className="input"
+              />
+            </div>
+
+            <div>
+              <label className="label" htmlFor="max_salary">Max Salary</label>
+              <input
+                id="max_salary"
+                type="number"
+                name="max_salary"
+                value={form.max_salary}
+                onChange={handleChange}
+                className="input"
+              />
+            </div>
+
+            <div>
+              <label className="label" htmlFor="experience_min">Min Experience (years)</label>
+              <input
+                id="experience_min"
+                type="number"
+                step="0.5"
+                name="experience_min"
+                value={form.experience_min}
+                onChange={handleChange}
+                className="input"
+              />
+            </div>
+
+            <div>
+              <label className="label" htmlFor="experience_max">Max Experience (years)</label>
+              <input
+                id="experience_max"
+                type="number"
+                step="0.5"
+                name="experience_max"
+                value={form.experience_max}
+                onChange={handleChange}
+                className="input"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="label" htmlFor="description">Job Description *</label>
+              <textarea
+                id="description"
+                name="description"
+                rows={6}
+                value={form.description}
+                onChange={handleChange}
+                required
+                className="input min-h-36 resize-y"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="label" htmlFor="requirements">Requirements</label>
+              <textarea
+                id="requirements"
+                name="requirements"
+                rows={4}
+                value={form.requirements}
+                onChange={handleChange}
+                placeholder="Example: ReactJS, Node.js, Communication skills"
+                className="input min-h-28 resize-y"
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={saving || employer.status !== "active" || remainingCredits <= 0}
+            className="btn btn-primary mt-6 w-full sm:w-auto"
+          >
+            {saving ? "Creating..." : "Create Job"}
+          </button>
+        </form>
       </div>
-
-      {employer.status !== "active" && (
-        <p style={{ color: "#b45309" }}>
-          Your account is not active yet. Choose a plan from your dashboard
-          before posting jobs.
-        </p>
-      )}
-
-      {employer.status === "active" && remainingCredits <= 0 && (
-        <p style={{ color: "#b45309" }}>
-          You have used all your job credits. Renew your plan to post another
-          job.
-        </p>
-      )}
-
-      {message && (
-        <p
-          style={{
-            color: messageType === "success" ? "green" : "red",
-          }}
-        >
-          {message}
-        </p>
-      )}
-
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          border: "1px solid #e2e8f0",
-          borderRadius: "10px",
-          padding: "20px",
-          backgroundColor: "#fff",
-        }}
-      >
-        <div style={{ marginBottom: "15px" }}>
-          <label>Job Title *</label>
-          <br />
-          <input
-            type="text"
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "15px" }}>
-          <label>Category</label>
-          <br />
-          <select
-            name="category_id"
-            value={form.category_id}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px" }}
-          >
-            <option value="">Select category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ marginBottom: "15px" }}>
-          <label>Location</label>
-          <br />
-          <select
-            name="location_id"
-            value={form.location_id}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px" }}
-          >
-            <option value="">Select location</option>
-            {locations.map((location) => (
-              <option key={location.id} value={location.id}>
-                {location.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ marginBottom: "15px" }}>
-          <label>Job Type</label>
-          <br />
-          <select
-            name="job_type"
-            value={form.job_type}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px" }}
-          >
-            <option value="full-time">Full Time</option>
-            <option value="part-time">Part Time</option>
-            <option value="internship">Internship</option>
-            <option value="remote">Remote</option>
-          </select>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "12px",
-            marginBottom: "15px",
-          }}
-        >
-          <div>
-            <label>Min Salary</label>
-            <br />
-            <input
-              type="number"
-              name="min_salary"
-              value={form.min_salary}
-              onChange={handleChange}
-              style={{ width: "100%", padding: "8px" }}
-            />
-          </div>
-
-          <div>
-            <label>Max Salary</label>
-            <br />
-            <input
-              type="number"
-              name="max_salary"
-              value={form.max_salary}
-              onChange={handleChange}
-              style={{ width: "100%", padding: "8px" }}
-            />
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "12px",
-            marginBottom: "15px",
-          }}
-        >
-          <div>
-            <label>Min Experience (years)</label>
-            <br />
-            <input
-              type="number"
-              step="0.5"
-              name="experience_min"
-              value={form.experience_min}
-              onChange={handleChange}
-              style={{ width: "100%", padding: "8px" }}
-            />
-          </div>
-
-          <div>
-            <label>Max Experience (years)</label>
-            <br />
-            <input
-              type="number"
-              step="0.5"
-              name="experience_max"
-              value={form.experience_max}
-              onChange={handleChange}
-              style={{ width: "100%", padding: "8px" }}
-            />
-          </div>
-        </div>
-
-        <div style={{ marginBottom: "15px" }}>
-          <label>Application Deadline</label>
-          <br />
-          <input
-            type="date"
-            name="deadline"
-            value={form.deadline}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "15px" }}>
-          <label>Job Description *</label>
-          <br />
-          <textarea
-            name="description"
-            rows={6}
-            value={form.description}
-            onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-
-        <div style={{ marginBottom: "15px" }}>
-          <label>Requirements</label>
-          <br />
-          <textarea
-            name="requirements"
-            rows={4}
-            value={form.requirements}
-            onChange={handleChange}
-            placeholder="Example: ReactJS, Node.js, Communication skills"
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={saving || employer.status !== "active" || remainingCredits <= 0}
-          style={{
-            padding: "10px 18px",
-            backgroundColor:
-              employer.status === "active" && remainingCredits > 0
-                ? "#0f172a"
-                : "#94a3b8",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor:
-              saving || employer.status !== "active" || remainingCredits <= 0
-                ? "not-allowed"
-                : "pointer",
-          }}
-        >
-          {saving ? "Creating..." : "Create Job"}
-        </button>
-      </form>
     </div>
   );
 }

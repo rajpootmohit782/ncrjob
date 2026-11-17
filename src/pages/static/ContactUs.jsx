@@ -1,5 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Send,
+} from "lucide-react";
 import { SITE } from "../../lib/site";
 
 export default function ContactUs() {
@@ -31,143 +40,86 @@ export default function ContactUs() {
   }
 
   return (
-    <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", padding: "40px 20px" }}>
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <Link to="/" style={{ color: "#2563eb", textDecoration: "none", fontSize: "14px" }}>
-          ← Back to Home
+    <div className="page-shell">
+      <div className="container-page max-w-5xl py-10 sm:py-14">
+        <Link to="/" className="link-arrow mb-6">
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to Home
         </Link>
 
-        <h1 style={{ fontSize: "32px", color: "#0f172a", margin: "20px 0 10px" }}>
-          Contact Us
-        </h1>
+        <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">Contact Us</h1>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
+        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
           {/* Contact Form */}
-          <div style={{ 
-            backgroundColor: "#fff", 
-            padding: "30px", 
-            borderRadius: "12px", 
-            border: "1px solid #e2e8f0"
-          }}>
-            <h2 style={{ color: "#0f172a", marginTop: 0, marginBottom: "20px" }}>
-              Send Us a Message
-            </h2>
+          <div className="card p-6 sm:p-8">
+            <h2 className="text-xl font-bold text-ink">Send Us a Message</h2>
 
             {submitted ? (
-              <div style={{ 
-                backgroundColor: "#dcfce7", 
-                padding: "20px", 
-                borderRadius: "8px",
-                textAlign: "center"
-              }}>
-                <p style={{ color: "#166534", fontWeight: "bold", margin: 0 }}>
-                  ✅ Your email app should have opened.
+              <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-center">
+                <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-600" aria-hidden="true" />
+                <p className="mt-3 font-bold text-emerald-800">
+                  Your email app should have opened.
                 </p>
-                <p style={{ color: "#166534", margin: "8px 0 0" }}>
+                <p className="mt-2 text-sm text-emerald-700">
                   If it did not, email us directly at {SITE.email}.
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "16px" }}>
-                  <label style={{ display: "block", marginBottom: "6px", fontWeight: "600", color: "#0f172a", fontSize: "14px" }}>
-                    Your Name *
-                  </label>
+              <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+                <div>
+                  <label className="label" htmlFor="contact-name">Your Name *</label>
                   <input
+                    id="contact-name"
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    style={{ 
-                      width: "100%", 
-                      padding: "12px 15px", 
-                      border: "1px solid #e2e8f0", 
-                      borderRadius: "8px",
-                      fontSize: "15px",
-                      boxSizing: "border-box"
-                    }}
+                    className="input"
                   />
                 </div>
 
-                <div style={{ marginBottom: "16px" }}>
-                  <label style={{ display: "block", marginBottom: "6px", fontWeight: "600", color: "#0f172a", fontSize: "14px" }}>
-                    Email Address *
-                  </label>
+                <div>
+                  <label className="label" htmlFor="contact-email">Email Address *</label>
                   <input
+                    id="contact-email"
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    style={{ 
-                      width: "100%", 
-                      padding: "12px 15px", 
-                      border: "1px solid #e2e8f0", 
-                      borderRadius: "8px",
-                      fontSize: "15px",
-                      boxSizing: "border-box"
-                    }}
+                    className="input"
                   />
                 </div>
 
-                <div style={{ marginBottom: "16px" }}>
-                  <label style={{ display: "block", marginBottom: "6px", fontWeight: "600", color: "#0f172a", fontSize: "14px" }}>
-                    Subject *
-                  </label>
+                <div>
+                  <label className="label" htmlFor="contact-subject">Subject *</label>
                   <input
+                    id="contact-subject"
                     type="text"
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    style={{ 
-                      width: "100%", 
-                      padding: "12px 15px", 
-                      border: "1px solid #e2e8f0", 
-                      borderRadius: "8px",
-                      fontSize: "15px",
-                      boxSizing: "border-box"
-                    }}
+                    className="input"
                   />
                 </div>
 
-                <div style={{ marginBottom: "16px" }}>
-                  <label style={{ display: "block", marginBottom: "6px", fontWeight: "600", color: "#0f172a", fontSize: "14px" }}>
-                    Message *
-                  </label>
+                <div>
+                  <label className="label" htmlFor="contact-message">Message *</label>
                   <textarea
+                    id="contact-message"
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
                     required
                     rows={5}
-                    style={{ 
-                      width: "100%", 
-                      padding: "12px 15px", 
-                      border: "1px solid #e2e8f0", 
-                      borderRadius: "8px",
-                      fontSize: "15px",
-                      resize: "vertical",
-                      boxSizing: "border-box"
-                    }}
+                    className="input min-h-32 resize-y"
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  style={{
-                    width: "100%",
-                    padding: "14px",
-                    backgroundColor: "#2563eb",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
-                >
+                <button type="submit" className="btn btn-primary w-full">
+                  <Mail className="h-4 w-4" aria-hidden="true" />
                   Open Email App
                 </button>
               </form>
@@ -175,90 +127,68 @@ export default function ContactUs() {
           </div>
 
           {/* Contact Info */}
-          <div>
-            <div style={{ 
-              backgroundColor: "#fff", 
-              padding: "24px", 
-              borderRadius: "12px", 
-              border: "1px solid #e2e8f0",
-              marginBottom: "16px"
-            }}>
-              <h3 style={{ color: "#0f172a", marginTop: 0, marginBottom: "16px" }}>
-                📧 Email Us
-              </h3>
-              <p style={{ color: "#64748b", margin: 0, fontSize: "14px", lineHeight: "1.6" }}>
+          <div className="space-y-4">
+            <div className="card p-5 sm:p-6">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-brand">
+                  <Mail className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <h3 className="text-lg font-bold text-ink">Email Us</h3>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-muted">
                 For job inquiries and employer support:<br />
-                <a href={`mailto:${SITE.email}`} style={{ color: "#2563eb", textDecoration: "none" }}>
+                <a href={`mailto:${SITE.email}`} className="font-semibold text-brand hover:underline">
                   {SITE.email}
                 </a>
               </p>
-              <p style={{ color: "#64748b", margin: "12px 0 0", fontSize: "14px", lineHeight: "1.6" }}>
+              <p className="mt-3 text-sm leading-6 text-muted">
                 Phone:<br />
-                <a href={SITE.phoneHref} style={{ color: "#2563eb", textDecoration: "none" }}>
+                <a href={SITE.phoneHref} className="font-semibold text-brand hover:underline">
                   {SITE.phoneDisplay}
                 </a>
               </p>
             </div>
 
-            <div style={{ 
-              backgroundColor: "#fff", 
-              padding: "24px", 
-              borderRadius: "12px", 
-              border: "1px solid #e2e8f0",
-              marginBottom: "16px"
-            }}>
-              <h3 style={{ color: "#0f172a", marginTop: 0, marginBottom: "16px" }}>
-                📱 Connect With Us
-              </h3>
-              <p style={{ color: "#64748b", margin: "0 0 12px", fontSize: "14px" }}>
+            <div className="card p-5 sm:p-6">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <h3 className="text-lg font-bold text-ink">Connect With Us</h3>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-muted">
                 Join our community for instant job alerts:
               </p>
-              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                <a 
-                  href={SITE.socials.whatsapp} 
-                  target="_blank" 
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a
+                  href={SITE.socials.whatsapp}
+                  target="_blank"
                   rel="noreferrer"
-                  style={{
-                    padding: "10px 16px",
-                    backgroundColor: "#25D366",
-                    color: "#fff",
-                    textDecoration: "none",
-                    borderRadius: "8px",
-                    fontSize: "13px",
-                    fontWeight: "bold"
-                  }}
+                  className="btn min-h-10 bg-[#25D366] px-4 py-2 text-xs text-white shadow-md shadow-emerald-600/20 hover:bg-[#1fb85a]"
                 >
-                  💬 WhatsApp
+                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                  WhatsApp
                 </a>
-                <a 
-                  href={SITE.socials.telegram} 
-                  target="_blank" 
+                <a
+                  href={SITE.socials.telegram}
+                  target="_blank"
                   rel="noreferrer"
-                  style={{
-                    padding: "10px 16px",
-                    backgroundColor: "#0088cc",
-                    color: "#fff",
-                    textDecoration: "none",
-                    borderRadius: "8px",
-                    fontSize: "13px",
-                    fontWeight: "bold"
-                  }}
+                  className="btn min-h-10 bg-[#0088cc] px-4 py-2 text-xs text-white shadow-md shadow-sky-600/20 hover:bg-[#0077b3]"
                 >
-                  ✈️ Telegram
+                  <Send className="h-4 w-4" aria-hidden="true" />
+                  Telegram
                 </a>
               </div>
             </div>
 
-            <div style={{ 
-              backgroundColor: "#fff", 
-              padding: "24px", 
-              borderRadius: "12px", 
-              border: "1px solid #e2e8f0"
-            }}>
-              <h3 style={{ color: "#0f172a", marginTop: 0, marginBottom: "16px" }}>
-                📍 Office Address
-              </h3>
-              <p style={{ color: "#64748b", margin: 0, fontSize: "14px", lineHeight: "1.8" }}>
+            <div className="card p-5 sm:p-6">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                  <MapPin className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <h3 className="text-lg font-bold text-ink">Office Address</h3>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-muted">
                 VMWjobs<br />
                 {SITE.address}
               </p>

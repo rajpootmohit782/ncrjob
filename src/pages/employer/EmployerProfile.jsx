@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowLeft, Building2 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import useEmployer from "../../hooks/useEmployer";
+import { FormMessage, LoadingState } from "../../components/ui";
 
 export default function EmployerProfile() {
   const { employer, loading, error, refetch } = useEmployer();
@@ -100,155 +102,162 @@ export default function EmployerProfile() {
   }
 
   if (loading) {
-    return <div style={{ padding: "20px" }}>Loading company profile...</div>;
+    return (
+      <div className="page-shell">
+        <div className="container-page py-12">
+          <LoadingState label="Loading company profile..." />
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div style={{ padding: "20px", color: "red" }}>{error}</div>;
+    return (
+      <div className="page-shell">
+        <div className="container-page py-12">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium text-rose-700">
+            {error}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!employer) {
     return (
-      <div style={{ padding: "20px" }}>
-        <p>No employer profile found.</p>
+      <div className="page-shell">
+        <div className="container-page py-12">
+          <div className="card p-8 text-sm text-muted">No employer profile found.</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "20px" }}>
-      <Link to="/employer-dashboard">← Back to dashboard</Link>
+    <div className="page-shell">
+      <div className="container-page max-w-4xl py-8 sm:py-12">
+        <Link to="/employer-dashboard" className="link-arrow mb-6">
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to dashboard
+        </Link>
 
-      <h1>Company Profile</h1>
-
-      {message && (
-        <p
-          style={{
-            color: messageType === "success" ? "green" : "red",
-          }}
-        >
-          {message}
-        </p>
-      )}
-
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          border: "1px solid #e2e8f0",
-          borderRadius: "10px",
-          padding: "20px",
-          backgroundColor: "#fff",
-        }}
-      >
-        <div style={{ marginBottom: "15px" }}>
-          <label>Company Name *</label>
-          <br />
-          <input
-            type="text"
-            name="company_name"
-            value={form.company_name}
-            onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
+        <div className="mb-6 flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+            <Building2 className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <h1 className="text-3xl font-extrabold text-ink sm:text-4xl">Company Profile</h1>
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>WhatsApp Number</label>
-          <br />
-          <input
-            type="text"
-            name="whatsapp_number"
-            value={form.whatsapp_number}
-            onChange={handleChange}
-            placeholder="Example: 919876543210"
-            style={{ width: "100%", padding: "8px" }}
-          />
-          <small style={{ color: "#666" }}>
-            Use country code + number, digits only. Example: 919876543210
-          </small>
-        </div>
+        {message && (
+          <div className="mb-4">
+            <FormMessage type={messageType === "success" ? "success" : "error"}>
+              {message}
+            </FormMessage>
+          </div>
+        )}
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>Website</label>
-          <br />
-          <input
-            type="text"
-            name="website"
-            value={form.website}
-            onChange={handleChange}
-            placeholder="https://example.com"
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="card p-5 sm:p-7">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="label" htmlFor="company_name">Company Name *</label>
+              <input
+                id="company_name"
+                type="text"
+                name="company_name"
+                value={form.company_name}
+                onChange={handleChange}
+                required
+                className="input"
+              />
+            </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>Industry</label>
-          <br />
-          <input
-            type="text"
-            name="industry"
-            value={form.industry}
-            onChange={handleChange}
-            placeholder="Example: IT / Software"
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
+            <div>
+              <label className="label" htmlFor="whatsapp_number">WhatsApp Number</label>
+              <input
+                id="whatsapp_number"
+                type="text"
+                name="whatsapp_number"
+                value={form.whatsapp_number}
+                onChange={handleChange}
+                placeholder="Example: 919876543210"
+                className="input"
+              />
+              <small className="mt-1.5 block text-xs text-muted">
+                Use country code + number, digits only. Example: 919876543210
+              </small>
+            </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>Company Size</label>
-          <br />
-          <input
-            type="text"
-            name="company_size"
-            value={form.company_size}
-            onChange={handleChange}
-            placeholder="Example: 10-50"
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
+            <div>
+              <label className="label" htmlFor="website">Website</label>
+              <input
+                id="website"
+                type="text"
+                name="website"
+                value={form.website}
+                onChange={handleChange}
+                placeholder="https://example.com"
+                className="input"
+              />
+            </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>Location</label>
-          <br />
-          <input
-            type="text"
-            name="location"
-            value={form.location}
-            onChange={handleChange}
-            placeholder="Example: Mumbai"
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
+            <div>
+              <label className="label" htmlFor="industry">Industry</label>
+              <input
+                id="industry"
+                type="text"
+                name="industry"
+                value={form.industry}
+                onChange={handleChange}
+                placeholder="Example: IT / Software"
+                className="input"
+              />
+            </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>Company Description</label>
-          <br />
-          <textarea
-            name="description"
-            rows={5}
-            value={form.description}
-            onChange={handleChange}
-            placeholder="Write about your company..."
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
+            <div>
+              <label className="label" htmlFor="company_size">Company Size</label>
+              <input
+                id="company_size"
+                type="text"
+                name="company_size"
+                value={form.company_size}
+                onChange={handleChange}
+                placeholder="Example: 10-50"
+                className="input"
+              />
+            </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          style={{
-            padding: "10px 18px",
-            backgroundColor: "#0f172a",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: saving ? "not-allowed" : "pointer",
-          }}
-        >
-          {saving ? "Saving..." : "Save Company Profile"}
-        </button>
-      </form>
+            <div className="sm:col-span-2">
+              <label className="label" htmlFor="location">Location</label>
+              <input
+                id="location"
+                type="text"
+                name="location"
+                value={form.location}
+                onChange={handleChange}
+                placeholder="Example: Mumbai"
+                className="input"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="label" htmlFor="description">Company Description</label>
+              <textarea
+                id="description"
+                name="description"
+                rows={5}
+                value={form.description}
+                onChange={handleChange}
+                placeholder="Write about your company..."
+                className="input min-h-32 resize-y"
+              />
+            </div>
+          </div>
+
+          <button type="submit" disabled={saving} className="btn btn-primary mt-6 w-full sm:w-auto">
+            {saving ? "Saving..." : "Save Company Profile"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

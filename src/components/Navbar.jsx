@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { Briefcase, LayoutDashboard, LogOut, Plus } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
@@ -23,41 +24,57 @@ export default function Navbar() {
   }
 
   return (
-    <nav style={{ backgroundColor: "#ffffff", borderBottom: "1px solid #e2e8f0", padding: "12px 20px", position: "sticky", top: 0, zIndex: 100 }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
-        <Link to="/" style={{ textDecoration: "none", fontSize: "24px", fontWeight: "800", color: "#0f172a" }}>
-          VMW<span style={{ color: "#2563eb" }}>jobs</span>
+    <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
+      <div className="container-page flex min-h-16 flex-wrap items-center justify-between gap-3 py-2.5">
+        <Link to="/" className="group flex min-h-11 items-center gap-2.5" aria-label="VMWjobs home">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-900/20 transition-transform duration-200 group-hover:-rotate-3">
+            <Briefcase className="h-4.5 w-4.5" aria-hidden="true" />
+          </span>
+          <span className="font-display text-xl font-extrabold tracking-tight text-ink">
+            VMW<span className="text-brand">jobs</span>
+          </span>
         </Link>
 
-        <div style={{ display: "flex", gap: "24px", alignItems: "center", flexWrap: "wrap" }}>
-          <Link to="/" style={{ textDecoration: "none", color: "#0f172a", fontWeight: "500" }}>Home</Link>
-          <Link to="/jobs" style={{ textDecoration: "none", color: "#0f172a", fontWeight: "500" }}>All Jobs</Link>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <Link
+              to="/"
+              className="inline-flex min-h-11 items-center text-sm font-semibold text-slate-600 transition-colors hover:text-brand"
+            >
+              Home
+            </Link>
+            <Link
+              to="/jobs"
+              className="inline-flex min-h-11 items-center text-sm font-semibold text-slate-600 transition-colors hover:text-brand"
+            >
+              All Jobs
+            </Link>
+          </div>
 
-          <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+          <div className="flex flex-wrap items-center gap-2">
             {!authLoading && dashboard && (
-              <Link to={dashboard.to} style={{ textDecoration: "none", padding: "8px 16px", border: "1px solid #cbd5e1", borderRadius: "6px", color: "#0f172a", fontSize: "14px" }}>
+              <Link to={dashboard.to} className="btn btn-secondary min-h-10 px-4 py-2 text-xs">
+                <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
                 {dashboard.label}
               </Link>
             )}
 
             {!authLoading && role !== "admin" && (
-              <Link to={postJobTo} style={{ textDecoration: "none", padding: "8px 16px", border: "1px solid #cbd5e1", borderRadius: "6px", color: "#0f172a", fontSize: "14px" }}>
+              <Link to={postJobTo} className="btn btn-accent min-h-10 px-4 py-2 text-xs">
+                <Plus className="h-4 w-4" aria-hidden="true" />
                 Post a Job
               </Link>
             )}
 
             {!authLoading && !user && (
-              <Link to="/employer-login" style={{ textDecoration: "none", padding: "8px 16px", backgroundColor: "#2563eb", borderRadius: "6px", color: "#fff", fontSize: "14px" }}>
+              <Link to="/employer-login" className="btn btn-primary min-h-10 px-4 py-2 text-xs">
                 Employer Login
               </Link>
             )}
 
             {!authLoading && user && (
-              <button
-                type="button"
-                onClick={handleSignOut}
-                style={{ padding: "8px 16px", backgroundColor: "#f1f5f9", border: "1px solid #cbd5e1", borderRadius: "6px", color: "#0f172a", fontSize: "14px", cursor: "pointer" }}
-              >
+              <button type="button" onClick={handleSignOut} className="btn btn-ghost min-h-10 px-3 py-2 text-xs">
+                <LogOut className="h-4 w-4" aria-hidden="true" />
                 Sign out
               </button>
             )}

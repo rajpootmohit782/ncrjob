@@ -1,6 +1,28 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  ArrowRight,
+  BriefcaseBusiness,
+  Building2,
+  MapPin,
+  Search,
+  Sparkles,
+} from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
+import { getCategoryIcon, getCategoryTone } from "../../components/CategoryIcon";
+import JobCard from "../../components/JobCard";
+import { CountUp, EmptyState, LoadingState, Reveal, SectionHeading } from "../../components/ui";
+
+const HOVER_BORDERS = {
+  indigo: "hover:border-indigo-300",
+  sky: "hover:border-sky-300",
+  emerald: "hover:border-emerald-300",
+  amber: "hover:border-amber-300",
+  rose: "hover:border-rose-300",
+  violet: "hover:border-violet-300",
+  teal: "hover:border-teal-300",
+  orange: "hover:border-orange-300",
+};
 
 export default function Home() {
   const navigate = useNavigate();
@@ -67,505 +89,233 @@ export default function Home() {
     return `₹${format(max)}`;
   }
 
-  // Category icons mapping
-  function getCategoryIcon(slug) {
-    const icons = {
-      "private-jobs": "🏢",
-      "data-entry-back-office": "💻",
-      "bpo-customer-care": "📞",
-      "delivery-driver-logistics": "🚚",
-      "sales-marketing": "📊",
-      "receptionist-front-office": "🪑",
-      "security-housekeeping": "🛡️",
-      "accounts-finance": "💰",
-      "hr-admin": "👥",
-      "teaching-tutoring": "📚",
-      "campus-trainee": "🎓",
-      "aadhar-field-verification": "🪪",
-      "iit-institute-jobs": "🏫",
-      "work-from-home": "🏠",
-      "noida-jobs": "📍",
-      "gurgaon-jobs": "📍",
-      "other-jobs": "📋",
-    };
-    return icons[slug] || "💼";
-  }
-
   return (
-    <div style={{ backgroundColor: "#f1f5f9", minHeight: "100vh" }}>
-      
-      {/* ==================== HERO SECTION ==================== */}
-      <section style={{ 
-        background: "linear-gradient(135deg, #669ee7 0%, #7e0d62 100%)", 
-        padding: "70px 20px 80px", 
-        textAlign: "center", 
-        color: "#fff",
-        position: "relative",
-        overflow: "hidden"
-      }}>
-        {/* Decorative circles */}
-        <div style={{ position: "absolute", top: "-50px", right: "-50px", width: "200px", height: "200px", borderRadius: "50%", backgroundColor: "rgba(37, 99, 235, 0.1)" }}></div>
-        <div style={{ position: "absolute", bottom: "-30px", left: "-30px", width: "150px", height: "150px", borderRadius: "50%", backgroundColor: "rgba(37, 99, 235, 0.08)" }}></div>
-        
-        <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <div style={{ 
-            display: "inline-block", 
-            backgroundColor: "rgba(123, 159, 238, 0.2)", 
-            padding: "6px 16px", 
-            borderRadius: "20px", 
-            marginBottom: "20px",
-            border: "1px solid rgba(124, 164, 250, 0.3)"
-          }}>
-            <span style={{ fontSize: "14px", color: "#93c5fd" }}>
-              🎯 Delhi NCR's private-sector job marketplace
+    <div className="page-shell">
+      <section className="hero-gradient relative overflow-hidden pb-32 pt-14 sm:pt-20">
+        <div className="hero-dots pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />
+        <div className="hero-glow pointer-events-none absolute -right-24 top-4 h-80 w-80 rounded-full blur-3xl sm:h-[28rem] sm:w-[28rem]" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-indigo-400/10 blur-3xl" aria-hidden="true" />
+
+        <div className="container-page relative z-10">
+          <div className="mx-auto max-w-4xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-indigo-100 backdrop-blur-md sm:text-sm">
+              <Sparkles className="h-4 w-4 text-amber-300" aria-hidden="true" />
+              Delhi NCR's private-sector job marketplace
             </span>
-          </div>
-          
-          <h1 style={{ 
-            fontSize: "42px", 
-            marginBottom: "12px", 
-            fontWeight: "800", 
-            lineHeight: "1.2",
-            margin: "0 auto 35px",
-            letterSpacing: "-0.5px"
-          }}>
-               Find Your <span style={{ color: "#60a5fa" }}>Next Job</span> in NCR
-          </h1>
-          
-          <p style={{ 
-            fontSize: "18px", 
-            marginBottom: "35px", 
-            color: "#94a3b8",
-            maxWidth: "500px",
-            margin: "0 auto 35px"
-          }}>
-            Connect with verified private-sector employers across Noida, Greater
-            Noida, Gurugram and Delhi.
-          </p>
-          
-          {/* Search Box */}
-          <form onSubmit={handleSearch} style={{ 
-            maxWidth: "750px", 
-            margin: "0 auto", 
-            display: "flex", 
-            gap: "12px", 
-            flexWrap: "wrap", 
-            justifyContent: "center", 
-            backgroundColor: "#fff", 
-            padding: "12px", 
-            borderRadius: "16px", 
-            boxShadow: "0 20px 60px rgba(0,0,0,0.3)" 
-          }}>
-            <div style={{ flex: "1 1 220px", position: "relative" }}>
-              <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", fontSize: "18px" }}>🔍</span>
-              <input 
-                type="text" 
-                placeholder="Job title or Keyword" 
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-                style={{ 
-                  width: "100%", 
-                  padding: "14px 15px 14px 45px", 
-                  border: "2px solid #e2e8f0", 
-                  borderRadius: "10px", 
-                  fontSize: "15px", 
-                  color: "#0f172a",
-                  outline: "none",
-                  boxSizing: "border-box"
-                }}
-              />
-            </div>
-            
-            <div style={{ flex: "1 1 180px", position: "relative" }}>
-              <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", fontSize: "18px" }}>📍</span>
-              <select
-                value={searchLocation}
-                onChange={(e) => setSearchLocation(e.target.value)}
-                style={{ 
-                  width: "100%", 
-                  padding: "14px 15px 14px 45px", 
-                  border: "2px solid #e2e8f0", 
-                  borderRadius: "10px", 
-                  fontSize: "15px", 
-                  color: "#0f172a",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  backgroundColor: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                <option value="">All locations</option>
-                {locations.map((location) => (
-                  <option key={location.id} value={location.id}>
-                    {location.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <button type="submit" style={{ 
-              padding: "14px 35px", 
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)", 
-              color: "#fff", 
-              border: "none", 
-              borderRadius: "10px", 
-              fontWeight: "bold", 
-              cursor: "pointer", 
-              fontSize: "16px",
-              boxShadow: "0 4px 15px rgba(37, 99, 235, 0.4)",
-              transition: "all 0.3s"
-            }}>
-              Search Jobs
-            </button>
-          </form>
-          
-          {/* Quick Stats */}
-          <div style={{ 
-            display: "flex", 
-            justifyContent: "center", 
-            gap: "40px", 
-            marginTop: "35px",
-            flexWrap: "wrap"
-          }}>
-            <div>
-              <p style={{ fontSize: "28px", fontWeight: "800", margin: 0, color: "#60a5fa" }}>{stats.activeJobs}</p>
-              <p style={{ fontSize: "13px", color: "#94a3b8", margin: "4px 0 0" }}>Active Jobs</p>
-            </div>
-            <div>
-              <p style={{ fontSize: "28px", fontWeight: "800", margin: 0, color: "#60a5fa" }}>{stats.activeEmployers}</p>
-              <p style={{ fontSize: "13px", color: "#94a3b8", margin: "4px 0 0" }}>Active Employers</p>
-            </div>
-            <div>
-              <p style={{ fontSize: "28px", fontWeight: "800", margin: 0, color: "#60a5fa" }}>{stats.activeLocations}</p>
-              <p style={{ fontSize: "13px", color: "#94a3b8", margin: "4px 0 0" }}>Locations</p>
+
+            <h1 className="mt-6 text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Find Your <span className="text-amber-400">Next Job</span> in NCR
+            </h1>
+
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-indigo-100/80 sm:text-lg">
+              Connect with verified private-sector employers across Noida, Greater
+              Noida, Gurugram and Delhi.
+            </p>
+
+            <div className="mt-8 flex flex-wrap justify-center gap-2.5 sm:gap-3">
+              <div className="glass-chip flex min-w-[7.5rem] items-center gap-2.5">
+                <BriefcaseBusiness className="h-4 w-4 text-amber-300" aria-hidden="true" />
+                <div className="text-left">
+                  <p className="font-display text-xl font-bold leading-none text-white">
+                    <CountUp value={stats.activeJobs} />
+                  </p>
+                  <p className="mt-1 text-[11px] text-indigo-100/80">Active Jobs</p>
+                </div>
+              </div>
+              <div className="glass-chip flex min-w-[7.5rem] items-center gap-2.5">
+                <Building2 className="h-4 w-4 text-emerald-300" aria-hidden="true" />
+                <div className="text-left">
+                  <p className="font-display text-xl font-bold leading-none text-white">
+                    <CountUp value={stats.activeEmployers} />
+                  </p>
+                  <p className="mt-1 text-[11px] text-indigo-100/80">Active Employers</p>
+                </div>
+              </div>
+              <div className="glass-chip flex min-w-[7.5rem] items-center gap-2.5">
+                <MapPin className="h-4 w-4 text-sky-300" aria-hidden="true" />
+                <div className="text-left">
+                  <p className="font-display text-xl font-bold leading-none text-white">
+                    <CountUp value={stats.activeLocations} />
+                  </p>
+                  <p className="mt-1 text-[11px] text-indigo-100/80">Locations</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
-        
-        {/* ==================== CATEGORIES SECTION ==================== */}
-        <section style={{ marginBottom: "50px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-            <div>
-              <h2 style={{ fontSize: "26px", margin: "0 0 6px", color: "#0f172a", fontWeight: "700" }}>
-                Browse by Category
-              </h2>
-              <p style={{ margin: 0, color: "#64748b", fontSize: "15px" }}>
-                Find jobs in your preferred field
-              </p>
-            </div>
+      <div className="container-page relative z-20 -mt-16">
+        <form
+          onSubmit={handleSearch}
+          className="card flex flex-col gap-2 p-2 shadow-lift sm:flex-row sm:items-center"
+        >
+          <div className="flex min-h-12 flex-1 items-center gap-3 rounded-xl px-3 sm:px-4">
+            <Search className="h-5 w-5 shrink-0 text-slate-400" aria-hidden="true" />
+            <input
+              type="text"
+              placeholder="Job title or Keyword"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              className="w-full min-w-0 border-0 bg-transparent py-3 text-sm text-ink placeholder:text-slate-400 focus:outline-none focus:ring-0"
+            />
           </div>
-          
+
+          <div className="hidden h-8 w-px bg-line sm:block" aria-hidden="true" />
+
+          <div className="flex min-h-12 flex-1 items-center gap-3 rounded-xl border-t border-line px-3 sm:border-t-0 sm:px-4">
+            <MapPin className="h-5 w-5 shrink-0 text-slate-400" aria-hidden="true" />
+            <select
+              value={searchLocation}
+              onChange={(e) => setSearchLocation(e.target.value)}
+              className="w-full min-w-0 appearance-none border-0 bg-transparent py-3 text-sm text-ink focus:outline-none focus:ring-0"
+            >
+              <option value="">All locations</option>
+              {locations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button type="submit" className="btn btn-accent w-full sm:w-auto sm:px-7">
+            <Search className="h-4 w-4" aria-hidden="true" />
+            Search Jobs
+          </button>
+        </form>
+      </div>
+
+      <div className="container-page py-14 sm:py-20">
+        <Reveal as="section" className="mb-16 sm:mb-20">
+          <SectionHeading
+            title="Browse by Category"
+            description="Find jobs in your preferred field"
+          />
+
           {loading ? (
-            <p style={{ color: "#64748b" }}>Loading categories...</p>
+            <LoadingState label="Loading categories..." />
           ) : (
-            <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", 
-              gap: "14px" 
-            }}>
-              {categories.map((cat) => (
-                <Link 
-                  key={cat.id} 
-                  to={`/jobs?category=${cat.id}`} 
-                  style={{ 
-                    textDecoration: "none", 
-                    backgroundColor: "#fff", 
-                    padding: "20px 16px", 
-                    borderRadius: "12px", 
-                    border: "1px solid #e2e8f0", 
-                    textAlign: "center", 
-                    transition: "all 0.3s ease", 
-                    color: "#0f172a",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-4px)";
-                    e.currentTarget.style.boxShadow = "0 8px 25px rgba(37, 99, 235, 0.15)";
-                    e.currentTarget.style.borderColor = "#2563eb";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
-                    e.currentTarget.style.borderColor = "#e2e8f0";
-                  }}
-                >
-                  <div style={{ 
-                    fontSize: "32px", 
-                    marginBottom: "10px",
-                    height: "40px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}>
-                    {getCategoryIcon(cat.slug)}
-                  </div>
-                  <h3 style={{ margin: "0 0 4px", fontSize: "14px", fontWeight: "600", color: "#0f172a" }}>
-                    {cat.name}
-                  </h3>
-                  <p style={{ margin: 0, color: "#94a3b8", fontSize: "12px" }}>
-                    View jobs →
-                  </p>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              {categories.map((cat, index) => {
+                const tone = getCategoryTone(index);
+                const CategoryIcon = getCategoryIcon(cat.slug);
+                return (
+                  <Link
+                    key={cat.id}
+                    to={`/jobs?category=${cat.id}`}
+                    className={`card card-hover group flex min-h-40 flex-col p-4 sm:p-5 ${HOVER_BORDERS[tone] || HOVER_BORDERS.indigo}`}
+                  >
+                    <IconChipForCategory tone={tone} icon={CategoryIcon} />
+                    <h3 className="mt-4 text-sm font-bold leading-5 text-ink sm:text-base">
+                      {cat.name}
+                    </h3>
+                    <p className="mt-auto inline-flex items-center gap-1 pt-3 text-xs font-semibold text-slate-400 transition-colors group-hover:text-brand">
+                      View jobs
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </Reveal>
+
+        {featuredJobs.length > 0 && (
+          <Reveal as="section" className="mb-16 sm:mb-20" delay={80}>
+            <SectionHeading
+              title={
+                <span className="inline-flex items-center gap-2">
+                  <Sparkles className="h-6 w-6 text-amber-500" aria-hidden="true" />
+                  Featured Jobs
+                </span>
+              }
+              description="Hand-picked opportunities for you"
+              action={
+                <Link to="/jobs" className="link-arrow">
+                  View All
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
+              }
+            />
+
+            <div className="flex flex-col gap-2.5">
+              {featuredJobs.map((job) => (
+                <JobCard key={job.id} job={job} salary={formatSalary(job.min_salary, job.max_salary)} featured />
+              ))}
+            </div>
+          </Reveal>
+        )}
+
+        <Reveal as="section" className="mb-16 sm:mb-20" delay={120}>
+          <SectionHeading
+            title="Latest Jobs"
+            description="Recently posted opportunities"
+            action={
+              <Link to="/jobs" className="link-arrow">
+                View All
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            }
+          />
+
+          {loading ? (
+            <LoadingState label="Loading jobs..." />
+          ) : latestJobs.length === 0 ? (
+            <EmptyState
+              icon={BriefcaseBusiness}
+              title="New jobs are being reviewed. Check back soon or browse all openings."
+            />
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              {latestJobs.map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  salary={formatSalary(job.min_salary, job.max_salary)}
+                  showDate
+                />
               ))}
             </div>
           )}
-        </section>
+        </Reveal>
 
-        {/* ==================== FEATURED JOBS ==================== */}
-        {featuredJobs.length > 0 && (
-          <section style={{ marginBottom: "50px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-              <div>
-                <h2 style={{ fontSize: "26px", margin: "0 0 6px", color: "#0f172a", fontWeight: "700" }}>
-                  ⭐ Featured Jobs
-                </h2>
-                <p style={{ margin: 0, color: "#64748b", fontSize: "15px" }}>
-                  Hand-picked opportunities for you
-                </p>
-              </div>
-              <Link to="/jobs" style={{ 
-                color: "#2563eb", 
-                textDecoration: "none", 
-                fontWeight: "600", 
-                fontSize: "14px",
-                padding: "8px 16px",
-                backgroundColor: "#eff6ff",
-                borderRadius: "8px"
-              }}>
-                View All →
-              </Link>
-            </div>
-            
-            <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", 
-              gap: "18px" 
-            }}>
-              {featuredJobs.map((job) => (
-                <Link 
-                  to={`/jobs/${job.id}`} 
-                  key={job.id} 
-                  style={{ 
-                    textDecoration: "none", 
-                    backgroundColor: "#fff", 
-                    border: "1px solid #e2e8f0", 
-                    borderRadius: "14px", 
-                    padding: "22px", 
-                    position: "relative", 
-                    color: "#111",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                    transition: "all 0.3s ease"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-3px)";
-                    e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
-                  }}
-                >
-                  <span style={{ 
-                    position: "absolute", 
-                    top: "14px", 
-                    right: "14px", 
-                    background: "linear-gradient(135deg, #f59e0b, #d97706)", 
-                    color: "#fff", 
-                    fontSize: "10px", 
-                    padding: "4px 10px", 
-                    borderRadius: "20px", 
-                    fontWeight: "bold",
-                    letterSpacing: "0.5px"
-                  }}>
-                    ⭐ FEATURED
-                  </span>
-                  
-                  <h3 style={{ margin: "0 0 10px", fontSize: "17px", color: "#0f172a", fontWeight: "700", paddingRight: "80px" }}>
-                    {job.title}
-                  </h3>
-                  
-                  <p style={{ margin: "0 0 6px", fontWeight: "600", color: "#2563eb", fontSize: "14px" }}>
-                    {job.employers?.company_name || "Company"}
-                  </p>
-                  
-                  <div style={{ display: "flex", gap: "12px", marginBottom: "12px", flexWrap: "wrap" }}>
-                    <span style={{ fontSize: "13px", color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}>
-                      📍 {job.locations?.name || "Location"}
-                    </span>
-                    <span style={{ fontSize: "13px", color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}>
-                      💼 {job.job_type}
-                    </span>
-                  </div>
-                  
-                  <div style={{ 
-                    display: "flex", 
-                    justifyContent: "space-between", 
-                    alignItems: "center",
-                    paddingTop: "12px",
-                    borderTop: "1px solid #f1f5f9"
-                  }}>
-                    <p style={{ margin: 0, fontWeight: "bold", color: "#16a34a", fontSize: "15px" }}>
-                      {formatSalary(job.min_salary, job.max_salary)}
-                    </p>
-                    <span style={{ 
-                      fontSize: "12px", 
-                      color: "#2563eb", 
-                      fontWeight: "600",
-                      backgroundColor: "#eff6ff",
-                      padding: "4px 10px",
-                      borderRadius: "6px"
-                    }}>
-                      Apply Now →
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ==================== LATEST JOBS ==================== */}
-        <section style={{ marginBottom: "50px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-            <div>
-              <h2 style={{ fontSize: "26px", margin: "0 0 6px", color: "#0f172a", fontWeight: "700" }}>
-                🆕 Latest Jobs
-              </h2>
-              <p style={{ margin: 0, color: "#64748b", fontSize: "15px" }}>
-                Recently posted opportunities
+        <Reveal as="section" delay={160}>
+          <div className="hero-gradient relative overflow-hidden rounded-3xl p-6 text-center shadow-lift sm:p-10 lg:p-14">
+            <div className="hero-dots pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
+            <div className="hero-glow pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full blur-3xl" aria-hidden="true" />
+            <div className="relative z-10 mx-auto max-w-2xl">
+              <h2 className="text-2xl font-bold text-white sm:text-3xl">Are You an Employer?</h2>
+              <p className="mt-3 text-sm leading-7 text-indigo-100/80 sm:text-base">
+                Post your job listings and reach candidates across Delhi NCR.
               </p>
-            </div>
-            <Link to="/jobs" style={{ 
-              color: "#2563eb", 
-              textDecoration: "none", 
-              fontWeight: "600", 
-              fontSize: "14px",
-              padding: "8px 16px",
-              backgroundColor: "#eff6ff",
-              borderRadius: "8px"
-            }}>
-              View All →
-            </Link>
-          </div>
-          
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {!loading && latestJobs.length === 0 && (
-              <div style={{ backgroundColor: "#fff", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "30px", textAlign: "center", color: "#64748b" }}>
-                New jobs are being reviewed. Check back soon or browse all
-                openings.
-              </div>
-            )}
-            {latestJobs.map((job) => (
-              <Link 
-                to={`/jobs/${job.id}`} 
-                key={job.id} 
-                style={{ 
-                  textDecoration: "none", 
-                  backgroundColor: "#fff", 
-                  border: "1px solid #e2e8f0", 
-                  borderRadius: "12px", 
-                  padding: "18px 20px", 
-                  display: "flex", 
-                  justifyContent: "space-between", 
-                  alignItems: "center", 
-                  flexWrap: "wrap", 
-                  gap: "12px", 
-                  color: "#111",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                  transition: "all 0.3s ease"
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateX(4px)";
-                  e.currentTarget.style.boxShadow = "0 4px 15px rgba(37, 99, 235, 0.1)";
-                  e.currentTarget.style.borderColor = "#2563eb";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateX(0)";
-                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
-                  e.currentTarget.style.borderColor = "#e2e8f0";
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                  <div style={{ 
-                    width: "48px", 
-                    height: "48px", 
-                    borderRadius: "10px", 
-                    background: "linear-gradient(135deg, #eff6ff, #dbeafe)", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center",
-                    fontSize: "22px",
-                    flexShrink: 0
-                  }}>
-                    💼
-                  </div>
-                  <div>
-                    <h3 style={{ margin: "0 0 5px", fontSize: "16px", fontWeight: "600", color: "#0f172a" }}>
-                      {job.title}
-                    </h3>
-                    <p style={{ margin: 0, color: "#64748b", fontSize: "13px" }}>
-                      {job.employers?.company_name} • 📍 {job.locations?.name} • {job.job_type}
-                    </p>
-                  </div>
-                </div>
-                
-                <div style={{ textAlign: "right", display: "flex", alignItems: "center", gap: "12px" }}>
-                  <p style={{ margin: 0, fontWeight: "bold", color: "#16a34a", fontSize: "14px" }}>
-                    {formatSalary(job.min_salary, job.max_salary)}
-                  </p>
-                  <span style={{ 
-                    fontSize: "12px", 
-                    color: "#2563eb", 
-                    fontWeight: "600",
-                    backgroundColor: "#eff6ff",
-                    padding: "6px 12px",
-                    borderRadius: "6px",
-                    whiteSpace: "nowrap"
-                  }}>
-                    Apply →
-                  </span>
-                </div>
+              <Link to="/become-employer" className="btn btn-accent mt-7">
+                Post a Job
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
-            ))}
+            </div>
           </div>
-        </section>
-
-        {/* ==================== CTA SECTION ==================== */}
-        <section style={{ 
-          background: "linear-gradient(135deg, #1e3a5f, #0f172a)", 
-          borderRadius: "16px", 
-          padding: "40px", 
-          textAlign: "center",
-          color: "#fff"
-        }}>
-          <h2 style={{ fontSize: "28px", margin: "0 0 10px", fontWeight: "700" }}>
-            Are You an Employer?
-          </h2>
-          <p style={{ fontSize: "16px", color: "#94a3b8", margin: "0 0 25px" }}>
-            Post your job listings and reach candidates across Delhi NCR.
-          </p>
-          <Link 
-            to="/become-employer" 
-            style={{ 
-              display: "inline-block",
-              padding: "14px 35px", 
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)", 
-              color: "#fff", 
-              textDecoration: "none", 
-              borderRadius: "10px", 
-              fontWeight: "bold",
-              fontSize: "16px",
-              boxShadow: "0 4px 15px rgba(37, 99, 235, 0.4)"
-            }}
-          >
-            Post a Job →
-          </Link>
-        </section>
-
+        </Reveal>
       </div>
     </div>
+  );
+}
+
+function IconChipForCategory({ tone, icon: Icon }) {
+  const tones = {
+    indigo: "bg-indigo-50 text-indigo-600",
+    sky: "bg-sky-50 text-sky-600",
+    emerald: "bg-emerald-50 text-emerald-600",
+    amber: "bg-amber-50 text-amber-600",
+    rose: "bg-rose-50 text-rose-600",
+    violet: "bg-violet-50 text-violet-600",
+    teal: "bg-teal-50 text-teal-600",
+    orange: "bg-orange-50 text-orange-600",
+  };
+
+  return (
+    <span className={`inline-flex h-11 w-11 items-center justify-center rounded-xl ${tones[tone] || tones.indigo}`}>
+      <Icon className="h-5 w-5" aria-hidden="true" />
+    </span>
   );
 }
