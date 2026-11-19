@@ -40,6 +40,19 @@ select public.admin_make_admin('you@example.com');
 update public.categories set status = 'inactive' where slug = 'government-jobs';
 ```
 
+## 2b. Qualification taxonomy (run once per project)
+
+[`02_job_qualification.sql`](./02_job_qualification.sql) adds the
+`jobs.qualification` enum (`TENTH`, `TWELFTH`, `ITI`, `DIPLOMA`, `GRADUATE`,
+`BTECH_MTECH`, `ANY`) plus its indexes. It is non-destructive and idempotent, so
+it is safe to run on a live database. Existing jobs are backfilled with `ANY`,
+which means they stay visible in every qualification filter until an employer
+edits them.
+
+```sql
+-- Supabase Dashboard -> SQL Editor -> paste 02_job_qualification.sql -> Run
+```
+
 ## 3. Schema overview
 
 ```

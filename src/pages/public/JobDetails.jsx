@@ -7,12 +7,14 @@ import {
   Briefcase,
   CalendarDays,
   Clock3,
+  GraduationCap,
   MapPin,
   MessageCircle,
   Sparkles,
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { LoadingState } from "../../components/ui";
+import { qualificationLabel } from "../../lib/qualifications";
 
 export default function JobDetails() {
   const { id } = useParams();
@@ -45,6 +47,7 @@ export default function JobDetails() {
         deadline,
         is_featured,
         created_at,
+        qualification,
         employers (
           company_name,
           description,
@@ -230,6 +233,7 @@ export default function JobDetails() {
                   <DetailItem icon={MapPin} label="Location" value={job.locations?.name || "N/A"} />
                   <DetailItem icon={Briefcase} label="Category" value={job.categories?.name || "N/A"} />
                   <DetailItem icon={Clock3} label="Job Type" value={job.job_type || "N/A"} />
+                  <DetailItem icon={GraduationCap} label="Minimum Qualification" value={qualificationLabel(job.qualification)} />
                   <DetailItem icon={Banknote} label="Salary" value={formatSalary(job.min_salary, job.max_salary)} />
                   <DetailItem icon={BadgeCheck} label="Experience" value={formatExperience(job.experience_min, job.experience_max)} />
                   {job.deadline && (

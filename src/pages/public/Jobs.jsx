@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Briefcase, MapPin, Search, SlidersHorizontal, SearchX } from "lucide-react";
+import { Briefcase, GraduationCap, MapPin, Search, SlidersHorizontal, SearchX } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import JobCard, { JobCardSkeleton } from "../../components/JobCard";
 import { EmptyState } from "../../components/ui";
+import {
+  QUALIFICATION_OPTIONS,
+  normalizeQualification,
+  qualificationFilterValues,
+} from "../../lib/qualifications";
+import useSeo from "../../hooks/useSeo";
 
 export default function Jobs() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,15 +19,26 @@ export default function Jobs() {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  useSeo({
+    title: "All jobs in Delhi NCR — search by category, location & qualification | NCR Jobs",
+    description:
+      "Search every active job in Delhi NCR by keyword, category, location and minimum qualification — 10th pass, 12th pass, ITI, diploma, graduate and B.Tech openings.",
+    path: "/jobs",
+  });
+
   // Read URL parameters
   const keywordParam = searchParams.get("keyword") || "";
   const categoryParam = searchParams.get("category") || "";
   const locationParam = searchParams.get("location") || "";
+  const qualificationParam = normalizeQualification(
+    searchParams.get("qualification"),
+  );
 
   // Local state for inputs
   const [keyword, setKeyword] = useState(keywordParam);
   const [categoryId, setCategoryId] = useState(categoryParam);
   const [locationId, setLocationId] = useState(locationParam);
+  const [qualificationId, setQualificationId] = useState(qualificationParam);
 
   useEffect(() => {
     fetchFilters();
@@ -72,6 +89,11 @@ export default function Jobs() {
       query = query.eq("location_id", locationParam);
     }
 
+    const qualificationValues = qualificationFilterValues(qualificationParam);
+    if (qualificationValues.length) {
+      query = query.in("qualification", qualificationValues);
+    }
+
     const { data, error } = await query;
 
     if (error) {
@@ -89,6 +111,7 @@ export default function Jobs() {
     if (keyword.trim()) params.keyword = keyword.trim();
     if (categoryId) params.category = categoryId;
     if (locationId) params.location = locationId;
+    if (qualificationId) params.qualification = qualificationId;
     
     setSearchParams(params);
   }
@@ -97,6 +120,7 @@ export default function Jobs() {
     setKeyword("");
     setCategoryId("");
     setLocationId("");
+    setQualificationId("");
     setSearchParams({});
   }
 
@@ -143,6 +167,21 @@ export default function Jobs() {
               >
                 <option value="">All Categories</option>
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+
+            <div className="relative min-w-0 flex-1 lg:max-w-[14rem]">
+              <GraduationCap className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+              <select
+                value={qualificationId}
+                onChange={(e) => setQualificationId(e.target.value)}
+                aria-label="Minimum qualification"
+                className={`select pl-10 ${qualificationId ? "border-indigo-300 bg-indigo-50/60 ring-2 ring-indigo-500/10" : ""}`}
+              >
+                <option value="">Any Qualification</option>
+                {QUALIFICATION_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
               </select>
             </div>
 

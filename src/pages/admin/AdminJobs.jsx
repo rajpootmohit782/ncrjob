@@ -12,6 +12,7 @@ import {
 import { supabase } from "../../lib/supabaseClient";
 import AdminMenu from "../../components/AdminMenu";
 import { EmptyState, FormMessage, LoadingState } from "../../components/ui";
+import { QUALIFICATION_OPTIONS } from "../../lib/qualifications";
 
 function statusClasses(status) {
   if (status === "active") return "bg-emerald-50 text-emerald-700 ring-emerald-200";
@@ -46,6 +47,7 @@ export default function AdminJobs() {
         title,
         status,
         is_featured,
+        qualification,
         created_at,
         employers (
           company_name
@@ -170,12 +172,13 @@ export default function AdminJobs() {
         ) : (
           <div className="card overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[860px] border-collapse text-left text-sm">
+              <table className="w-full min-w-[980px] border-collapse text-left text-sm">
                 <thead>
                   <tr className="border-b border-line bg-slate-50/80 text-xs uppercase tracking-wider text-slate-500">
                     <th className="px-4 py-3 font-semibold">Job</th>
                     <th className="px-4 py-3 font-semibold">Company</th>
                     <th className="px-4 py-3 font-semibold">Location</th>
+                    <th className="px-4 py-3 font-semibold">Qualification</th>
                     <th className="px-4 py-3 font-semibold">Status</th>
                     <th className="px-4 py-3 font-semibold">Featured</th>
                     <th className="px-4 py-3 font-semibold">Actions</th>
@@ -198,6 +201,31 @@ export default function AdminJobs() {
 
                       <td className="px-4 py-4 text-muted">
                         {job.locations?.name || "N/A"}
+                      </td>
+
+                      <td className="px-4 py-4">
+                        <label className="sr-only" htmlFor={`qualification-${job.id}`}>
+                          Minimum qualification
+                        </label>
+                        <select
+                          id={`qualification-${job.id}`}
+                          value={job.qualification || "ANY"}
+                          disabled={actionLoadingId === job.id}
+                          onChange={(event) =>
+                            updateJob(
+                              job.id,
+                              { qualification: event.target.value },
+                              "Qualification updated.",
+                            )
+                          }
+                          className="select min-h-9 w-40 py-1.5 pl-2.5 pr-8 text-xs"
+                        >
+                          {QUALIFICATION_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
                       </td>
 
                       <td className="px-4 py-4">

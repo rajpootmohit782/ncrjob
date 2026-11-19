@@ -76,6 +76,9 @@ $$;
 
 drop trigger if exists on_auth_user_created on auth.users;
 
+-- Application enum types (not handled by the loop above).
+drop type if exists public.job_qualification cascade;
+
 -- Delete every login account (this also removes their sessions/tokens).
 -- Comment this line out if you want to keep the existing logins.
 delete from auth.users;
@@ -138,6 +141,17 @@ create table public.locations (
   created_at  timestamptz not null default now()
 );
 
+-- Minimum qualification taxonomy used by the homepage tiles and /jobs filter.
+create type public.job_qualification as enum (
+  'TENTH',
+  'TWELFTH',
+  'ITI',
+  'DIPLOMA',
+  'GRADUATE',
+  'BTECH_MTECH',
+  'ANY'
+);
+
 -- Plan catalogue. Prices are in INR and are validated server-side, so a user
 -- can never change the amount from the browser.
 create table public.plans (
@@ -164,6 +178,7 @@ create table public.jobs (
   experience_min  numeric(4, 1),
   experience_max  numeric(4, 1),
   job_type        text not null default 'full-time' check (job_type in ('full-time', 'part-time', 'internship', 'remote', 'contract', 'temporary')),
+  qualification   public.job_qualification not null default 'ANY',
   status          text not null default 'pending' check (status in ('pending', 'active', 'rejected', 'closed')),
   is_featured     boolean not null default false,
   deadline        date,
@@ -204,6 +219,9 @@ create index jobs_category_id_idx         on public.jobs (category_id);
 create index jobs_location_id_idx         on public.jobs (location_id);
 create index jobs_status_created_idx      on public.jobs (status, created_at desc);
 create index jobs_featured_idx            on public.jobs (is_featured) where is_featured;
+create index jobs_qualification_idx       on public.jobs (qualification);
+create index jobs_status_qualification_created_idx
+  on public.jobs (status, qualification, created_at desc);
 create index subs_user_id_idx             on public.employer_subscriptions (user_id);
 create index subs_status_idx              on public.employer_subscriptions (status);
 create index subs_order_id_idx            on public.employer_subscriptions (razorpay_order_id);
@@ -633,24 +651,17 @@ grant all on all tables in schema public to service_role;
 -- ----------------------------------------------------------------------------
 -- 6. SEED DATA  (NO government jobs — private/NCR market only)
 -- ----------------------------------------------------------------------------
+-- Category taxonomy mirrors the six qualification tiles shown on the homepage.
+-- Field categories (BPO, Data Entry, Sales, …) were retired when the site moved
+-- to a qualification-first feed. Keep this list in sync with
+-- src/lib/qualifications.js.
 insert into public.categories (name, slug) values
-  ('Private Jobs',                    'private-jobs'),
-  ('Data Entry & Back Office',        'data-entry-back-office'),
-  ('BPO & Customer Care',             'bpo-customer-care'),
-  ('Delivery, Driver & Logistics',    'delivery-driver-logistics'),
-  ('Sales & Marketing',               'sales-marketing'),
-  ('Receptionist & Front Office',     'receptionist-front-office'),
-  ('Security Guard & Housekeeping',   'security-housekeeping'),
-  ('Accounts & Finance',              'accounts-finance'),
-  ('HR & Admin',                      'hr-admin'),
-  ('Teaching & Tutoring',             'teaching-tutoring'),
-  ('Campus & Trainee Jobs',           'campus-trainee'),
-  ('Aadhar & Field Verification',     'aadhar-field-verification'),
-  ('IIT & Institute Jobs',            'iit-institute-jobs'),
-  ('Work From Home',                  'work-from-home'),
-  ('Noida Jobs',                      'noida-jobs'),
-  ('Gurgaon Jobs',                    'gurgaon-jobs'),
-  ('Other Jobs',                      'other-jobs')
+  ('10th Pass Jobs',      '10th-pass-jobs'),
+  ('12th Pass Jobs',      '12th-pass-jobs'),
+  ('ITI Jobs',            'iti-jobs'),
+  ('Diploma Jobs',        'diploma-jobs'),
+  ('Graduation Jobs',     'graduate-jobs'),
+  ('B.Tech / M.Tech Jobs','btech-mtech-jobs')
 on conflict (slug) do nothing;
 
 insert into public.locations (name) values

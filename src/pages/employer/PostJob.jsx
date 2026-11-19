@@ -4,6 +4,7 @@ import { ArrowLeft, BriefcaseBusiness, CircleAlert } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import useEmployer from "../../hooks/useEmployer";
 import { FormMessage, LoadingState } from "../../components/ui";
+import { QUALIFICATION_OPTIONS } from "../../lib/qualifications";
 
 export default function PostJob() {
   const { employer, loading: employerLoading, error: employerError } = useEmployer();
@@ -16,6 +17,7 @@ export default function PostJob() {
     category_id: "",
     location_id: "",
     job_type: "full-time",
+    qualification: "",
     min_salary: "",
     max_salary: "",
     experience_min: "",
@@ -125,6 +127,12 @@ export default function PostJob() {
       return;
     }
 
+    if (!form.qualification) {
+      setMessage("Minimum qualification is required. Choose \"Any / No specific qualification\" if none applies.");
+      setMessageType("error");
+      return;
+    }
+
     if (!form.description.trim()) {
       setMessage("Job description is required.");
       setMessageType("error");
@@ -139,6 +147,7 @@ export default function PostJob() {
       category_id: form.category_id || null,
       location_id: form.location_id || null,
       job_type: form.job_type,
+      qualification: form.qualification,
       min_salary: toNumberOrNull(form.min_salary),
       max_salary: toNumberOrNull(form.max_salary),
       experience_min: toNumberOrNull(form.experience_min),
@@ -176,6 +185,7 @@ export default function PostJob() {
         category_id: "",
         location_id: "",
         job_type: "full-time",
+        qualification: "",
         min_salary: "",
         max_salary: "",
         experience_min: "",
@@ -337,6 +347,25 @@ export default function PostJob() {
                 <option value="part-time">Part Time</option>
                 <option value="internship">Internship</option>
                 <option value="remote">Remote</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="label" htmlFor="qualification">Minimum Qualification *</label>
+              <select
+                id="qualification"
+                name="qualification"
+                value={form.qualification}
+                onChange={handleChange}
+                required
+                className="select"
+              >
+                <option value="">Select minimum qualification</option>
+                {QUALIFICATION_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </div>
 

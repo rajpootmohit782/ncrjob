@@ -22,7 +22,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminJobs from "./pages/admin/AdminJobs";
 
 import Home from "./pages/public/Home";
+import QualificationJobs from "./pages/public/QualificationJobs";
 import Footer from "./components/Footer";
+import { QUALIFICATIONS } from "./lib/qualifications";
 
 import BecomeEmployer from "./pages/public/BecomeEmployer";
 import AdminEmployers from "./pages/admin/AdminEmployers";
@@ -45,6 +47,15 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
+
+          {/* Static qualification landing pages (SEO) */}
+          {QUALIFICATIONS.map(({ value, slug }) => (
+            <Route
+              key={slug}
+              path={`/${slug}`}
+              element={<QualificationJobs qualification={value} />}
+            />
+          ))}
 
           {/* Auth pages */}
           <Route path="/login" element={<Login />} />

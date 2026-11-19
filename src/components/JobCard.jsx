@@ -1,17 +1,40 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
+
+const NEW_JOB_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+function isNewJob(createdAt) {
+  if (!createdAt) return false;
+  const created = new Date(createdAt).getTime();
+  if (Number.isNaN(created)) return false;
+  return Date.now() - created < NEW_JOB_WINDOW_MS;
+}
 
 export default function JobCard({ job, salary }) {
   const company = job.employers?.company_name || "Company";
+  const location = job.locations?.name || "";
+  const fresh = isNewJob(job.created_at);
 
   return (
     <Link
       to={`/jobs/${job.id}`}
       className="card group block p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-lift sm:grid sm:grid-cols-[minmax(0,2.2fr)_minmax(0,1.1fr)_auto_auto] sm:items-center sm:gap-4 sm:px-5 sm:py-4"
     >
-      <h3 className="break-words text-sm font-bold leading-5 text-ink transition-colors group-hover:text-brand sm:text-base">
-        {job.title}
-      </h3>
+      <div className="min-w-0">
+        <h3 className="break-words text-sm font-bold leading-5 text-ink transition-colors group-hover:text-brand sm:text-base">
+          {job.title}
+          {fresh && <span className="badge-new ml-2 align-middle">New</span>}
+        </h3>
+
+        {location && (
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            <span className="chip">
+              <MapPin className="h-3 w-3" aria-hidden="true" />
+              {location}
+            </span>
+          </div>
+        )}
+      </div>
 
       <div className="mt-2 flex items-center justify-between gap-3 sm:contents">
         <p className="min-w-0 break-words text-xs font-medium text-brand sm:text-sm">
@@ -32,7 +55,10 @@ export default function JobCard({ job, salary }) {
 export function JobCardSkeleton() {
   return (
     <div className="card p-4 sm:grid sm:grid-cols-[minmax(0,2.2fr)_minmax(0,1.1fr)_auto_auto] sm:items-center sm:gap-4 sm:px-5 sm:py-4">
-      <div className="skeleton h-5 w-3/4" />
+      <div>
+        <div className="skeleton h-5 w-3/4" />
+        <div className="skeleton mt-2 h-5 w-20 rounded-full" />
+      </div>
       <div className="mt-2 flex items-center justify-between gap-3 sm:contents">
         <div className="skeleton h-4 w-1/2 sm:w-3/4" />
         <div className="skeleton h-4 w-24" />

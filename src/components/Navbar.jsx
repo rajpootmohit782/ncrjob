@@ -24,61 +24,71 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
-      <div className="container-page flex min-h-16 flex-wrap items-center justify-between gap-3 py-2.5">
-        <Link to="/" className="group flex min-h-11 items-center gap-2.5" aria-label="VMWjobs home">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-900/20 transition-transform duration-200 group-hover:-rotate-3">
-            <Briefcase className="h-4.5 w-4.5" aria-hidden="true" />
+    <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl">
+      <div className="container-page flex h-14 items-center justify-between gap-2">
+        <Link
+          to="/"
+          className="group flex min-h-11 shrink-0 items-center gap-2"
+          aria-label="VMWjobs home"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-900/20 transition-transform duration-200 group-hover:-rotate-3">
+            <Briefcase className="h-4 w-4" aria-hidden="true" />
           </span>
-          <span className="font-display text-xl font-extrabold tracking-tight text-ink">
+          <span className="font-display text-lg font-extrabold tracking-tight text-ink">
             VMW<span className="text-brand">jobs</span>
           </span>
         </Link>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6">
-          <div className="flex items-center gap-4 sm:gap-6">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <Link
+            to="/jobs"
+            className="inline-flex min-h-11 items-center px-1.5 text-sm font-semibold text-slate-600 transition-colors hover:text-brand"
+          >
+            Jobs
+          </Link>
+
+          {!authLoading && dashboard && (
             <Link
-              to="/"
-              className="inline-flex min-h-11 items-center text-sm font-semibold text-slate-600 transition-colors hover:text-brand"
+              to={dashboard.to}
+              className="btn btn-secondary min-h-11 px-2.5 py-2 text-xs"
+              aria-label={dashboard.label}
             >
-              Home
+              <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden lg:inline">{dashboard.label}</span>
             </Link>
+          )}
+
+          {!authLoading && role !== "admin" && (
             <Link
-              to="/jobs"
-              className="inline-flex min-h-11 items-center text-sm font-semibold text-slate-600 transition-colors hover:text-brand"
+              to={postJobTo}
+              className="btn btn-accent min-h-11 px-3 py-2 text-xs"
             >
-              All Jobs
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Post a Job</span>
+              <span className="sm:hidden">Post</span>
             </Link>
-          </div>
+          )}
 
-          <div className="flex flex-wrap items-center gap-2">
-            {!authLoading && dashboard && (
-              <Link to={dashboard.to} className="btn btn-secondary min-h-10 px-4 py-2 text-xs">
-                <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
-                {dashboard.label}
-              </Link>
-            )}
+          {!authLoading && !user && (
+            <Link
+              to="/employer-login"
+              className="btn btn-primary hidden min-h-11 px-3 py-2 text-xs md:inline-flex"
+            >
+              Employer Login
+            </Link>
+          )}
 
-            {!authLoading && role !== "admin" && (
-              <Link to={postJobTo} className="btn btn-accent min-h-10 px-4 py-2 text-xs">
-                <Plus className="h-4 w-4" aria-hidden="true" />
-                Post a Job
-              </Link>
-            )}
-
-            {!authLoading && !user && (
-              <Link to="/employer-login" className="btn btn-primary min-h-10 px-4 py-2 text-xs">
-                Employer Login
-              </Link>
-            )}
-
-            {!authLoading && user && (
-              <button type="button" onClick={handleSignOut} className="btn btn-ghost min-h-10 px-3 py-2 text-xs">
-                <LogOut className="h-4 w-4" aria-hidden="true" />
-                Sign out
-              </button>
-            )}
-          </div>
+          {!authLoading && user && (
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="btn btn-ghost min-h-11 px-2.5 py-2 text-xs"
+              aria-label="Sign out"
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden lg:inline">Sign out</span>
+            </button>
+          )}
         </div>
       </div>
     </nav>
