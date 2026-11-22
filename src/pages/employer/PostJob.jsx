@@ -70,18 +70,9 @@ export default function PostJob() {
     fetchLocations();
   }, []);
 
-  // Pre-fill the company from the employer profile the first time, so every
-  // post already has a company without forcing the employer to retype it.
-  useEffect(() => {
-    if (!employer?.company_name) return;
-
-    setForm((previous) => {
-      if (previous.company) return previous;
-      const next = { ...previous, company: employer.company_name };
-      savePostJobDraft(next);
-      return next;
-    });
-  }, [employer]);
+  // Note: company is deliberately NOT pre-filled from the employer profile.
+  // Employers can be freelance HRs posting for different client companies,
+  // so the company belongs to this specific job and is typed each time.
 
   async function fetchCategories() {
     const { data, error } = await supabase
@@ -237,7 +228,7 @@ export default function PostJob() {
       // the employer's job_limit. Do not update it again from the browser.
       setCreditsUsed((used) => used + 1);
 
-      setForm({ ...INITIAL_FORM, company: employer.company_name || "" });
+      setForm({ ...INITIAL_FORM });
     }
 
     setSaving(false);
@@ -354,11 +345,13 @@ export default function PostJob() {
                 value={form.company}
                 onChange={handleChange}
                 required
-                placeholder="Example: TCS, Infosys, Wipro"
+                placeholder="Company hiring for this job"
                 className="input"
               />
               <p className="mt-1.5 text-xs text-muted">
-                Shown on the job as{" "}
+                Enter the client company for{" "}
+                <strong className="font-semibold text-ink">this job</strong> —
+                it changes with every post. Shown as{" "}
                 <span className="font-semibold text-ink">
                   {form.title.trim() || "Job Title"}
                   {form.company.trim() ? ` (${form.company.trim()})` : ""}
