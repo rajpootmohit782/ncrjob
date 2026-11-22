@@ -177,8 +177,8 @@ export default function JobDetails() {
           Back to jobs
         </Link>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
-          <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+          <div className="min-w-0 space-y-6">
             <div className="card overflow-hidden">
               <div className="hero-gradient relative p-6 text-white sm:p-8">
                 <div className="hero-dots pointer-events-none absolute inset-0 opacity-30" aria-hidden="true" />
@@ -260,7 +260,7 @@ export default function JobDetails() {
             </div>
           </div>
 
-          <aside className="card p-6 lg:sticky lg:top-24">
+          <aside className="min-w-0 card p-6 lg:sticky lg:top-24">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
               <MessageCircle className="h-6 w-6" aria-hidden="true" />
             </div>
