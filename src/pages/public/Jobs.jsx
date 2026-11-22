@@ -70,7 +70,7 @@ export default function Jobs() {
         max_salary,
         is_featured,
         created_at,
-        employers (company_name),
+        employers (contact_person),
         categories (id, name),
         locations (id, name)
       `)

@@ -49,7 +49,7 @@ export default function JobDetails() {
         created_at,
         qualification,
         employers (
-          company_name,
+          contact_person,
           description,
           industry,
           location,
@@ -120,7 +120,7 @@ export default function JobDetails() {
     }
 
     const message = `Hello, I am interested in the "${job.title}" position at ${
-      job.employers?.company_name || "your company"
+      job?.employers?.contact_person || "your employer"
     }. I found this job on VMWjobs.`;
 
     const encodedMessage = encodeURIComponent(message);
@@ -167,7 +167,7 @@ export default function JobDetails() {
   }
 
   const whatsappLink = getWhatsAppLink();
-  const company = job.employers?.company_name || "Company";
+  const employerName = job.employers?.contact_person || "Employer";
 
   return (
     <div className="page-shell">
@@ -218,9 +218,9 @@ export default function JobDetails() {
               </div>
 
               <div className="p-6 sm:p-8">
-                <h2 className="text-lg font-bold text-ink">Company</h2>
+                <h2 className="text-lg font-bold text-ink">Employer</h2>
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">
-                  <span className="font-semibold text-ink">{company}</span>
+                  <span className="font-semibold text-ink">{employerName}</span>
                   {job.employers?.is_verified && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
                       <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />

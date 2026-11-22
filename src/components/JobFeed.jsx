@@ -17,7 +17,7 @@ const JOB_FIELDS = `
   is_featured,
   created_at,
   qualification,
-  employers (company_name),
+  employers (contact_person),
   locations (id, name)
 `;
 

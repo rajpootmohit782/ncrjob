@@ -11,7 +11,7 @@ function isNewJob(createdAt) {
 }
 
 export default function JobCard({ job, salary }) {
-  const company = job.employers?.company_name || "Company";
+  const employerName = job.employers?.contact_person || "Employer";
   const location = job.locations?.name || "";
   const fresh = isNewJob(job.created_at);
 
@@ -38,7 +38,7 @@ export default function JobCard({ job, salary }) {
 
       <div className="mt-2 flex items-center justify-between gap-3 sm:contents">
         <p className="min-w-0 break-words text-xs font-medium text-brand sm:text-sm">
-          {company}
+          {employerName}
         </p>
         <p className="shrink-0 text-sm font-bold text-emerald-600 sm:text-right">
           {salary}
