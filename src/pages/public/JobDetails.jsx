@@ -15,6 +15,7 @@ import {
 import { supabase } from "../../lib/supabaseClient";
 import { LoadingState } from "../../components/ui";
 import { qualificationLabel } from "../../lib/qualifications";
+import useSeo from "../../hooks/useSeo";
 
 export default function JobDetails() {
   const { id } = useParams();
@@ -26,6 +27,54 @@ export default function JobDetails() {
   useEffect(() => {
     fetchJob();
   }, [id]);
+
+  const jobTitle = job?.title ? `${job.title} in Delhi NCR | VMWjobs` : "Job details in Delhi NCR | VMWjobs";
+  const jobDescription = job
+    ? `${job.title} in ${job.locations?.name || job.employers?.location || "Delhi NCR"}. ${job.description || "View job details and apply directly."}`.replace(/\s+/g, " ").slice(0, 300)
+    : "View job details and apply directly to employers hiring in Delhi NCR.";
+  const structuredJob = job ? {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: [job.description, job.requirements].filter(Boolean).join("\n\n"),
+    datePosted: job.created_at,
+    ...(job.deadline ? { validThrough: new Date(`${job.deadline}T23:59:59+05:30`).toISOString() } : {}),
+    employmentType: job.job_type ? String(job.job_type).toUpperCase().replace(/[ -]+/g, "_") : undefined,
+    hiringOrganization: {
+      "@type": "Organization",
+      name: job.employers?.company_name || "Employer",
+      ...(job.employers?.description ? { description: job.employers.description } : {}),
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: job.locations?.name || job.employers?.location || "Delhi NCR",
+        addressRegion: "Delhi NCR",
+        addressCountry: "IN",
+      },
+    },
+    ...(job.min_salary || job.max_salary ? {
+      baseSalary: {
+        "@type": "MonetaryAmount",
+        currency: "INR",
+        value: {
+          "@type": "QuantitativeValue",
+          ...(job.min_salary ? { minValue: job.min_salary } : {}),
+          ...(job.max_salary ? { maxValue: job.max_salary } : {}),
+          unitText: "MONTH",
+        },
+      },
+    } : {}),
+    url: `https://vmwncrjob.in/jobs/${id}`,
+  } : undefined;
+
+  useSeo({
+    title: jobTitle,
+    description: jobDescription,
+    path: `/jobs/${id}`,
+    structuredData: structuredJob,
+  });
 
   async function fetchJob() {
     setLoading(true);
@@ -49,6 +98,7 @@ export default function JobDetails() {
         created_at,
         qualification,
         employers (
+          company_name,
           contact_person,
           description,
           industry,

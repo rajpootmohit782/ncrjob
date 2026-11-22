@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import useSeo from "../../hooks/useSeo";
 
 const reasons = [
   "100% Free for job seekers",
@@ -11,6 +12,7 @@ const reasons = [
 ];
 
 export default function AboutUs() {
+  useSeo({ title: "About VMWjobs | Delhi NCR Job Marketplace", description: "Learn how VMWjobs connects job seekers with private-sector employers across Noida, Greater Noida, Gurugram and Delhi NCR.", path: "/about" });
   return (
     <div className="page-shell">
       <div className="container-page max-w-4xl py-10 sm:py-14">

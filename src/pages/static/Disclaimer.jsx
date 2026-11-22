@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 
+import useSeo from "../../hooks/useSeo";
+
 export default function Disclaimer() {
+  useSeo({ title: "Disclaimer | VMWjobs", description: "Read the VMWjobs disclaimer about job listings, employers and use of this Delhi NCR job marketplace.", path: "/disclaimer" });
   return (
     <div className="page-shell">
       <div className="container-page max-w-4xl py-10 sm:py-14">

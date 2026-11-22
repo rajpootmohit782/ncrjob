@@ -2,7 +2,10 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { SITE } from "../../lib/site";
 
+import useSeo from "../../hooks/useSeo";
+
 export default function PrivacyPolicy() {
+  useSeo({ title: "Privacy Policy | VMWjobs", description: "Read the VMWjobs privacy policy and learn how information is handled when you use our Delhi NCR job marketplace.", path: "/privacy" });
   return (
     <div className="page-shell">
       <div className="container-page max-w-4xl py-10 sm:py-14">

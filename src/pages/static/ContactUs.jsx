@@ -10,8 +10,10 @@ import {
   Send,
 } from "lucide-react";
 import { SITE } from "../../lib/site";
+import useSeo from "../../hooks/useSeo";
 
 export default function ContactUs() {
+  useSeo({ title: "Contact VMWjobs | Delhi NCR Jobs", description: "Contact the VMWjobs team for help with job listings, employer accounts or questions about our Delhi NCR job marketplace.", path: "/contact" });
   const [formData, setFormData] = useState({
     name: "",
     email: "",

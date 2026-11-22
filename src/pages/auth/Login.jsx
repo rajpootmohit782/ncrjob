@@ -4,6 +4,7 @@ import { LockKeyhole, Mail, LogIn } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabaseClient";
 import { FormMessage } from "../../components/ui";
+import useSeo from "../../hooks/useSeo";
 
 export default function Login({ employerMode = false }) {
   const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ export default function Login({ employerMode = false }) {
   const navigate = useNavigate();
 
   const title = employerMode ? "Employer Login" : "Login";
+  useSeo({ title: `${title} | VMWjobs`, description: "Sign in to your VMWjobs account.", robots: "noindex,nofollow", path: employerMode ? "/employer-login" : "/login" });
 
   async function handleSubmit(e) {
     e.preventDefault();

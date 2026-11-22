@@ -10,6 +10,7 @@ import {
 import { supabase } from "../../lib/supabaseClient";
 import { payForPlan } from "../../lib/razorpay";
 import { FormMessage } from "../../components/ui";
+import useSeo from "../../hooks/useSeo";
 
 const FALLBACK_PLANS = [
   { id: "basic", name: "Basic Plan", price: 9, jobs: 5, validity: "30 Days" },
@@ -17,6 +18,7 @@ const FALLBACK_PLANS = [
 ];
 
 export default function BecomeEmployer() {
+  useSeo({ title: "Hire in Delhi NCR | Post Jobs on VMWjobs", description: "Reach job seekers across Noida, Greater Noida, Gurugram and Delhi. Create an employer account and post private-sector openings on VMWjobs.", path: "/become-employer" });
   const navigate = useNavigate();
 
   const [plans, setPlans] = useState(FALLBACK_PLANS);

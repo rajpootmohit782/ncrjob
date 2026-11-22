@@ -1,10 +1,12 @@
 ﻿import { Link } from "react-router-dom";
 import { ArrowLeft, Download, Smartphone, ShieldCheck, Info } from "lucide-react";
+import useSeo from "../../hooks/useSeo";
 
 const APK_URL = import.meta.env.VITE_APK_URL || "/apk/VMWjobs-v1.0.apk";
 const APK_SHA256 = "DFA459BC9A107BC238D4C8E5BDBE132B4E91B21C95983FED63149438ED3F9086";
 
 export default function DownloadApp() {
+  useSeo({ title: "Download the VMWjobs App | Delhi NCR Jobs", description: "Download the free VMWjobs app to browse private-sector jobs in Noida, Greater Noida, Gurugram and Delhi NCR.", path: "/download" });
   return (
     <div className="page-shell">
       <div className="container-page max-w-4xl py-10 sm:py-14">

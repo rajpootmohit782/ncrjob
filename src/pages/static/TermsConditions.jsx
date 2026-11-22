@@ -2,7 +2,10 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { SITE } from "../../lib/site";
 
+import useSeo from "../../hooks/useSeo";
+
 export default function TermsConditions() {
+  useSeo({ title: "Terms and Conditions | VMWjobs", description: "Review the terms for using VMWjobs, a private-sector job marketplace serving Delhi NCR.", path: "/terms" });
   return (
     <div className="page-shell">
       <div className="container-page max-w-4xl py-10 sm:py-14">

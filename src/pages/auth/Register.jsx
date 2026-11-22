@@ -3,8 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, UserPlus } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { FormMessage } from "../../components/ui";
+import useSeo from "../../hooks/useSeo";
 
 export default function Register() {
+  useSeo({ title: "Create an Account | VMWjobs", description: "Create a free VMWjobs candidate account.", robots: "noindex,nofollow", path: "/register" });
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

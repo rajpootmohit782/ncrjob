@@ -4,8 +4,10 @@ import { LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabaseClient";
 import { FormMessage } from "../../components/ui";
+import useSeo from "../../hooks/useSeo";
 
 export default function AdminLogin() {
+  useSeo({ title: "Administrator Sign In | VMWjobs", description: "VMWjobs administrator sign in.", robots: "noindex,nofollow" });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
