@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Briefcase, LayoutDashboard, LogOut, Plus } from "lucide-react";
+import { LayoutDashboard, LogOut, Plus } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
@@ -31,9 +31,13 @@ export default function Navbar() {
           className="group flex min-h-11 shrink-0 items-center gap-2"
           aria-label="VMW NCR Jobs home"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-900/20 transition-transform duration-200 group-hover:-rotate-3">
-            <Briefcase className="h-4 w-4" aria-hidden="true" />
-          </span>
+          <img
+            src="/vmw-ncr-jobs-logo.png"
+            alt=""
+            width="36"
+            height="36"
+            className="h-8 w-8 shrink-0 rounded-lg bg-white object-contain ring-1 ring-slate-200/80 transition-transform duration-200 group-hover:-rotate-3 sm:h-9 sm:w-9"
+          />
           <span className="flex flex-col leading-none">
             <span className="font-display text-lg font-extrabold tracking-tight text-ink">
               VMW <span className="text-brand">NCR Jobs</span>
