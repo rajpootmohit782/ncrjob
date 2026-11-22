@@ -5,6 +5,7 @@ import { supabase } from "../../lib/supabaseClient";
 import useEmployer from "../../hooks/useEmployer";
 import { FormMessage, LoadingState } from "../../components/ui";
 import { QUALIFICATION_OPTIONS } from "../../lib/qualifications";
+import { hasUnlimitedJobs } from "../../lib/employer";
 
 export default function PostJob() {
   const { employer, loading: employerLoading, error: employerError } = useEmployer();
@@ -231,7 +232,10 @@ export default function PostJob() {
     );
   }
 
-  const remainingCredits = Math.max((employer.job_limit ?? 0) - creditsUsed, 0);
+  const isUnlimited = hasUnlimitedJobs(employer);
+  const remainingCredits = isUnlimited
+    ? Number.POSITIVE_INFINITY
+    : Math.max((employer.job_limit ?? 0) - creditsUsed, 0);
 
   return (
     <div className="page-shell">
@@ -250,12 +254,12 @@ export default function PostJob() {
           </div>
           <span
             className={`inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-bold ring-1 ${
-              remainingCredits > 0
+              isUnlimited || remainingCredits > 0
                 ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
                 : "bg-rose-50 text-rose-700 ring-rose-200"
             }`}
           >
-            {remainingCredits} job {remainingCredits === 1 ? "credit" : "credits"} left
+            {isUnlimited ? "Unlimited" : `${remainingCredits} job ${remainingCredits === 1 ? "credit" : "credits"} left`}
           </span>
         </div>
 
@@ -267,7 +271,7 @@ export default function PostJob() {
           </div>
         )}
 
-        {employer.status === "active" && remainingCredits <= 0 && (
+        {employer.status === "active" && !isUnlimited && remainingCredits <= 0 && (
           <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             You have used all your job credits. Renew your plan to post another
@@ -460,7 +464,7 @@ export default function PostJob() {
 
           <button
             type="submit"
-            disabled={saving || employer.status !== "active" || remainingCredits <= 0}
+            disabled={saving || employer.status !== "active" || (!isUnlimited && remainingCredits <= 0)}
             className="btn btn-primary mt-6 w-full sm:w-auto"
           >
             {saving ? "Creating..." : "Create Job"}

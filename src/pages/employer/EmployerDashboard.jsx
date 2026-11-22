@@ -16,6 +16,7 @@ import { useAuth } from "../../context/AuthContext";
 import useEmployer from "../../hooks/useEmployer";
 import { supabase } from "../../lib/supabaseClient";
 import { formatDate } from "../../lib/format";
+import { hasUnlimitedJobs } from "../../lib/employer";
 import { EmptyState, LoadingState } from "../../components/ui";
 
 function statusClasses(status) {
@@ -118,6 +119,7 @@ export default function EmployerDashboard() {
 
   const needsPlan = employer.status !== "active" || isExpired;
   const outOfCredits = employer.job_limit != null && employer.job_limit <= 0;
+  const isUnlimited = hasUnlimitedJobs(employer);
 
   return (
     <div className="page-shell">
@@ -190,15 +192,17 @@ export default function EmployerDashboard() {
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="card p-5">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-muted">Job credits</p>
+              <p className="text-sm font-medium text-muted">{isUnlimited ? "Job posts" : "Job credits"}</p>
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
                 <CreditCard className="h-4 w-4" aria-hidden="true" />
               </span>
             </div>
-            <p className={`mt-4 font-display text-3xl font-extrabold ${outOfCredits ? "text-rose-600" : "text-ink"}`}>
-              {employer.job_limit ?? 0}
+            <p className={`mt-4 font-display text-3xl font-extrabold ${outOfCredits ? "text-rose-600" : isUnlimited ? "text-emerald-600" : "text-ink"}`}>
+              {isUnlimited ? "Unlimited" : (employer.job_limit ?? 0)}
             </p>
-            <p className="mt-1 text-xs text-slate-400">Remaining job posts</p>
+            <p className="mt-1 text-xs text-slate-400">
+              {isUnlimited ? "No credit bar" : "Remaining job posts"}
+            </p>
           </div>
 
           <div className="card p-5">
