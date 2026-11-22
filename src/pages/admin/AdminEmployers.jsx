@@ -89,6 +89,18 @@ export default function AdminEmployers() {
     setActionLoadingId(request.id);
     setMessage("");
 
+    const hasConfirmedPayment = Boolean(request.razorpay_payment_id || request.paid_at);
+
+    if (!hasConfirmedPayment) {
+      setActionLoadingId(null);
+      showMessage(
+        "Payment is not confirmed yet. Wait for Razorpay confirmation before approving.",
+        "error",
+      );
+      await fetchData();
+      return;
+    }
+
     try {
       const { error: subError } = await supabase
         .from("employer_subscriptions")
@@ -166,6 +178,35 @@ export default function AdminEmployers() {
 
     setActionLoadingId(employer.id);
     setMessage("");
+
+    const { data: subscription, error: subscriptionError } = await supabase
+      .from("employer_subscriptions")
+      .select(
+        "id, status, razorpay_order_id, razorpay_payment_id, paid_at, plan_name, amount, job_limit, duration_days, created_at, updated_at",
+      )
+      .eq("user_id", employer.user_id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (subscriptionError) {
+      setActionLoadingId(null);
+      showMessage(subscriptionError.message || "Unable to check payment status.", "error");
+      return;
+    }
+
+    const hasConfirmedPayment = Boolean(
+      subscription?.razorpay_payment_id || subscription?.paid_at,
+    );
+
+    if (subscription && !hasConfirmedPayment) {
+      setActionLoadingId(null);
+      showMessage(
+        `Payment for ${employer.company_name || "this employer"} is not confirmed yet. Wait for Razorpay confirmation before activating.`,
+        "error",
+      );
+      return;
+    }
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
