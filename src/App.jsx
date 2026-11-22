@@ -38,6 +38,7 @@ import PrivacyPolicy from "./pages/static/PrivacyPolicy";
 import TermsConditions from "./pages/static/TermsConditions";
 import Disclaimer from "./pages/static/Disclaimer";
 import DownloadApp from "./pages/static/DownloadApp";
+import AdminTaxonomy from "./pages/admin/AdminTaxonomy";
 
 function App() {
   return (
@@ -144,6 +145,24 @@ function App() {
   element={
     <ProtectedRoute allowedRoles={["admin"]}>
       <AdminJobs />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/categories"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <AdminTaxonomy kind="categories" />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/locations"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <AdminTaxonomy kind="locations" />
     </ProtectedRoute>
   }
 />

@@ -175,7 +175,9 @@ The employer can never activate their own account. `status`, `is_verified`, `job
 | Route | Page |
 | --- | --- |
 | `/admin/dashboard` | Overview and queue counts |
-| `/admin/jobs` | Approve, reject, close or feature jobs; filter by employer (`?employer=<id>`) |
+| `/admin/jobs` | Approve, reject, close or feature jobs; filter by employer (`?employer=<id>`) or status (`?status=pending`) |
+| `/admin/categories` | Add, activate/deactivate and delete job categories |
+| `/admin/locations` | Add, activate/deactivate and delete locations |
 | `/admin/employers` | Review payments, browse all employers, block/unblock, adjust job credits, and jump to their jobs |
 
 ## Project structure

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   BriefcaseBusiness,
   Building2,
@@ -114,42 +114,56 @@ export default function AdminDashboard() {
       value: stats.totalJobs,
       tone: "ink",
       icon: BriefcaseBusiness,
+      to: "/admin/jobs",
+      hint: "View all jobs",
     },
     {
       title: "Active Jobs",
       value: stats.activeJobs,
       tone: "emerald",
       icon: CheckCircle2,
+      to: "/admin/jobs?status=active",
+      hint: "View published jobs",
     },
     {
       title: "Pending Jobs",
       value: stats.pendingJobs,
       tone: "amber",
       icon: Clock3,
+      to: "/admin/jobs?status=pending",
+      hint: "Approve pending jobs",
     },
     {
       title: "Total Employers",
       value: stats.totalEmployers,
       tone: "indigo",
       icon: Building2,
+      to: "/admin/employers",
+      hint: "View all employers",
     },
     {
       title: "Pending Employers",
       value: stats.pendingEmployers,
       tone: "violet",
       icon: Users,
+      to: "/admin/employers?status=pending",
+      hint: "Review pending employers",
     },
     {
       title: "Categories",
       value: stats.totalCategories,
       tone: "sky",
       icon: Grid2X2,
+      to: "/admin/categories",
+      hint: "Manage categories",
     },
     {
       title: "Locations",
       value: stats.totalLocations,
       tone: "lime",
       icon: MapPin,
+      to: "/admin/locations",
+      hint: "Manage locations",
     },
   ];
 
@@ -184,7 +198,12 @@ export default function AdminDashboard() {
               const Icon = card.icon;
 
               return (
-                <div key={card.title} className="card card-hover p-5">
+                <Link
+                  key={card.title}
+                  to={card.to}
+                  className="card card-hover block p-5"
+                  aria-label={`${card.title}: ${card.hint}`}
+                >
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-sm font-medium text-muted">{card.title}</p>
                     <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${style.chip}`}>
@@ -195,7 +214,12 @@ export default function AdminDashboard() {
                   <p className={`mt-4 font-display text-3xl font-extrabold ${style.value}`}>
                     <CountUp value={card.value} />
                   </p>
-                </div>
+
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-brand">
+                    {card.hint}
+                    <span aria-hidden="true">→</span>
+                  </span>
+                </Link>
               );
             })}
           </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Ban,
   BriefcaseBusiness,
@@ -19,8 +19,12 @@ export default function AdminEmployers() {
   const [paymentRequests, setPaymentRequests] = useState([]);
   const [pendingEmployers, setPendingEmployers] = useState([]);
   const [allEmployers, setAllEmployers] = useState([]);
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(() => {
+    const requested = searchParams.get("status");
+    return ["active", "pending", "blocked"].includes(requested) ? requested : "all";
+  });
   const [creditDrafts, setCreditDrafts] = useState({});
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);

@@ -1,10 +1,18 @@
 import { Link, useLocation } from "react-router-dom";
-import { BriefcaseBusiness, Building2, LayoutDashboard } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Building2,
+  Grid2X2,
+  LayoutDashboard,
+  MapPin,
+} from "lucide-react";
 
 const links = [
   { to: "/admin/dashboard", label: "Overview", icon: LayoutDashboard },
   { to: "/admin/jobs", label: "Jobs", icon: BriefcaseBusiness },
   { to: "/admin/employers", label: "Employers", icon: Building2 },
+  { to: "/admin/categories", label: "Categories", icon: Grid2X2 },
+  { to: "/admin/locations", label: "Locations", icon: MapPin },
 ];
 
 export default function AdminMenu() {

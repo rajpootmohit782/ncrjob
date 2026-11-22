@@ -27,13 +27,31 @@ export default function AdminJobs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [searchParams] = useSearchParams();
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [statusFilter, setStatusFilter] = useState(
+    () => searchParams.get("status") || "all",
+  );
   const [employerFilter, setEmployerFilter] = useState(
     () => searchParams.get("employer") || "all",
   );
   const [employers, setEmployers] = useState([]);
   const [actionLoadingId, setActionLoadingId] = useState(null);
+
+  function changeStatusFilter(value) {
+    setStatusFilter(value);
+    const next = new URLSearchParams(searchParams);
+    if (value === "all") next.delete("status");
+    else next.set("status", value);
+    setSearchParams(next, { replace: true });
+  }
+
+  function changeEmployerFilter(value) {
+    setEmployerFilter(value);
+    const next = new URLSearchParams(searchParams);
+    if (value === "all") next.delete("employer");
+    else next.set("employer", value);
+    setSearchParams(next, { replace: true });
+  }
 
   useEffect(() => {
     fetchJobs();
@@ -180,7 +198,7 @@ export default function AdminJobs() {
           {filters.map((filter) => (
             <button
               key={filter}
-              onClick={() => setStatusFilter(filter)}
+              onClick={() => changeStatusFilter(filter)}
               className={`inline-flex min-h-9 items-center rounded-full px-4 py-1.5 text-xs font-bold ring-1 transition-all duration-200 ${
                 statusFilter === filter
                   ? "bg-brand text-white ring-brand shadow-md shadow-indigo-950/20"
@@ -199,7 +217,7 @@ export default function AdminJobs() {
           <select
             id="employer-filter"
             value={employerFilter}
-            onChange={(event) => setEmployerFilter(event.target.value)}
+            onChange={(event) => changeEmployerFilter(event.target.value)}
             className="select min-h-10 max-w-full py-2 text-xs sm:w-72"
           >
             <option value="all">All employers</option>
@@ -212,7 +230,7 @@ export default function AdminJobs() {
           {employerFilter !== "all" && (
             <button
               type="button"
-              onClick={() => setEmployerFilter("all")}
+              onClick={() => changeEmployerFilter("all")}
               className="text-xs font-semibold text-brand hover:underline"
             >
               Clear employer filter
