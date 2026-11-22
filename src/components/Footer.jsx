@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Briefcase, Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { SITE } from "../lib/site";
 
 const quickLinks = [
@@ -22,12 +22,22 @@ export default function Footer() {
       <div className="container-page">
         <div className="grid gap-10 border-b border-white/10 py-12 sm:grid-cols-2 lg:grid-cols-4 lg:py-16">
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link to="/" className="inline-flex items-center gap-2.5" aria-label="VMWjobs home">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-950/40">
-                <Briefcase className="h-4.5 w-4.5" aria-hidden="true" />
-              </span>
-              <span className="font-display text-xl font-extrabold tracking-tight text-white">
-                VMW<span className="text-amber-400">jobs</span>
+            <Link to="/" className="inline-flex items-center gap-2.5" aria-label="VMW NCR Jobs home">
+              <img
+                src="/vmw-ncr-jobs-logo.png"
+                alt=""
+                width="44"
+                height="44"
+                className="h-11 w-11 shrink-0 rounded-xl bg-white object-contain p-1 ring-1 ring-white/10"
+              />
+              <span className="flex flex-col leading-none">
+                <span className="font-display text-xl font-extrabold tracking-tight text-white">
+                  <span className="text-amber-400">VMW</span>{" "}
+                  <span className="text-indigo-300">NCR Jobs</span>
+                </span>
+                <span className="mt-1 text-xs font-medium tracking-wide text-slate-500">
+                  www.vmwncrjob.in
+                </span>
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-7 text-slate-400">
@@ -124,7 +134,7 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col gap-3 py-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p className="m-0">© {new Date().getFullYear()} VMWjobs. All rights reserved.</p>
+          <p className="m-0">© {new Date().getFullYear()} VMW NCR Jobs. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-2">
             <span>
               Design:{" "}
