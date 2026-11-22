@@ -29,6 +29,8 @@ function walk(dir, relative = '') {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const rel = relative ? `${relative}/${entry.name}` : entry.name;
     if (rel === 'app-update.zip' || rel === 'app-update.json') continue;
+    // The APK is a separate download, not part of the web bundle delivered to apps.
+    if (rel.startsWith('apk/')) continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) walk(full, rel);
     else if (entry.isFile()) files.push({ full, rel });

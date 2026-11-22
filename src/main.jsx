@@ -34,4 +34,10 @@ if (!Capacitor.isNativePlatform() && import.meta.env.PROD && 'serviceWorker' in 
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {})
   })
+
+  // Capture Chrome's install event early so our popup can trigger it with one tap.
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault()
+    window.__vmwInstallPrompt = event
+  })
 }

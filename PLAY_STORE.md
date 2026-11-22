@@ -94,13 +94,8 @@ Install the APK on a connected device with `adb install app\build\outputs\apk\de
 
 ### Deploy the update to your website
 
-1. Change Vercel's **Build Command** for the site from `npm run build` to:
-
-   ```
-   npm run build:app
-   ```
-
-   This runs Vite and then `scripts/build-app-update.mjs`, producing two extra files in `dist/`:
+1. Vercel's default **Build Command** `npm run build` is enough. It runs Vite and then
+   `scripts/build-app-update.mjs`, producing two extra files in `dist/`:
    `app-update.json` (manifest) and `app-update.zip` (the site bundle).
 
 2. Deploy. Verify both URLs return 200:

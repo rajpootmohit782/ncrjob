@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
+import InstallPrompt from "./components/InstallPrompt";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -162,6 +163,7 @@ function App() {
           />
         </Routes>
               <Footer />
+        <InstallPrompt />
       </BrowserRouter>
     </AuthProvider>
   );

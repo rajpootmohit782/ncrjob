@@ -42,8 +42,9 @@ Android Chrome shows **Install app** in the menu; iPhone Safari shows **Add to H
 
 ## Deploying
 
-Vercel's build command can stay as `npm run build`, or use `npm run build:app` if you also want to
-publish a live update for the native app. Both include the APK, manifest and service worker.
+Vercel's default build command `npm run build` produces everything: the site, the APK, the PWA
+manifest/service worker, and the `app-update.json` + `app-update.zip` files used by the native
+app's live-update mechanism. (`npm run build:app` is kept as an alias.)
 
 After pushing to `main`, verify:
 

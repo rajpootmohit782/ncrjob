@@ -15,8 +15,8 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "build:app": "vite build && node scripts/build-app-update.mjs",
+    "build": "vite build && node scripts/build-app-update.mjs",
+    "build:app": "npm run build",
     "preview": "vite preview",
     "icons": "capacitor-assets generate --android --iconBackgroundColor #ffffff --splashBackgroundColor #ffffff",
     "android:sync": "vite build && node scripts/strip-android-assets.mjs && cap sync android",

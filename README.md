@@ -246,7 +246,7 @@ cd android
 .\gradlew.bat bundleRelease   # signed AAB for Play Console
 ```
 
-Web-only changes can be shipped without a new release by running `npm.cmd run build:app` and deploying `dist/` to Vercel; set the Vercel build command to `npm run build:app` so the live-update manifest and zip are published.
+Web-only changes can be shipped without a new release by pushing to `main` — the default `npm run build` also generates the live-update manifest and zip in `dist/` (see [DISTRIBUTION.md](DISTRIBUTION.md)).
 
 ## Security model
 
