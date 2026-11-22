@@ -238,6 +238,16 @@ npm.cmd run sb:deploy
 
 For live payments, replace the test Razorpay keys with live keys, update `VITE_RAZORPAY_KEY_ID` in Vercel, and push the live server keys to Supabase secrets.
 
+### Google Search Console
+
+`npm run build` generates `dist/sitemap.xml` with every public page, all six qualification
+landing pages, and the currently active job URLs fetched from Supabase. `public/robots.txt`
+points to it. After deploying:
+
+1. Open [Google Search Console](https://search.google.com/search-console) → your property.
+2. Go to **Sitemaps**, enter `sitemap.xml` and click **Submit**.
+3. Status should show **Success**. Re-deploy (or re-run the build) to refresh job URLs.
+
 ### Android (Play Store)
 
 This site can also be published as an Android app using Capacitor. The complete setup, signing and publishing guide is in **[PLAY_STORE.md](PLAY_STORE.md)**. For immediate distribution while Play review is pending — direct APK download and installable PWA — see **[DISTRIBUTION.md](DISTRIBUTION.md)**.
