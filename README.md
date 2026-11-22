@@ -238,7 +238,7 @@ For live payments, replace the test Razorpay keys with live keys, update `VITE_R
 
 ### Android (Play Store)
 
-This site can also be published as an Android app using Capacitor. The complete setup, signing and publishing guide is in **[PLAY_STORE.md](PLAY_STORE.md)**.
+This site can also be published as an Android app using Capacitor. The complete setup, signing and publishing guide is in **[PLAY_STORE.md](PLAY_STORE.md)**. For immediate distribution while Play review is pending — direct APK download and installable PWA — see **[DISTRIBUTION.md](DISTRIBUTION.md)**.
 
 ```powershell
 npm.cmd run android:sync      # build the site and sync it into android/

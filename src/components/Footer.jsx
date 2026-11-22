@@ -2,12 +2,16 @@ import { Link } from "react-router-dom";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { SITE } from "../lib/site";
 
+// Set VITE_SHOW_APK_DOWNLOAD=false after the Play Store release goes live.
+const showApkDownload = import.meta.env.VITE_SHOW_APK_DOWNLOAD !== "false";
+
 const quickLinks = [
   { to: "/", label: "Home" },
   { to: "/jobs", label: "Browse Jobs" },
   { to: "/become-employer", label: "Post a Job" },
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
+  ...(showApkDownload ? [{ to: "/download", label: "Get the App" }] : []),
 ];
 
 const legalLinks = [

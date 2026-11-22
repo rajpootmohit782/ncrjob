@@ -19,7 +19,7 @@
     "build:app": "vite build && node scripts/build-app-update.mjs",
     "preview": "vite preview",
     "icons": "capacitor-assets generate --android --iconBackgroundColor #ffffff --splashBackgroundColor #ffffff",
-    "android:sync": "vite build && cap sync android",
+    "android:sync": "vite build && node scripts/strip-android-assets.mjs && cap sync android",
     "android:aab": "cd android && gradlew.bat bundleRelease",
     "sb:login": "supabase login --agent=no",
     "sb:secrets": "supabase secrets set --env-file .env --remote=vqbatlkrteqzwlunhdln --yes",

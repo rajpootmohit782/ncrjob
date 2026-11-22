@@ -36,6 +36,7 @@ import ContactUs from "./pages/static/ContactUs";
 import PrivacyPolicy from "./pages/static/PrivacyPolicy";
 import TermsConditions from "./pages/static/TermsConditions";
 import Disclaimer from "./pages/static/Disclaimer";
+import DownloadApp from "./pages/static/DownloadApp";
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
 
           {/* Static pages */}
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/download" element={<DownloadApp />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsConditions />} />

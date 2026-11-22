@@ -1,4 +1,4 @@
-# VMWjobs Android APK (v1.0)
+﻿# VMWjobs Android APK (v1.0)
 
 Signed release build for direct installation and testing.
 
@@ -7,8 +7,8 @@ Signed release build for direct installation and testing.
 | File | `VMWjobs-v1.0.apk` |
 | Package | `in.vmwncrjob.app` |
 | Version | 1.0 (versionCode 1) |
-| Size | ~4.6 MB |
-| SHA-256 | `D9FFEED3C862983F2FF53C1108A5E5726DF3E972121495216419F36F88E996C2` |
+| Size | ~4.8 MB |
+| SHA-256 | `DFA459BC9A107BC238D4C8E5BDBE132B4E91B21C95983FED63149438ED3F9086` |
 | Signer | `CN=VMWjobs, OU=Mobile, O=VMWjobs, L=Greater Noida, ST=Uttar Pradesh, C=IN` |
 
 ## Download
@@ -22,7 +22,7 @@ https://github.com/rajpootmohit782/ncrjob/raw/main/apk/VMWjobs-v1.0.apk
 ## Install on Android
 
 1. Download the APK to your phone.
-2. Open it — Android will ask to allow "Install unknown apps" for the browser/file manager you used. Allow it.
+2. Open it â€” Android will ask to allow "Install unknown apps" for the browser/file manager you used. Allow it.
 3. Tap **Install**.
 
 Because this APK is signed with a self-generated upload key (not the Play Store signing key), you must **uninstall any previously installed VMWjobs app** before installing this one, otherwise Android will report a signature conflict.

@@ -1,0 +1,28 @@
+{
+  "name": "VMWjobs — Careers in NCR",
+  "short_name": "VMWjobs",
+  "description": "Private-sector jobs in Noida, Greater Noida, Gurugram and Delhi NCR. Browse free, apply directly on WhatsApp.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#4338ca",
+  "lang": "en-IN",
+  "categories": ["business", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

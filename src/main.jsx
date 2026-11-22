@@ -27,3 +27,11 @@ if (Capacitor.isNativePlatform()) {
   LiveUpdate.markReady().catch(() => {})
   LiveUpdate.sync().catch(() => {})
 }
+
+// Website only: register the PWA service worker so the site can be installed
+// from the browser (Add to Home Screen) and open in standalone mode.
+if (!Capacitor.isNativePlatform() && import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {})
+  })
+}
