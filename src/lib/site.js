@@ -5,18 +5,22 @@ export const SITE = {
   tagline: "Careers in NCR",
   description:
     "A private-sector job marketplace for Noida, Greater Noida, Gurugram and Delhi NCR.",
-  email: "hello@ncrjob.in",
-  phoneDisplay: "+91 92754 37897",
-  phoneHref: "tel:+919275437897",
-  whatsapp: "919275437897",
-  address: "Noida, Uttar Pradesh, India",
+  email: "Vmwncr@gmail.com",
+  phoneDisplay: "+91 9289980394",
+  phoneHref: "tel:+919289980394",
+  phones: [
+    { display: "+91 9289980394", href: "tel:+919289980394" },
+    { display: "+91 96062 57956", href: "tel:+919606257956" },
+  ],
+  whatsapp: "919289980394",
+  address: "Jagat Farm, Greater Noida, Uttar Pradesh, India",
   socials: {
-    whatsapp: "https://wa.me/919275437897",
+    whatsapp: "https://wa.me/919289980394",
     telegram: "https://t.me/yourchannel",
     instagram: "https://instagram.com/subh.ai",
   },
   credits: {
     builtBy: "https://mohitspace.in",
-    design: "https://instagram.com/subh.ai",
+    design: "https://www.instagram.com/saswat_2002?bqrl=MWFzcmNtcGllMm5vNA==",
   },
 };

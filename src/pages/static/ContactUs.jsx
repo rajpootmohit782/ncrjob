@@ -143,9 +143,13 @@ export default function ContactUs() {
               </p>
               <p className="mt-3 text-sm leading-6 text-muted">
                 Phone:<br />
-                <a href={SITE.phoneHref} className="font-semibold text-brand hover:underline">
-                  {SITE.phoneDisplay}
-                </a>
+                {SITE.phones.map((phone) => (
+                  <span key={phone.href} className="block">
+                    <a href={phone.href} className="font-semibold text-brand hover:underline">
+                      {phone.display}
+                    </a>
+                  </span>
+                ))}
               </p>
             </div>
 
@@ -189,7 +193,7 @@ export default function ContactUs() {
                 <h3 className="text-lg font-bold text-ink">Office Address</h3>
               </div>
               <p className="mt-4 text-sm leading-7 text-muted">
-                VMWjobs<br />
+                VMW NCR Jobs<br />
                 {SITE.address}
               </p>
             </div>

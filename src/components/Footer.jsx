@@ -96,10 +96,16 @@ export default function Footer() {
           <div>
             <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">Contact</h4>
             <div className="space-y-3.5 text-sm">
-              <a href={SITE.phoneHref} className="footer-link flex items-center gap-2.5">
-                <Phone className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
-                {SITE.phoneDisplay}
-              </a>
+              {SITE.phones.map((phone) => (
+                <a
+                  key={phone.href}
+                  href={phone.href}
+                  className="footer-link flex items-center gap-2.5"
+                >
+                  <Phone className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
+                  {phone.display}
+                </a>
+              ))}
               <a href={`mailto:${SITE.email}`} className="footer-link flex items-center gap-2.5">
                 <Mail className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
                 {SITE.email}

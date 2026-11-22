@@ -8,7 +8,7 @@ Security fixes are applied to the `main` branch. Older commits and forks are not
 
 Please **do not** open a public GitHub issue for security problems.
 
-Email **hello@ncrjob.in** with the subject **“Security — VMWjobs”**, including:
+Email **Vmwncr@gmail.com** with the subject **“Security — VMW NCR Jobs”**, including:
 
 - A short description of the issue
 - Steps to reproduce
