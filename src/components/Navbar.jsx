@@ -39,8 +39,9 @@ export default function Navbar() {
             className="h-8 w-8 shrink-0 rounded-lg bg-white object-contain ring-1 ring-slate-200/80 transition-transform duration-200 group-hover:-rotate-3 sm:h-9 sm:w-9"
           />
           <span className="flex flex-col leading-none">
-            <span className="font-display text-lg font-extrabold tracking-tight text-ink">
-              VMW <span className="text-brand">NCR Jobs</span>
+            <span className="font-display text-lg font-extrabold tracking-tight">
+              <span className="text-amber-500">VMW</span>{" "}
+              <span className="text-brand">NCR Jobs</span>
             </span>
             <span className="mt-0.5 text-[10px] font-medium tracking-wide text-slate-500">
               www.vmwncrjob.in

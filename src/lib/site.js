@@ -5,12 +5,12 @@ export const SITE = {
   tagline: "Careers in NCR",
   description:
     "A private-sector job marketplace for Noida, Greater Noida, Gurugram and Delhi NCR.",
-  email: "Vmwncr@gmail.com",
+  email: "vmwncrjob@gmail.com",
   phoneDisplay: "+91 9289980394",
   phoneHref: "tel:+919289980394",
   phones: [
     { display: "+91 9289980394", href: "tel:+919289980394" },
-    { display: "+91 96062 57956", href: "tel:+919606257956" },
+    { display: "+91 9606257956", href: "tel:+919606257956" },
   ],
   whatsapp: "919289980394",
   address: "Jagat Farm, Greater Noida, Uttar Pradesh, India",
