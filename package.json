@@ -16,12 +16,20 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:app": "vite build && node scripts/build-app-update.mjs",
     "preview": "vite preview",
+    "icons": "capacitor-assets generate --android --iconBackgroundColor #ffffff --splashBackgroundColor #ffffff",
+    "android:sync": "vite build && cap sync android",
+    "android:aab": "cd android && gradlew.bat bundleRelease",
     "sb:login": "supabase login --agent=no",
     "sb:secrets": "supabase secrets set --env-file .env --remote=vqbatlkrteqzwlunhdln --yes",
     "sb:deploy": "supabase functions deploy create-order verify-payment --remote=vqbatlkrteqzwlunhdln --use-api --yes"
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource-variable/sora": "^5.3.0",
     "@supabase/supabase-js": "^2.117.0",
@@ -31,8 +39,10 @@
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
     "@tailwindcss/vite": "^4.3.5",
     "@vitejs/plugin-react": "^5.0.2",
+    "archiver": "^8.0.0",
     "tailwindcss": "^4.3.5",
     "vite": "^7.1.7"
   }

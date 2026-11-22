@@ -8,13 +8,22 @@ console.log(
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { Capacitor } from '@capacitor/core'
 import '@fontsource-variable/inter'
 import '@fontsource-variable/sora'
 import App from './App.jsx'
 import './index.css'
+import LiveUpdate from './lib/liveUpdate.js'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
   </StrictMode>,
 )
+
+// Native app only. A downloaded bundle is applied at startup by MainActivity; here we
+// confirm it rendered (so rollback can work) and quietly stage any newer bundle for next launch.
+if (Capacitor.isNativePlatform()) {
+  LiveUpdate.markReady().catch(() => {})
+  LiveUpdate.sync().catch(() => {})
+}

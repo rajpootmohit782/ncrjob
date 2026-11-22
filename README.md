@@ -236,6 +236,18 @@ npm.cmd run sb:deploy
 
 For live payments, replace the test Razorpay keys with live keys, update `VITE_RAZORPAY_KEY_ID` in Vercel, and push the live server keys to Supabase secrets.
 
+### Android (Play Store)
+
+This site can also be published as an Android app using Capacitor. The complete setup, signing and publishing guide is in **[PLAY_STORE.md](PLAY_STORE.md)**.
+
+```powershell
+npm.cmd run android:sync      # build the site and sync it into android/
+cd android
+.\gradlew.bat bundleRelease   # signed AAB for Play Console
+```
+
+Web-only changes can be shipped without a new release by running `npm.cmd run build:app` and deploying `dist/` to Vercel; set the Vercel build command to `npm run build:app` so the live-update manifest and zip are published.
+
 ## Security model
 
 - RLS is enabled on all application tables.

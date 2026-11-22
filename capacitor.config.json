@@ -1,0 +1,21 @@
+{
+  "appId": "in.vmwncrjob.app",
+  "appName": "VMWjobs",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "vmwncrjob.in",
+      "*.vmwncrjob.in",
+      "razorpay.com",
+      "*.razorpay.com",
+      "supabase.co",
+      "*.supabase.co"
+    ]
+  },
+  "plugins": {
+    "LiveUpdate": {
+      "manifestUrl": "https://vmwncrjob.in/app-update.json"
+    }
+  }
+}
