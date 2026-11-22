@@ -15,9 +15,9 @@ export const SITE = {
   whatsapp: "919289980394",
   address: "Jagat Farm, Greater Noida, Uttar Pradesh, India",
   socials: {
-    whatsapp: "https://wa.me/919289980394",
+    whatsapp: "https://whatsapp.com/channel/0029VbC5Zmr0gcfOyecuZx0u",
     telegram: "https://t.me/yourchannel",
-    instagram: "https://instagram.com/subh.ai",
+    instagram: "https://www.instagram.com/vmwncrjob?avpt=MWprZHVyeHhubWcyNg==",
   },
   credits: {
     builtBy: "https://mohitspace.in",
