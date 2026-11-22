@@ -10,6 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
+import FeaturedJobs from "../../components/FeaturedJobs";
 import JobFeed from "../../components/JobFeed";
 import QualificationTiles from "../../components/QualificationTiles";
 import {
@@ -296,6 +297,8 @@ export default function Home() {
             onSelect={(value) => updateParams({ qualification: value })}
           />
         </section>
+
+        <FeaturedJobs />
 
         <JobFeed
           keyword={keywordParam}

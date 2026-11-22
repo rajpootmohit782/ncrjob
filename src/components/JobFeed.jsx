@@ -45,6 +45,7 @@ export default function JobFeed({
         .from("jobs")
         .select(JOB_FIELDS, { count: "exact" })
         .eq("status", "active")
+        .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false })
         .range(from, to);
 
@@ -165,6 +166,7 @@ export default function JobFeed({
               key={job.id}
               job={job}
               salary={formatSalary(job.min_salary, job.max_salary)}
+              featured={Boolean(job.is_featured)}
             />
           ))}
 

@@ -75,6 +75,7 @@ export default function Jobs() {
         locations (id, name)
       `)
       .eq("status", "active")
+      .order("is_featured", { ascending: false })
       .order("created_at", { ascending: false });
 
     // Apply Filters

@@ -10,10 +10,11 @@ function isNewJob(createdAt) {
   return Date.now() - created < NEW_JOB_WINDOW_MS;
 }
 
-export default function JobCard({ job, salary }) {
+export default function JobCard({ job, salary, featured = false }) {
   const employerName = job.employers?.contact_person || "Employer";
   const location = job.locations?.name || "";
   const fresh = isNewJob(job.created_at);
+  const showFeatured = featured || Boolean(job.is_featured);
 
   return (
     <Link
@@ -23,6 +24,9 @@ export default function JobCard({ job, salary }) {
       <div className="min-w-0">
         <h3 className="break-words text-sm font-bold leading-5 text-ink transition-colors group-hover:text-brand sm:text-base">
           {job.title}
+          {showFeatured && (
+            <span className="badge-featured ml-2 align-middle">Featured</span>
+          )}
           {fresh && <span className="badge-new ml-2 align-middle">New</span>}
         </h3>
 
