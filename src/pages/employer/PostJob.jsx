@@ -7,26 +7,57 @@ import { FormMessage, LoadingState } from "../../components/ui";
 import { QUALIFICATION_OPTIONS } from "../../lib/qualifications";
 import { hasUnlimitedJobs } from "../../lib/employer";
 
+const POST_JOB_DRAFT_KEY = "vmw_post_job_draft";
+
+const INITIAL_FORM = {
+  title: "",
+  category_id: "",
+  location_id: "",
+  job_type: "full-time",
+  qualification: "",
+  min_salary: "",
+  max_salary: "",
+  experience_min: "",
+  experience_max: "",
+  deadline: "",
+  description: "",
+  requirements: "",
+};
+
+function loadPostJobDraft() {
+  try {
+    const raw = sessionStorage.getItem(POST_JOB_DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return { ...INITIAL_FORM, ...parsed };
+  } catch {
+    return null;
+  }
+}
+
+function savePostJobDraft(nextForm) {
+  try {
+    sessionStorage.setItem(POST_JOB_DRAFT_KEY, JSON.stringify(nextForm));
+  } catch {
+    // Draft persistence is best-effort and should never block posting.
+  }
+}
+
+function clearPostJobDraft() {
+  try {
+    sessionStorage.removeItem(POST_JOB_DRAFT_KEY);
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
 export default function PostJob() {
   const { employer, loading: employerLoading, error: employerError } = useEmployer();
 
   const [categories, setCategories] = useState([]);
   const [locations, setLocations] = useState([]);
 
-  const [form, setForm] = useState({
-    title: "",
-    category_id: "",
-    location_id: "",
-    job_type: "full-time",
-    qualification: "",
-    min_salary: "",
-    max_salary: "",
-    experience_min: "",
-    experience_max: "",
-    deadline: "",
-    description: "",
-    requirements: "",
-  });
+  const [form, setForm] = useState(() => loadPostJobDraft() ?? INITIAL_FORM);
 
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -63,10 +94,9 @@ export default function PostJob() {
   }
 
   function handleChange(e) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const nextForm = { ...form, [e.target.name]: e.target.value };
+    setForm(nextForm);
+    savePostJobDraft(nextForm);
   }
 
   function toNumberOrNull(value) {
@@ -177,24 +207,13 @@ export default function PostJob() {
       setMessage("Job submitted. It will appear publicly once it has been reviewed.");
       setMessageType("success");
 
+      clearPostJobDraft();
+
       // The database trigger `jobs_decrement_limit` already deducted 1 from
       // the employer's job_limit. Do not update it again from the browser.
       setCreditsUsed((used) => used + 1);
 
-      setForm({
-        title: "",
-        category_id: "",
-        location_id: "",
-        job_type: "full-time",
-        qualification: "",
-        min_salary: "",
-        max_salary: "",
-        experience_min: "",
-        experience_max: "",
-        deadline: "",
-        description: "",
-        requirements: "",
-      });
+      setForm({ ...INITIAL_FORM });
     }
 
     setSaving(false);
