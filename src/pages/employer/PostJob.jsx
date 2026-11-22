@@ -11,6 +11,7 @@ const POST_JOB_DRAFT_KEY = "vmw_post_job_draft";
 
 const INITIAL_FORM = {
   title: "",
+  company: "",
   category_id: "",
   location_id: "",
   job_type: "full-time",
@@ -68,6 +69,19 @@ export default function PostJob() {
     fetchCategories();
     fetchLocations();
   }, []);
+
+  // Pre-fill the company from the employer profile the first time, so every
+  // post already has a company without forcing the employer to retype it.
+  useEffect(() => {
+    if (!employer?.company_name) return;
+
+    setForm((previous) => {
+      if (previous.company) return previous;
+      const next = { ...previous, company: employer.company_name };
+      savePostJobDraft(next);
+      return next;
+    });
+  }, [employer]);
 
   async function fetchCategories() {
     const { data, error } = await supabase
@@ -158,6 +172,12 @@ export default function PostJob() {
       return;
     }
 
+    if (!form.company.trim()) {
+      setMessage("Company name is required.");
+      setMessageType("error");
+      return;
+    }
+
     if (!form.qualification) {
       setMessage("Minimum qualification is required. Choose \"Any / No specific qualification\" if none applies.");
       setMessageType("error");
@@ -172,9 +192,13 @@ export default function PostJob() {
 
     setSaving(true);
 
+    const company = form.company.trim();
+    const title = form.title.trim();
+
     const payload = {
       employer_id: employer.id,
-      title: form.title.trim(),
+      // The public title always carries the company: "Title (Company Name)".
+      title: company ? `${title} (${company})` : title,
       category_id: form.category_id || null,
       location_id: form.location_id || null,
       job_type: form.job_type,
@@ -213,7 +237,7 @@ export default function PostJob() {
       // the employer's job_limit. Do not update it again from the browser.
       setCreditsUsed((used) => used + 1);
 
-      setForm({ ...INITIAL_FORM });
+      setForm({ ...INITIAL_FORM, company: employer.company_name || "" });
     }
 
     setSaving(false);
@@ -319,6 +343,27 @@ export default function PostJob() {
                 required
                 className="input"
               />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="label" htmlFor="company">Company Name *</label>
+              <input
+                id="company"
+                type="text"
+                name="company"
+                value={form.company}
+                onChange={handleChange}
+                required
+                placeholder="Example: TCS, Infosys, Wipro"
+                className="input"
+              />
+              <p className="mt-1.5 text-xs text-muted">
+                Shown on the job as{" "}
+                <span className="font-semibold text-ink">
+                  {form.title.trim() || "Job Title"}
+                  {form.company.trim() ? ` (${form.company.trim()})` : ""}
+                </span>
+              </p>
             </div>
 
             <div>
