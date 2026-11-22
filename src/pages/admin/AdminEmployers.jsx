@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
+  Ban,
+  BriefcaseBusiness,
   Building2,
   Check,
+  Save,
+  Search,
   ShieldCheck,
   TriangleAlert,
   X,
@@ -13,6 +18,10 @@ import { FormMessage, LoadingState } from "../../components/ui";
 export default function AdminEmployers() {
   const [paymentRequests, setPaymentRequests] = useState([]);
   const [pendingEmployers, setPendingEmployers] = useState([]);
+  const [allEmployers, setAllEmployers] = useState([]);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [creditDrafts, setCreditDrafts] = useState({});
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
   const [message, setMessage] = useState("");
@@ -30,7 +39,7 @@ export default function AdminEmployers() {
   async function fetchData() {
     setLoading(true);
 
-    const [subResult, empResult] = await Promise.all([
+    const [subResult, empResult, allResult] = await Promise.all([
       supabase
         .from("employer_subscriptions")
         .select(
@@ -68,6 +77,24 @@ export default function AdminEmployers() {
         )
         .eq("status", "pending")
         .order("created_at", { ascending: false }),
+      supabase
+        .from("employers")
+        .select(
+          `
+          id,
+          user_id,
+          company_name,
+          status,
+          is_verified,
+          job_limit,
+          subscription_expires_at,
+          created_at,
+          profiles (name, email),
+          jobs (id, status)
+        `,
+        )
+        .order("created_at", { ascending: false })
+        .limit(200),
     ]);
 
     if (subResult.error) {
@@ -80,8 +107,14 @@ export default function AdminEmployers() {
       showMessage("Unable to load pending employers.", "error");
     }
 
+    if (allResult.error) {
+      console.error(allResult.error);
+      showMessage("Unable to load employers.", "error");
+    }
+
     setPaymentRequests(subResult.data || []);
     setPendingEmployers(empResult.data || []);
+    setAllEmployers(allResult.data || []);
     setLoading(false);
   }
 
@@ -253,6 +286,80 @@ export default function AdminEmployers() {
 
     setActionLoadingId(null);
   }
+
+  async function toggleEmployerStatus(employer) {
+    const next = employer.status === "blocked" ? "active" : "blocked";
+    const confirmed = window.confirm(
+      next === "blocked"
+        ? `Block ${employer.company_name || "this employer"}? Their job postings will be paused.`
+        : `Unblock ${employer.company_name || "this employer"}?`,
+    );
+
+    if (!confirmed) return;
+
+    setActionLoadingId(employer.id);
+    setMessage("");
+
+    const { error } = await supabase
+      .from("employers")
+      .update({
+        status: next,
+        is_verified: next === "active" ? true : employer.is_verified,
+      })
+      .eq("id", employer.id);
+
+    if (error) {
+      console.error(error);
+      showMessage("Unable to update employer status.", "error");
+    } else {
+      showMessage(
+        next === "blocked" ? "Employer blocked." : "Employer unblocked.",
+        "success",
+      );
+      await fetchData();
+    }
+
+    setActionLoadingId(null);
+  }
+
+  async function saveCredits(employer) {
+    const value = Number(creditDrafts[employer.id] ?? employer.job_limit);
+
+    if (!Number.isInteger(value) || value < 0) {
+      showMessage("Enter a valid whole number of job credits.", "error");
+      return;
+    }
+
+    setActionLoadingId(employer.id);
+    setMessage("");
+
+    const { error } = await supabase
+      .from("employers")
+      .update({ job_limit: value })
+      .eq("id", employer.id);
+
+    if (error) {
+      console.error(error);
+      showMessage("Unable to update job credits.", "error");
+    } else {
+      showMessage(`Job credits set to ${value} for ${employer.company_name || "employer"}.`, "success");
+      await fetchData();
+    }
+
+    setActionLoadingId(null);
+  }
+
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredEmployers = allEmployers.filter((employer) => {
+    const matchesSearch =
+      !normalizedSearch ||
+      employer.company_name?.toLowerCase().includes(normalizedSearch) ||
+      employer.profiles?.name?.toLowerCase().includes(normalizedSearch) ||
+      employer.profiles?.email?.toLowerCase().includes(normalizedSearch);
+    const matchesStatus =
+      statusFilter === "all" || employer.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="page-shell">
@@ -448,6 +555,175 @@ export default function AdminEmployers() {
                 </div>
               </>
             )}
+
+            <h2 className="mb-4 mt-10 text-xl font-bold text-ink">
+              All Employers ({allEmployers.length})
+            </h2>
+
+            <div className="card overflow-hidden">
+              <div className="flex flex-wrap items-center gap-3 border-b border-line bg-slate-50/80 p-4">
+                <label className="relative min-w-[220px] flex-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Search company, name or email"
+                    className="input min-h-10 w-full pl-9 text-xs"
+                    aria-label="Search employers"
+                  />
+                </label>
+                <select
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                  className="select min-h-10 py-2 text-xs"
+                  aria-label="Filter employers by status"
+                >
+                  <option value="all">All statuses</option>
+                  <option value="active">Active</option>
+                  <option value="pending">Pending</option>
+                  <option value="blocked">Blocked</option>
+                </select>
+                <span className="text-xs text-muted">{filteredEmployers.length} shown</span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[980px] border-collapse text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-line bg-slate-50/80 text-xs uppercase tracking-wider text-slate-500">
+                      <th className="px-4 py-3 font-semibold">Company</th>
+                      <th className="px-4 py-3 font-semibold">Contact</th>
+                      <th className="px-4 py-3 font-semibold">Status</th>
+                      <th className="px-4 py-3 font-semibold">Job Credits</th>
+                      <th className="px-4 py-3 font-semibold">Jobs</th>
+                      <th className="px-4 py-3 font-semibold">Plan Expiry</th>
+                      <th className="px-4 py-3 font-semibold">Joined</th>
+                      <th className="px-4 py-3 font-semibold">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredEmployers.length === 0 ? (
+                      <tr>
+                        <td colSpan="8" className="px-4 py-8 text-center text-sm text-muted">
+                          No employers match your filters.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredEmployers.map((employer) => {
+                        const busy = actionLoadingId === employer.id;
+                        const jobs = employer.jobs || [];
+                        const activeJobs = jobs.filter((job) => job.status === "active").length;
+
+                        return (
+                          <tr key={employer.id} className="border-b border-line/80 last:border-0 align-top">
+                            <td className="px-4 py-4">
+                              <strong className="block font-semibold text-ink">
+                                {employer.company_name || "No company name"}
+                              </strong>
+                              <span className="mt-1 block text-xs text-slate-500">
+                                ID {employer.id.slice(0, 8)}
+                              </span>
+                            </td>
+
+                            <td className="px-4 py-4 text-muted">
+                              <span className="block">{employer.profiles?.name || "—"}</span>
+                              <span className="block text-xs">{employer.profiles?.email || "—"}</span>
+                            </td>
+
+                            <td className="px-4 py-4">
+                              <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold capitalize ring-1 ${
+                                employer.status === "active"
+                                  ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                                  : employer.status === "pending"
+                                    ? "bg-amber-50 text-amber-700 ring-amber-200"
+                                    : employer.status === "blocked"
+                                      ? "bg-rose-50 text-rose-700 ring-rose-200"
+                                      : "bg-slate-100 text-slate-600 ring-slate-200"
+                              }`}>
+                                {employer.status}
+                              </span>
+                              {employer.is_verified && (
+                                <span className="mt-1 block text-[10px] font-semibold uppercase tracking-wide text-emerald-600">
+                                  Verified
+                                </span>
+                              )}
+                            </td>
+
+                            <td className="px-4 py-4">
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={creditDrafts[employer.id] ?? employer.job_limit ?? 0}
+                                  onChange={(event) =>
+                                    setCreditDrafts((drafts) => ({
+                                      ...drafts,
+                                      [employer.id]: event.target.value,
+                                    }))
+                                  }
+                                  className="input min-h-9 w-20 px-2 py-1.5 text-xs"
+                                  aria-label={`Job credits for ${employer.company_name || "employer"}`}
+                                />
+                                <button
+                                  type="button"
+                                  disabled={busy}
+                                  onClick={() => saveCredits(employer)}
+                                  className="inline-flex min-h-9 items-center gap-1 rounded-lg bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-50"
+                                  aria-label={`Save credits for ${employer.company_name || "employer"}`}
+                                >
+                                  <Save className="h-3.5 w-3.5" aria-hidden="true" />
+                                  Save
+                                </button>
+                              </div>
+                            </td>
+
+                            <td className="px-4 py-4">
+                              <Link
+                                to={`/admin/jobs?employer=${employer.id}`}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-brand transition hover:bg-indigo-50"
+                              >
+                                <BriefcaseBusiness className="h-4 w-4" aria-hidden="true" />
+                                {jobs.length} total · {activeJobs} active
+                              </Link>
+                            </td>
+
+                            <td className="px-4 py-4 text-xs text-muted">
+                              {employer.subscription_expires_at
+                                ? new Date(employer.subscription_expires_at).toLocaleDateString()
+                                : "—"}
+                            </td>
+
+                            <td className="px-4 py-4 text-xs text-muted">
+                              {new Date(employer.created_at).toLocaleDateString()}
+                            </td>
+
+                            <td className="px-4 py-4">
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => toggleEmployerStatus(employer)}
+                                className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-white transition disabled:opacity-50 ${
+                                  employer.status === "blocked"
+                                    ? "bg-emerald-600 hover:bg-emerald-500"
+                                    : "bg-rose-600 hover:bg-rose-500"
+                                }`}
+                              >
+                                {employer.status === "blocked" ? (
+                                  <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                                ) : (
+                                  <Ban className="h-3.5 w-3.5" aria-hidden="true" />
+                                )}
+                                {employer.status === "blocked" ? "Unblock" : "Block"}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </>
         )}
       </div>

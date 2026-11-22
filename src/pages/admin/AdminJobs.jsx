@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Archive,
   BriefcaseBusiness,
@@ -27,12 +27,34 @@ export default function AdminJobs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [searchParams] = useSearchParams();
   const [statusFilter, setStatusFilter] = useState("all");
+  const [employerFilter, setEmployerFilter] = useState(
+    () => searchParams.get("employer") || "all",
+  );
+  const [employers, setEmployers] = useState([]);
   const [actionLoadingId, setActionLoadingId] = useState(null);
 
   useEffect(() => {
     fetchJobs();
-  }, [statusFilter]);
+  }, [statusFilter, employerFilter]);
+
+  useEffect(() => {
+    let active = true;
+    supabase
+      .from("employers")
+      .select("id, company_name")
+      .order("company_name", { ascending: true })
+      .limit(500)
+      .then(({ data, error }) => {
+        if (!active) return;
+        if (error) console.error(error);
+        else setEmployers(data || []);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function fetchJobs() {
     setLoading(true);
@@ -50,7 +72,8 @@ export default function AdminJobs() {
         qualification,
         created_at,
         employers (
-          company_name
+          company_name,
+          profiles (email)
         ),
         categories (
           name
@@ -65,6 +88,10 @@ export default function AdminJobs() {
 
     if (statusFilter !== "all") {
       query = query.eq("status", statusFilter);
+    }
+
+    if (employerFilter !== "all") {
+      query = query.eq("employer_id", employerFilter);
     }
 
     const { data, error } = await query;
@@ -165,6 +192,35 @@ export default function AdminJobs() {
           ))}
         </div>
 
+        <div className="mb-5 flex flex-wrap items-center gap-3">
+          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500" htmlFor="employer-filter">
+            Employer
+          </label>
+          <select
+            id="employer-filter"
+            value={employerFilter}
+            onChange={(event) => setEmployerFilter(event.target.value)}
+            className="select min-h-10 max-w-full py-2 text-xs sm:w-72"
+          >
+            <option value="all">All employers</option>
+            {employers.map((employer) => (
+              <option key={employer.id} value={employer.id}>
+                {employer.company_name || "No company name"}
+              </option>
+            ))}
+          </select>
+          {employerFilter !== "all" && (
+            <button
+              type="button"
+              onClick={() => setEmployerFilter("all")}
+              className="text-xs font-semibold text-brand hover:underline"
+            >
+              Clear employer filter
+            </button>
+          )}
+          <span className="text-xs text-muted">{jobs.length} jobs shown (max 100)</span>
+        </div>
+
         {loading ? (
           <LoadingState label="Loading jobs..." />
         ) : jobs.length === 0 ? (
@@ -196,7 +252,10 @@ export default function AdminJobs() {
                       </td>
 
                       <td className="px-4 py-4 text-muted">
-                        {job.employers?.company_name || "N/A"}
+                        <span className="block">{job.employers?.company_name || "N/A"}</span>
+                        {job.employers?.profiles?.email && (
+                          <span className="mt-1 block text-xs">{job.employers.profiles.email}</span>
+                        )}
                       </td>
 
                       <td className="px-4 py-4 text-muted">
