@@ -5,6 +5,7 @@ import {
   BriefcaseBusiness,
   Building2,
   MapPin,
+  MessageCircle,
   Search,
   Sparkles,
 } from "lucide-react";
@@ -183,6 +184,35 @@ export default function Home() {
                   <p className="mt-1 text-[11px] text-indigo-100/80">Locations</p>
                 </div>
               </div>
+            </div>
+
+            <div className="mx-auto mt-3 w-[92%] max-w-[22rem] sm:mt-4 sm:w-full sm:max-w-[33rem]">
+              <a
+                href="https://whatsapp.com/channel/0029VbC5Zmr0gcfOyecuZx0u"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Join VMW NCR Jobs WhatsApp channel for daily job updates"
+                className="group flex items-center justify-between gap-1.5 rounded-lg border border-white/25 bg-gradient-to-r from-[#128C7E] via-[#1faa59] to-[#25D366] px-2.5 py-1.5 shadow-lg shadow-emerald-950/40 ring-1 ring-white/10 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-900 sm:gap-2 sm:rounded-xl sm:px-3.5 sm:py-2.5"
+              >
+                <span className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+                  <span className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/15 text-white ring-1 ring-white/30 sm:h-8 sm:w-8">
+                    <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
+                    <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-amber-300 ring-2 ring-emerald-700 sm:h-2 sm:w-2" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0 text-left">
+                    <span className="block text-[11px] font-extrabold leading-4 text-white sm:text-sm">
+                      Join WhatsApp for daily job updates
+                    </span>
+                    <span className="mt-0.5 hidden text-[10px] font-medium text-emerald-50/90 sm:block sm:text-[11px]">
+                      Get new openings directly on your phone
+                    </span>
+                  </span>
+                </span>
+                <span className="inline-flex min-h-7 shrink-0 items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[10px] font-extrabold text-emerald-700 shadow-sm transition-colors duration-200 group-hover:bg-amber-300 group-hover:text-emerald-950 sm:min-h-8 sm:px-3 sm:py-1.5 sm:text-[11px]">
+                  Join
+                  <ArrowRight className="h-2.5 w-2.5 transition-transform duration-200 group-hover:translate-x-0.5 sm:h-3 sm:w-3" aria-hidden="true" />
+                </span>
+              </a>
             </div>
           </div>
         </div>

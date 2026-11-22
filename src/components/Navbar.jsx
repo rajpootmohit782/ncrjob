@@ -29,13 +29,18 @@ export default function Navbar() {
         <Link
           to="/"
           className="group flex min-h-11 shrink-0 items-center gap-2"
-          aria-label="VMWjobs home"
+          aria-label="VMW NCR Jobs home"
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-900/20 transition-transform duration-200 group-hover:-rotate-3">
             <Briefcase className="h-4 w-4" aria-hidden="true" />
           </span>
-          <span className="font-display text-lg font-extrabold tracking-tight text-ink">
-            VMW<span className="text-brand">jobs</span>
+          <span className="flex flex-col leading-none">
+            <span className="font-display text-lg font-extrabold tracking-tight text-ink">
+              VMW <span className="text-brand">NCR Jobs</span>
+            </span>
+            <span className="mt-0.5 text-[10px] font-medium tracking-wide text-slate-500">
+              www.vmwncrjob.in
+            </span>
           </span>
         </Link>
 
