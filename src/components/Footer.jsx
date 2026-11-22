@@ -9,6 +9,7 @@ const quickLinks = [
   { to: "/", label: "Home" },
   { to: "/jobs", label: "Browse Jobs" },
   { to: "/become-employer", label: "Post a Job" },
+  { to: "/employer-login", label: "Employer Login" },
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
   ...(showApkDownload ? [{ to: "/download", label: "Get the App" }] : []),
