@@ -16,6 +16,8 @@ import EmployerLogin from "./pages/auth/EmployerLogin";
 import EmployerDashboard from "./pages/employer/EmployerDashboard";
 import EmployerProfile from "./pages/employer/EmployerProfile";
 import PostJob from "./pages/employer/PostJob";
+import MyJobs from "./pages/employer/MyJobs";
+import EditJob from "./pages/employer/EditJob";
 
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -99,6 +101,24 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["employer"]}>
                 <PostJob />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/employer/jobs"
+            element={
+              <ProtectedRoute allowedRoles={["employer"]}>
+                <MyJobs />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/employer/edit-job/:id"
+            element={
+              <ProtectedRoute allowedRoles={["employer"]}>
+                <EditJob />
               </ProtectedRoute>
             }
           />

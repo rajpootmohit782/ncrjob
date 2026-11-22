@@ -287,10 +287,16 @@ export default function EmployerDashboard() {
         <div className="card mt-6 p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-xl font-bold text-ink">Recent Jobs</h2>
-            <Link to="/employer/post-job" className="link-arrow">
-              Post a job
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link to="/employer/jobs" className="link-arrow">
+                View all jobs
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <Link to="/employer/post-job" className="link-arrow">
+                Post a job
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
 
           {jobsLoading ? (
@@ -314,9 +320,18 @@ export default function EmployerDashboard() {
                       {new Date(job.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ${statusClasses(job.status)}`}>
-                    {job.status}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize ring-1 ${statusClasses(job.status)}`}>
+                      {job.status}
+                    </span>
+                    <Link
+                      to={`/employer/edit-job/${job.id}`}
+                      className="inline-flex min-h-8 items-center gap-1.5 rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-600"
+                    >
+                      <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                      Edit
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
